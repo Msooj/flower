@@ -32,3 +32,8 @@
         transform: rotate(360deg);
     }
 }
+
+/* Remove text center alignment for natural reading flow */
+.App {
+    text-align: left;
+}
