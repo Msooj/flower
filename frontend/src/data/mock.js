@@ -2,7 +2,7 @@
 
 export const categories = [
   { id: 1, name: "Birthday", image: "https://images.unsplash.com/photo-1487530811176-3780de880c2d?w=400", slug: "birthday" },
-  { id: 2, name: "Roses", image: "https://images.unsplash.com/photo-1518882605630-8eb578d60a6d?w=400", slug: "roses" },
+  { id: 2, name: "Roses", image: "https://images.unsplash.com/photo-1455659817273-f96807779a8a?w=400", slug: "roses" },
   { id: 3, name: "Romance", image: "https://images.unsplash.com/photo-1490750967868-88aa4486c946?w=400", slug: "romance" },
   { id: 4, name: "Anniversary", image: "https://images.unsplash.com/photo-1561181286-d3fee7d55364?w=400", slug: "anniversary" },
   { id: 5, name: "Combos", image: "https://images.unsplash.com/photo-1563241527-3004b7be0ffd?w=400", slug: "combos" },
