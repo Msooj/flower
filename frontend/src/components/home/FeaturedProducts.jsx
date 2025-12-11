@@ -6,11 +6,16 @@ import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { featuredProducts } from '../../data/mock';
 
+<<<<<<< HEAD
 import { useCart } from '../../context/CartContext';
 
 const ProductCard = ({ product, index }) => {
   const navigate = useNavigate();
   const { addToCart } = useCart();
+=======
+const ProductCard = ({ product, index }) => {
+  const navigate = useNavigate();
+>>>>>>> 95c321e5e3ac7dac9ec57a2f518f7623cc96f764
 
   const formatPrice = (price) => {
     return `KSh ${price.toLocaleString()}`;
@@ -47,7 +52,11 @@ const ProductCard = ({ product, index }) => {
             alt={product.name}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           />
+<<<<<<< HEAD
 
+=======
+          
+>>>>>>> 95c321e5e3ac7dac9ec57a2f518f7623cc96f764
           {/* Badge */}
           {product.badge && (
             <div className="absolute top-3 left-3">
@@ -56,7 +65,11 @@ const ProductCard = ({ product, index }) => {
               </Badge>
             </div>
           )}
+<<<<<<< HEAD
 
+=======
+          
+>>>>>>> 95c321e5e3ac7dac9ec57a2f518f7623cc96f764
           {/* Discount Badge */}
           {product.originalPrice && (
             <div className="absolute top-3 right-3">
@@ -65,7 +78,11 @@ const ProductCard = ({ product, index }) => {
               </Badge>
             </div>
           )}
+<<<<<<< HEAD
 
+=======
+          
+>>>>>>> 95c321e5e3ac7dac9ec57a2f518f7623cc96f764
           {/* Quick Actions */}
           <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300" />
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
@@ -84,13 +101,20 @@ const ProductCard = ({ product, index }) => {
             <Button
               size="icon"
               className="bg-pink-500 text-white hover:bg-pink-600 rounded-full shadow-lg"
+<<<<<<< HEAD
               onClick={() => addToCart(product)}
+=======
+>>>>>>> 95c321e5e3ac7dac9ec57a2f518f7623cc96f764
             >
               <ShoppingBag className="w-5 h-5" />
             </Button>
           </div>
         </div>
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> 95c321e5e3ac7dac9ec57a2f518f7623cc96f764
         {/* Content */}
         <div className="p-4">
           {/* Rating */}
@@ -99,21 +123,37 @@ const ProductCard = ({ product, index }) => {
               {[...Array(5)].map((_, i) => (
                 <Star
                   key={i}
+<<<<<<< HEAD
                   className={`w-4 h-4 ${i < Math.floor(product.rating)
                       ? 'text-yellow-400 fill-yellow-400'
                       : 'text-gray-300'
                     }`}
+=======
+                  className={`w-4 h-4 ${
+                    i < Math.floor(product.rating)
+                      ? 'text-yellow-400 fill-yellow-400'
+                      : 'text-gray-300'
+                  }`}
+>>>>>>> 95c321e5e3ac7dac9ec57a2f518f7623cc96f764
                 />
               ))}
             </div>
             <span className="text-sm text-gray-500">({product.reviews})</span>
           </div>
+<<<<<<< HEAD
 
+=======
+          
+>>>>>>> 95c321e5e3ac7dac9ec57a2f518f7623cc96f764
           {/* Name */}
           <h3 className="font-semibold text-gray-800 mb-2 group-hover:text-pink-600 transition-colors line-clamp-1">
             {product.name}
           </h3>
+<<<<<<< HEAD
 
+=======
+          
+>>>>>>> 95c321e5e3ac7dac9ec57a2f518f7623cc96f764
           {/* Price */}
           <div className="flex items-center gap-2">
             <span className="text-lg font-bold text-pink-600">

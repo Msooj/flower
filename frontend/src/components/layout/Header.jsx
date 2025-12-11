@@ -5,10 +5,14 @@ import { Search, User, ShoppingBag, Menu, X, Heart, Phone } from 'lucide-react';
 import { Button } from '../ui/button';
 import { navLinks, contactInfo } from '../../data/mock';
 
+<<<<<<< HEAD
 import { useCart } from '../../context/CartContext';
 
 const Header = () => {
   const { cartCount } = useCart();
+=======
+const Header = ({ cartCount = 0 }) => {
+>>>>>>> 95c321e5e3ac7dac9ec57a2f518f7623cc96f764
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -39,10 +43,18 @@ const Header = () => {
 
       {/* Main Header */}
       <header
+<<<<<<< HEAD
         className={`sticky top-0 z-50 transition-all duration-300 ${isScrolled
             ? 'glass-effect shadow-lg border-b border-pink-100'
             : 'bg-white'
           }`}
+=======
+        className={`sticky top-0 z-50 transition-all duration-300 ${
+          isScrolled
+            ? 'glass-effect shadow-lg border-b border-pink-100'
+            : 'bg-white'
+        }`}
+>>>>>>> 95c321e5e3ac7dac9ec57a2f518f7623cc96f764
       >
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-20">
@@ -65,20 +77,37 @@ const Header = () => {
                 <Link
                   key={link.name}
                   to={link.href}
+<<<<<<< HEAD
                   className={`relative text-sm font-medium transition-colors hover:text-pink-600 ${location.pathname === link.href ||
                       (link.href !== '/' && location.pathname.startsWith(link.href.split('?')[0]))
                       ? 'text-pink-600'
                       : 'text-gray-700'
                     }`}
+=======
+                  className={`relative text-sm font-medium transition-colors hover:text-pink-600 ${
+                    location.pathname === link.href ||
+                    (link.href !== '/' && location.pathname.startsWith(link.href.split('?')[0]))
+                      ? 'text-pink-600'
+                      : 'text-gray-700'
+                  }`}
+>>>>>>> 95c321e5e3ac7dac9ec57a2f518f7623cc96f764
                 >
                   {link.name}
                   {(location.pathname === link.href ||
                     (link.href !== '/' && location.pathname.startsWith(link.href.split('?')[0]))) && (
+<<<<<<< HEAD
                       <motion.div
                         layoutId="navIndicator"
                         className="absolute -bottom-1 left-0 right-0 h-0.5 bg-pink-500 rounded-full"
                       />
                     )}
+=======
+                    <motion.div
+                      layoutId="navIndicator"
+                      className="absolute -bottom-1 left-0 right-0 h-0.5 bg-pink-500 rounded-full"
+                    />
+                  )}
+>>>>>>> 95c321e5e3ac7dac9ec57a2f518f7623cc96f764
                 </Link>
               ))}
             </nav>
@@ -109,7 +138,10 @@ const Header = () => {
                 variant="ghost"
                 size="icon"
                 className="relative text-gray-700 hover:text-pink-600 hover:bg-pink-50"
+<<<<<<< HEAD
                 onClick={() => navigate('/cart')}
+=======
+>>>>>>> 95c321e5e3ac7dac9ec57a2f518f7623cc96f764
               >
                 <ShoppingBag className="w-5 h-5" />
                 {cartCount > 0 && (
@@ -188,10 +220,18 @@ const Header = () => {
                     <Link
                       key={link.name}
                       to={link.href}
+<<<<<<< HEAD
                       className={`px-4 py-3 rounded-lg font-medium transition-colors ${location.pathname === link.href
                           ? 'bg-pink-50 text-pink-600'
                           : 'text-gray-700 hover:bg-pink-50 hover:text-pink-600'
                         }`}
+=======
+                      className={`px-4 py-3 rounded-lg font-medium transition-colors ${
+                        location.pathname === link.href
+                          ? 'bg-pink-50 text-pink-600'
+                          : 'text-gray-700 hover:bg-pink-50 hover:text-pink-600'
+                      }`}
+>>>>>>> 95c321e5e3ac7dac9ec57a2f518f7623cc96f764
                     >
                       {link.name}
                     </Link>
