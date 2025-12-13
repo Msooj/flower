@@ -1,0 +1,24 @@
+[31m✗[39m Build failed in 6.06s
+[31merror during build:
+[31m[vite:esbuild] Transform failed with 1 error:
+C:/Users/user/Desktop/flower-main/frontend/src/components/home/FeaturedProducts.jsx:9:0: ERROR: Unexpected "<<"[31m
+file: [36mC:/Users/user/Desktop/flower-main/frontend/src/components/home/FeaturedProducts.jsx:9:0[31m
+[33m
+[33mUnexpected "<<"[33m
+7  |  import { featuredProducts } from '../../data/mock';
+8  |  
+9  |  <<<<<<< HEAD
+   |  ^
+10 |  import { useCart } from '../../context/CartContext';
+11 |  
+[31m
+    at failureErrorWithLog (C:\Users\user\Desktop\flower-main\frontend\node_modules\esbuild\lib\main.js:1467:15)
+    at C:\Users\user\Desktop\flower-main\frontend\node_modules\esbuild\lib\main.js:736:50
+    at responseCallbacks.<computed> (C:\Users\user\Desktop\flower-main\frontend\node_modules\esbuild\lib\main.js:603:9)
+    at handleIncomingPacket (C:\Users\user\Desktop\flower-main\frontend\node_modules\esbuild\lib\main.js:658:12)
+    at Socket.readFromStdout (C:\Users\user\Desktop\flower-main\frontend\node_modules\esbuild\lib\main.js:581:7)
+    at Socket.emit (node:events:519:28)
+    at addChunk (node:internal/streams/readable:561:12)
+    at readableAddChunkPushByteMode (node:internal/streams/readable:512:3)
+    at Readable.push (node:internal/streams/readable:392:5)
+    at Pipe.onStreamRead (node:internal/stream_base_commons:189:23)[39m

@@ -1,36 +1,21 @@
-<<<<<<< HEAD
 from fastapi import FastAPI, APIRouter, HTTPException
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from supabase import create_client, Client
-=======
-from fastapi import FastAPI, APIRouter
-from dotenv import load_dotenv
-from starlette.middleware.cors import CORSMiddleware
-from motor.motor_asyncio import AsyncIOMotorClient
->>>>>>> 95c321e5e3ac7dac9ec57a2f518f7623cc96f764
 import os
 import logging
 from pathlib import Path
 from pydantic import BaseModel, Field, ConfigDict
-<<<<<<< HEAD
 from typing import List, Optional
 import uuid
 from datetime import datetime, timezone
 import requests
 import base64
 import json
-=======
-from typing import List
-import uuid
-from datetime import datetime, timezone
-
->>>>>>> 95c321e5e3ac7dac9ec57a2f518f7623cc96f764
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
-<<<<<<< HEAD
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
@@ -42,12 +27,6 @@ logger = logging.getLogger(__name__)
 supabase_url = os.environ.get("SUPABASE_URL", "")
 supabase_key = os.environ.get("SUPABASE_KEY", "")
 supabase: Client = create_client(supabase_url, supabase_key)
-=======
-# MongoDB connection
-mongo_url = os.environ['MONGO_URL']
-client = AsyncIOMotorClient(mongo_url)
-db = client[os.environ['DB_NAME']]
->>>>>>> 95c321e5e3ac7dac9ec57a2f518f7623cc96f764
 
 # Create the main app without a prefix
 app = FastAPI()
@@ -58,11 +37,7 @@ api_router = APIRouter(prefix="/api")
 
 # Define Models
 class StatusCheck(BaseModel):
-<<<<<<< HEAD
     model_config = ConfigDict(extra="ignore")
-=======
-    model_config = ConfigDict(extra="ignore")  # Ignore MongoDB's _id field
->>>>>>> 95c321e5e3ac7dac9ec57a2f518f7623cc96f764
     
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     client_name: str
@@ -71,7 +46,6 @@ class StatusCheck(BaseModel):
 class StatusCheckCreate(BaseModel):
     client_name: str
 
-<<<<<<< HEAD
 class MpesaPaymentRequest(BaseModel):
     phone_number: str
     amount: float
@@ -135,19 +109,12 @@ def format_phone_number(phone: str) -> str:
 @api_router.get("/")
 async def root():
     return {"message": "Flower Shop API - M-Pesa Integration Active"}
-=======
-# Add your routes to the router instead of directly to app
-@api_router.get("/")
-async def root():
-    return {"message": "Hello World"}
->>>>>>> 95c321e5e3ac7dac9ec57a2f518f7623cc96f764
 
 @api_router.post("/status", response_model=StatusCheck)
 async def create_status_check(input: StatusCheckCreate):
     status_dict = input.model_dump()
     status_obj = StatusCheck(**status_dict)
     
-<<<<<<< HEAD
     # Convert to dict and serialize datetime to ISO string for Supabase
     doc = status_obj.model_dump()
     doc['timestamp'] = doc['timestamp'].isoformat()
@@ -156,37 +123,20 @@ async def create_status_check(input: StatusCheckCreate):
     response = supabase.table('status_checks').insert(doc).execute()
     # The response.data will contain the inserted record(s)
     
-=======
-    # Convert to dict and serialize datetime to ISO string for MongoDB
-    doc = status_obj.model_dump()
-    doc['timestamp'] = doc['timestamp'].isoformat()
-    
-    _ = await db.status_checks.insert_one(doc)
->>>>>>> 95c321e5e3ac7dac9ec57a2f518f7623cc96f764
     return status_obj
 
 @api_router.get("/status", response_model=List[StatusCheck])
 async def get_status_checks():
-<<<<<<< HEAD
     response = supabase.table('status_checks').select("*").execute()
     status_checks = response.data
     
     # Convert ISO string timestamps back to datetime objects
     for check in status_checks:
         if isinstance(check.get('timestamp'), str):
-=======
-    # Exclude MongoDB's _id field from the query results
-    status_checks = await db.status_checks.find({}, {"_id": 0}).to_list(1000)
-    
-    # Convert ISO string timestamps back to datetime objects
-    for check in status_checks:
-        if isinstance(check['timestamp'], str):
->>>>>>> 95c321e5e3ac7dac9ec57a2f518f7623cc96f764
             check['timestamp'] = datetime.fromisoformat(check['timestamp'])
     
     return status_checks
 
-<<<<<<< HEAD
 @api_router.post("/mpesa/stk-push")
 async def initiate_stk_push(payment_request: MpesaPaymentRequest):
     """Initiate M-Pesa STK Push payment"""
@@ -341,8 +291,6 @@ async def check_payment_status(checkout_request_id: str):
         logger.error(f"Payment status check error: {e}")
         raise HTTPException(status_code=500, detail="Failed to check payment status")
 
-=======
->>>>>>> 95c321e5e3ac7dac9ec57a2f518f7623cc96f764
 # Include the router in the main app
 app.include_router(api_router)
 
@@ -352,19 +300,4 @@ app.add_middleware(
     allow_origins=os.environ.get('CORS_ORIGINS', '*').split(','),
     allow_methods=["*"],
     allow_headers=["*"],
-<<<<<<< HEAD
 )
-=======
-)
-
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
-logger = logging.getLogger(__name__)
-
-@app.on_event("shutdown")
-async def shutdown_db_client():
-    client.close()
->>>>>>> 95c321e5e3ac7dac9ec57a2f518f7623cc96f764

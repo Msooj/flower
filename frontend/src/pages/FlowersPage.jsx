@@ -9,38 +9,26 @@ import { Badge } from '../components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { allProducts, categories } from '../data/mock';
 
-<<<<<<< HEAD
 import { useCart } from '../context/CartContext';
+import { toast } from 'sonner';
 
 const FlowersPage = () => {
   const { addToCart } = useCart();
-=======
-const FlowersPage = () => {
->>>>>>> 95c321e5e3ac7dac9ec57a2f518f7623cc96f764
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState('featured');
   const [gridSize, setGridSize] = useState('large');
   const [showFilters, setShowFilters] = useState(false);
-<<<<<<< HEAD
 
-=======
-  
->>>>>>> 95c321e5e3ac7dac9ec57a2f518f7623cc96f764
   const activeCategory = searchParams.get('category') || 'all';
 
   const filteredProducts = useMemo(() => {
     let products = [...allProducts];
-<<<<<<< HEAD
 
-=======
-    
->>>>>>> 95c321e5e3ac7dac9ec57a2f518f7623cc96f764
     // Filter by category
     if (activeCategory && activeCategory !== 'all') {
       products = products.filter(p => p.category === activeCategory);
     }
-<<<<<<< HEAD
 
     // Filter by search
     if (searchQuery) {
@@ -49,16 +37,7 @@ const FlowersPage = () => {
       );
     }
 
-=======
-    
-    // Filter by search
-    if (searchQuery) {
-      products = products.filter(p => 
-        p.name.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-    }
-    
->>>>>>> 95c321e5e3ac7dac9ec57a2f518f7623cc96f764
+
     // Sort
     switch (sortBy) {
       case 'price-low':
@@ -77,11 +56,7 @@ const FlowersPage = () => {
         // Featured - keep original order
         break;
     }
-<<<<<<< HEAD
 
-=======
-    
->>>>>>> 95c321e5e3ac7dac9ec57a2f518f7623cc96f764
     return products;
   }, [activeCategory, searchQuery, sortBy]);
 
@@ -111,11 +86,7 @@ const FlowersPage = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-pink-50 to-white">
       <Header />
-<<<<<<< HEAD
 
-=======
-      
->>>>>>> 95c321e5e3ac7dac9ec57a2f518f7623cc96f764
       <main className="container mx-auto px-4 py-8">
         {/* Page Header */}
         <div className="text-center mb-10">
@@ -124,11 +95,7 @@ const FlowersPage = () => {
             animate={{ opacity: 1, y: 0 }}
             className="text-3xl md:text-4xl font-bold text-gray-900 mb-4"
           >
-<<<<<<< HEAD
             {activeCategory === 'all' ? 'All Flowers' :
-=======
-            {activeCategory === 'all' ? 'All Flowers' : 
->>>>>>> 95c321e5e3ac7dac9ec57a2f518f7623cc96f764
               categories.find(c => c.slug === activeCategory)?.name || 'Shop Flowers'}
           </motion.h1>
           <motion.p
@@ -203,18 +170,10 @@ const FlowersPage = () => {
               <div className="space-y-2">
                 <button
                   onClick={() => handleCategoryChange('all')}
-<<<<<<< HEAD
                   className={`w-full text-left px-4 py-2 rounded-lg transition-colors ${activeCategory === 'all'
-                      ? 'bg-pink-500 text-white'
-                      : 'text-gray-700 hover:bg-pink-50'
+                    ? 'bg-pink-500 text-white'
+                    : 'text-gray-700 hover:bg-pink-50'
                     }`}
-=======
-                  className={`w-full text-left px-4 py-2 rounded-lg transition-colors ${
-                    activeCategory === 'all'
-                      ? 'bg-pink-500 text-white'
-                      : 'text-gray-700 hover:bg-pink-50'
-                  }`}
->>>>>>> 95c321e5e3ac7dac9ec57a2f518f7623cc96f764
                 >
                   All Flowers
                 </button>
@@ -222,18 +181,10 @@ const FlowersPage = () => {
                   <button
                     key={cat.id}
                     onClick={() => handleCategoryChange(cat.slug)}
-<<<<<<< HEAD
                     className={`w-full text-left px-4 py-2 rounded-lg transition-colors ${activeCategory === cat.slug
-                        ? 'bg-pink-500 text-white'
-                        : 'text-gray-700 hover:bg-pink-50'
+                      ? 'bg-pink-500 text-white'
+                      : 'text-gray-700 hover:bg-pink-50'
                       }`}
-=======
-                    className={`w-full text-left px-4 py-2 rounded-lg transition-colors ${
-                      activeCategory === cat.slug
-                        ? 'bg-pink-500 text-white'
-                        : 'text-gray-700 hover:bg-pink-50'
-                    }`}
->>>>>>> 95c321e5e3ac7dac9ec57a2f518f7623cc96f764
                   >
                     {cat.name}
                   </button>
@@ -264,18 +215,10 @@ const FlowersPage = () => {
                 </Button>
               </div>
             ) : (
-<<<<<<< HEAD
               <div className={`grid gap-4 md:gap-6 ${gridSize === 'large'
-                  ? 'grid-cols-2 lg:grid-cols-3'
-                  : 'grid-cols-2 lg:grid-cols-4'
+                ? 'grid-cols-2 lg:grid-cols-3'
+                : 'grid-cols-2 lg:grid-cols-4'
                 }`}>
-=======
-              <div className={`grid gap-4 md:gap-6 ${
-                gridSize === 'large' 
-                  ? 'grid-cols-2 lg:grid-cols-3' 
-                  : 'grid-cols-2 lg:grid-cols-4'
-              }`}>
->>>>>>> 95c321e5e3ac7dac9ec57a2f518f7623cc96f764
                 {filteredProducts.map((product, index) => (
                   <motion.div
                     key={product.id}
@@ -304,41 +247,31 @@ const FlowersPage = () => {
                         )}
                         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />
                         <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <Button size="icon" className="bg-white text-pink-500 hover:bg-pink-500 hover:text-white rounded-full shadow-lg h-9 w-9">
+                          <Button size="icon" className="bg-white text-pink-500 hover:bg-pink-500 hover:text-white rounded-full shadow-lg h-9 w-9" onClick={() => toast.success('Added to wishlist!')}>
                             <Heart className="w-4 h-4" />
                           </Button>
-<<<<<<< HEAD
-                          <Button size="icon" className="bg-pink-500 text-white hover:bg-pink-600 rounded-full shadow-lg h-9 w-9" onClick={() => addToCart(product)}>
-=======
-                          <Button size="icon" className="bg-pink-500 text-white hover:bg-pink-600 rounded-full shadow-lg h-9 w-9">
->>>>>>> 95c321e5e3ac7dac9ec57a2f518f7623cc96f764
+                          <Button size="icon" className="bg-white text-gray-700 hover:bg-gray-100 rounded-full shadow-lg h-9 w-9" onClick={() => toast.info('Quick view coming soon!')}>
+                            <Eye className="w-4 h-4" />
+                          </Button>
+                          <Button size="icon" className="bg-pink-500 text-white hover:bg-pink-600 rounded-full shadow-lg h-9 w-9" onClick={() => {
+                            addToCart(product);
+                            toast.success('Added to cart!');
+                          }}>
                             <ShoppingBag className="w-4 h-4" />
                           </Button>
                         </div>
                       </div>
-<<<<<<< HEAD
 
-=======
-                      
->>>>>>> 95c321e5e3ac7dac9ec57a2f518f7623cc96f764
                       {/* Content */}
                       <div className="p-4">
                         <div className="flex items-center gap-1 mb-2">
                           {[...Array(5)].map((_, i) => (
                             <Star
                               key={i}
-<<<<<<< HEAD
                               className={`w-4 h-4 ${i < Math.floor(product.rating)
-                                  ? 'text-yellow-400 fill-yellow-400'
-                                  : 'text-gray-300'
+                                ? 'text-yellow-400 fill-yellow-400'
+                                : 'text-gray-300'
                                 }`}
-=======
-                              className={`w-4 h-4 ${
-                                i < Math.floor(product.rating)
-                                  ? 'text-yellow-400 fill-yellow-400'
-                                  : 'text-gray-300'
-                              }`}
->>>>>>> 95c321e5e3ac7dac9ec57a2f518f7623cc96f764
                             />
                           ))}
                           <span className="text-sm text-gray-500">({product.reviews})</span>

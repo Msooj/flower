@@ -1,13 +1,28 @@
 import { createClient } from '@supabase/supabase-js'
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://your-project.supabase.co'
-const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'your-anon-key'
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-export const supabase = createClient(supabaseUrl, supabaseKey, {
+console.log('Supabase Configuration Check:');
+console.log('URL:', supabaseUrl ? 'Found' : 'Missing', supabaseUrl);
+console.log('Key:', supabaseKey ? 'Found' : 'Missing');
+
+if (!supabaseUrl) console.error('CRITICAL: VITE_SUPABASE_URL is missing in .env');
+if (!supabaseKey) console.error('CRITICAL: VITE_SUPABASE_ANON_KEY is missing in .env');
+
+// Fallback to prevent app crash if variables are missing
+const url = supabaseUrl || 'https://placeholder.supabase.co';
+const key = supabaseKey || 'placeholder-key';
+
+if (key && !key.startsWith('ey')) {
+  console.warn('WARNING: VITE_SUPABASE_ANON_KEY does not appear to be a valid Supabase JWT. It should start with "ey".');
+}
+
+export const supabase = createClient(url, key, {
   auth: {
-    autoRefreshToken: false,
-    persistSession: false,
-    detectSessionInUrl: false
+    autoRefreshToken: true,
+    persistSession: true,
+    detectSessionInUrl: true
   }
 })
 
