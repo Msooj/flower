@@ -1,9 +1,9 @@
 {
-    "short_name": "FlowerApp",
-    "name": "Flower Lifestyle App",
+    "short_name": "Flower Lifestyle",
+    "name": "Flower Lifestyle - Fresh Floral Arrangements",
     "icons": [],
     "start_url": ".",
     "display": "standalone",
-    "theme_color": "#000000",
+    "theme_color": "#ec4899",
     "background_color": "#ffffff"
 }

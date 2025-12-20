@@ -3,27 +3,60 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, User, ShoppingBag, Menu, X, Heart, Phone } from 'lucide-react';
 import { Button } from '../ui/button';
+import { toast } from 'sonner';
 import { navLinks, contactInfo } from '../../data/mock';
 
 import { useCart } from '../../context/CartContext';
+import { useWishlist } from '../../context/WishlistContext';
 import { supabase } from '../../lib/supabase';
 
 const Header = () => {
   const { cartCount } = useCart();
+  const { wishlist } = useWishlist();
   const [user, setUser] = useState(null);
+  const [userProfile, setUserProfile] = useState(null);
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => setUser(data.user));
+    const getInitialUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setUser(user);
+      if (user) fetchProfile(user.id);
+    };
+
+    getInitialUser();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
+      const currentUser = session?.user ?? null;
+      setUser(currentUser);
+      if (currentUser) {
+        fetchProfile(currentUser.id);
+      } else {
+        setUserProfile(null);
+      }
     });
 
     return () => subscription.unsubscribe();
   }, []);
+
+  const fetchProfile = async (userId) => {
+    try {
+      const { data, error } = await supabase
+        .from('user_profiles')
+        .select('*')
+        .eq('id', userId)
+        .single();
+
+      if (!error && data) {
+        setUserProfile(data);
+      }
+    } catch (err) {
+      console.error('Error fetching profile:', err);
+    }
+  };
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -122,9 +155,15 @@ const Header = () => {
               <Button
                 variant="ghost"
                 size="icon"
-                className="hidden md:flex text-gray-700 hover:text-pink-600 hover:bg-pink-50"
+                className="hidden md:flex text-gray-700 hover:text-pink-600 hover:bg-pink-50 relative"
+                onClick={() => navigate('/wishlist')}
               >
                 <Heart className="w-5 h-5" />
+                {wishlist.length > 0 && (
+                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-pink-500 text-white text-[10px] rounded-full flex items-center justify-center">
+                    {wishlist.length}
+                  </span>
+                )}
               </Button>
 
               {/* Cart */}
@@ -144,18 +183,24 @@ const Header = () => {
 
               {/* Auth Buttons */}
               <div className="hidden md:flex items-center gap-2">
-
                 {user ? (
-                  <Button
-                    variant="ghost"
-                    className="text-gray-700 hover:text-pink-600 hover:bg-pink-50"
-                    onClick={async () => {
-                      await supabase.auth.signOut();
-                      window.location.reload();
-                    }}
-                  >
-                    Sign Out
-                  </Button>
+                  <div className="flex items-center gap-4">
+                    <span className="text-sm font-medium text-gray-700">
+                      Welcome, <span className="text-pink-600 font-semibold">{userProfile?.full_name || user.user_metadata?.full_name || user.email?.split('@')[0]}</span>
+                    </span>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="border-pink-200 text-pink-600 hover:bg-pink-50"
+                      onClick={async () => {
+                        await supabase.auth.signOut();
+                        toast.success('Logged out successfully');
+                        navigate('/');
+                      }}
+                    >
+                      Log Out
+                    </Button>
+                  </div>
                 ) : (
                   <>
                     <Button
@@ -203,6 +248,20 @@ const Header = () => {
                   <input
                     type="text"
                     placeholder="Search for flowers, bouquets, gifts..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        const q = searchTerm.trim();
+                        if (q) {
+                          navigate(`/flowers?search=${encodeURIComponent(q)}`);
+                        } else {
+                          navigate('/flowers');
+                        }
+                        setIsSearchOpen(false);
+                      }
+                    }}
                     className="w-full px-4 py-3 pl-12 rounded-full border border-pink-200 focus:border-pink-400 focus:ring-2 focus:ring-pink-100 outline-none transition-all"
                     autoFocus
                   />
@@ -236,20 +295,42 @@ const Header = () => {
                       {link.name}
                     </Link>
                   ))}
-                  <div className="border-t border-pink-100 my-2 pt-2 flex gap-2">
-                    <Button
-                      variant="outline"
-                      className="flex-1 border-pink-300 text-pink-600 hover:bg-pink-50"
-                      onClick={() => navigate('/login')}
-                    >
-                      Login
-                    </Button>
-                    <Button
-                      className="flex-1 bg-pink-500 hover:bg-pink-600 text-white"
-                      onClick={() => navigate('/signup')}
-                    >
-                      Sign Up
-                    </Button>
+                  <div className="border-t border-pink-100 my-2 pt-2 flex flex-col gap-2">
+                    {user ? (
+                      <>
+                        <div className="px-4 py-2 text-sm text-gray-600">
+                          Welcome, <span className="text-pink-600 font-semibold">{userProfile?.full_name || user.user_metadata?.full_name || user.email?.split('@')[0]}</span>
+                        </div>
+                        <Button
+                          variant="outline"
+                          className="w-full border-pink-300 text-pink-600 hover:bg-pink-50"
+                          onClick={async () => {
+                            await supabase.auth.signOut();
+                            toast.success('Logged out successfully');
+                            setIsMobileMenuOpen(false);
+                            navigate('/');
+                          }}
+                        >
+                          Log Out
+                        </Button>
+                      </>
+                    ) : (
+                      <div className="flex gap-2">
+                        <Button
+                          variant="outline"
+                          className="flex-1 border-pink-300 text-pink-600 hover:bg-pink-50"
+                          onClick={() => navigate('/login')}
+                        >
+                          Login
+                        </Button>
+                        <Button
+                          className="flex-1 bg-pink-500 hover:bg-pink-600 text-white"
+                          onClick={() => navigate('/signup')}
+                        >
+                          Sign Up
+                        </Button>
+                      </div>
+                    )}
                   </div>
                 </nav>
               </div>

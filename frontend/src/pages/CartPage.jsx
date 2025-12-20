@@ -85,7 +85,7 @@ const CartPage = () => {
                 personalized_message: checkoutData.personalizedMessage || null,
                 delivery_date: checkoutData.deliveryDate || null,
                 delivery_time: checkoutData.deliveryTime,
-                total_amount: cartTotal * 1.16,
+                total_amount: cartTotal,
                 status: 'pending',
                 payment_method: paymentMethod,
                 payment_phone_number: paymentMethod === 'mpesa' ? mpesaNumber : null
@@ -127,7 +127,7 @@ const CartPage = () => {
                         },
                         body: JSON.stringify({
                             phone_number: mpesaNumber,
-                            amount: cartTotal * 1.16,
+                            amount: cartTotal,
                             order_id: order.id,
                             account_reference: `Order-${order.id}`,
                             transaction_desc: 'Flower Purchase'
@@ -212,7 +212,7 @@ const CartPage = () => {
                         <div className="bg-white rounded-2xl shadow-sm border border-pink-100 p-8">
                             <h1 className="text-3xl font-bold text-gray-900 mb-6">Checkout</h1>
 
-                            <form onSubmit={handleCheckoutSubmit} className="space-y-6">
+                            <form onSubmit={handleCheckoutSubmit} className="space-y-6" autoComplete="off">
                                 {/* Customer Details */}
                                 <div>
                                     <h2 className="text-xl font-bold mb-4">Delivery Information</h2>
@@ -225,6 +225,7 @@ const CartPage = () => {
                                                 value={checkoutData.name}
                                                 onChange={handleChange}
                                                 className="w-full px-4 py-3 rounded-xl border border-pink-200 focus:border-pink-400 focus:ring-2 focus:ring-pink-100 outline-none"
+                                                autoComplete="off"
                                                 required
                                             />
                                         </div>
@@ -236,6 +237,7 @@ const CartPage = () => {
                                                 value={checkoutData.email}
                                                 onChange={handleChange}
                                                 className="w-full px-4 py-3 rounded-xl border border-pink-200 focus:border-pink-400 focus:ring-2 focus:ring-pink-100 outline-none"
+                                                autoComplete="off"
                                                 required
                                             />
                                         </div>
@@ -251,6 +253,7 @@ const CartPage = () => {
                                         onChange={handleChange}
                                         className="w-full px-4 py-3 rounded-xl border border-pink-200 focus:border-pink-400 focus:ring-2 focus:ring-pink-100 outline-none"
                                         placeholder="+254 ..."
+                                        autoComplete="off"
                                         required
                                     />
                                 </div>
@@ -362,7 +365,7 @@ const CartPage = () => {
                                         <div className="bg-green-50 rounded-xl p-6 border border-green-100 mb-6">
                                             <h3 className="font-bold text-green-800 mb-2">Pay via M-Pesa</h3>
                                             <p className="text-sm text-green-700 mb-4">
-                                                Please send the total amount of <span className="font-bold">KSh {(cartTotal * 1.16).toLocaleString()}</span> to the number below:
+                                                Please send the total amount of <span className="font-bold">KSh {cartTotal.toLocaleString()}</span> to the number below:
                                             </p>
                                             <div className="bg-white p-4 rounded-lg border border-green-200 text-center mb-4">
                                                 <p className="text-sm text-green-700 mb-2">Business Number:</p>
@@ -395,17 +398,9 @@ const CartPage = () => {
                                                 <span>KSh {(item.price * item.quantity).toLocaleString()}</span>
                                             </div>
                                         ))}
-                                        <div className="border-t border-pink-200 pt-2 flex justify-between">
-                                            <span>Subtotal</span>
-                                            <span>KSh {cartTotal.toLocaleString()}</span>
-                                        </div>
-                                        <div className="flex justify-between">
-                                            <span>Tax (16%)</span>
-                                            <span>KSh {(cartTotal * 0.16).toLocaleString()}</span>
-                                        </div>
                                         <div className="border-t border-pink-200 pt-2 flex justify-between font-bold text-lg">
                                             <span>Total</span>
-                                            <span className="text-pink-600">KSh {(cartTotal * 1.16).toLocaleString()}</span>
+                                            <span className="text-pink-600">KSh {cartTotal.toLocaleString()}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -512,21 +507,9 @@ const CartPage = () => {
                             <h2 className="text-xl font-bold text-gray-900 mb-6">Order Summary</h2>
 
                             <div className="space-y-4 mb-6">
-                                <div className="flex justify-between text-gray-600">
-                                    <span>Subtotal</span>
-                                    <span>KSh {cartTotal.toLocaleString()}</span>
-                                </div>
-                                <div className="flex justify-between text-gray-600">
-                                    <span>Shipping</span>
-                                    <span className="text-green-600">Free</span>
-                                </div>
-                                <div className="flex justify-between text-gray-600">
-                                    <span>Tax (16%)</span>
-                                    <span>KSh {(cartTotal * 0.16).toLocaleString()}</span>
-                                </div>
                                 <div className="border-t border-gray-100 pt-4 flex justify-between font-bold text-lg">
                                     <span>Total</span>
-                                    <span className="text-pink-600">KSh {(cartTotal * 1.16).toLocaleString()}</span>
+                                    <span className="text-pink-600">KSh {cartTotal.toLocaleString()}</span>
                                 </div>
                             </div>
 

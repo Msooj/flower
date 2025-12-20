@@ -3,15 +3,16 @@ import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import { Button } from '../components/ui/button';
 import { toast } from 'sonner';
-import { supabase } from '../lib/supabase';
-import { Plus, Image, Lock, User, LogOut, Package, Check, X, Clock, Edit, Trash2 } from 'lucide-react';
+import { supabase, createFreshClient } from '../lib/supabase';
+import { Plus, Image, Lock, User, LogOut, Package, Check, X, Clock, Edit, Trash2, Eye, EyeOff, Upload } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const AdminPage = () => {
     const navigate = useNavigate();
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
-    const [activeTab, setActiveTab] = useState('orders'); // 'orders', 'products', or 'manage-products'
+    const [activeTab, setActiveTab] = useState(() => localStorage.getItem('adminActiveTab') || 'orders');
+    const [currentUser, setCurrentUser] = useState({ email: '', role: '' });
     const [orders, setOrders] = useState([]);
     const [products, setProducts] = useState([]);
     const [editingProduct, setEditingProduct] = useState(null);
@@ -23,82 +24,578 @@ const AdminPage = () => {
         image: '',
         stock: 100
     });
+    const [adminLoginData, setAdminLoginData] = useState({ email: '', password: '' });
+    const [showPassword, setShowPassword] = useState(false);
+    const [isLoggingIn, setIsLoggingIn] = useState(false);
+    const [isUploading, setIsUploading] = useState(false);
+    const [users, setUsers] = useState([]);
+    const [dataLoading, setDataLoading] = useState({ users: false, orders: false, products: false });
 
     // Check if user is admin on component mount
     useEffect(() => {
         checkAdminAuth();
     }, []);
 
+    // Persist tab selection
+    useEffect(() => {
+        localStorage.setItem('adminActiveTab', activeTab);
+    }, [activeTab]);
+
     const checkAdminAuth = async () => {
         try {
-            const userResult = await supabase.auth.getUser();
-            const user = userResult.data?.user;
-
-            if (!user) {
+            // Don't refresh session if there's no session - it will cause errors
+            const { data: { session: currentSession } } = await supabase.auth.getSession();
+            if (!currentSession) {
                 setIsAuthenticated(false);
                 setIsLoading(false);
                 return;
             }
 
-            const profileResult = await supabase
+            const { data: { user }, error: userError } = await supabase.auth.getUser();
+
+            if (userError || !user) {
+                console.log('No authenticated user:', userError?.message);
+                setIsAuthenticated(false);
+                setIsLoading(false);
+                return;
+            }
+
+            // Query profile without using RLS policies that might cause recursion
+            const { data: profile, error: profileError } = await supabase
                 .from('user_profiles')
                 .select('role')
                 .eq('id', user.id)
-                .single();
+                .maybeSingle();
 
-            if (profileResult.data && profileResult.data.role === 'admin') {
+            const AUTHORIZED_ADMINS = ['flowerlifestyle@gmail.com'];
+            const userEmail = user.email;
+
+            // Grant access if role is admin OR if email is authorized
+            if ((profile && profile.role === 'admin') || AUTHORIZED_ADMINS.includes(userEmail)) {
+                setCurrentUser({ email: userEmail, role: profile?.role || 'admin' });
+
+                // Auto-upgrade/create profile if email is authorized but profile/role is wrong
+                if (!profile || profile.role !== 'admin') {
+                    console.log('Authorized admin detected, ensuring profile exists...');
+                    // Use insert with onConflict instead of upsert to avoid RLS issues
+                    const { error: upsertError } = await supabase
+                        .from('user_profiles')
+                        .upsert({
+                            id: user.id,
+                            email: userEmail,
+                            role: 'admin'
+                        }, {
+                            onConflict: 'id'
+                        });
+
+                    if (upsertError) {
+                        console.error('Failed to upsert admin profile:', upsertError);
+                        // Don't show error if it's just a permission issue - user is still authorized by email
+                        if (!upsertError.message?.includes('recursion') && !upsertError.message?.includes('permission')) {
+                            toast.error(`Profile update failed: ${upsertError.message}`);
+                        }
+                    } else {
+                        toast.success('Administrator privileges confirmed');
+                    }
+                }
+
                 setIsAuthenticated(true);
-                loadOrders();
-                loadProducts();
+                // Load data with a small delay to ensure session is fully established
+                setTimeout(() => {
+                    loadOrders();
+                    loadProducts();
+                    loadUsers();
+                }, 500);
             } else {
+                console.warn('Unauthorized access attempt by:', userEmail);
+                await supabase.auth.signOut();
                 setIsAuthenticated(false);
-                toast.error('You do not have admin privileges');
+                toast.error('Access Denied: You do not have administrator privileges.');
             }
         } catch (error) {
             console.error('Auth check error:', error);
             setIsAuthenticated(false);
+            toast.error(`Authentication error: ${error.message}`);
         } finally {
             setIsLoading(false);
         }
     };
 
-    const loadOrders = async () => {
+    const handleFileUpload = async (event, isEditing = false) => {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        // basic validation
+        if (!file.type.startsWith('image/')) {
+            toast.error('Please upload an image file');
+            return;
+        }
+
+        if (file.size > 5 * 1024 * 1024) {
+            toast.error('File size must be less than 5MB');
+            return;
+        }
+
+        setIsUploading(true);
         try {
+            const fileExt = file.name.split('.').pop();
+            const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
+            const filePath = `products/${fileName}`;
+
+            let uploadError = null;
+
+            // Retry loop for the "body stream" error
+            for (let i = 0; i < 3; i++) {
+                try {
+                    const result = await supabase.storage
+                        .from('products')
+                        .upload(filePath, file);
+
+                    if (result.error && (result.error.message?.includes('body stream') || result.error.message?.includes('Failed to execute'))) {
+                        console.warn(`Upload attempt ${i + 1} failed with stream error, retrying...`);
+                        await new Promise(r => setTimeout(r, 1000));
+                        continue;
+                    }
+
+                    uploadError = result.error;
+                    break;
+                } catch (e) {
+                    if (e.message?.includes('body stream') || e.message?.includes('Failed to execute')) {
+                        console.warn(`Upload catch ${i + 1} failed with stream error, retrying...`);
+                        await new Promise(r => setTimeout(r, 1000));
+                        continue;
+                    }
+                    uploadError = e;
+                    break;
+                }
+            }
+
+            if (uploadError) throw uploadError;
+
+            const { data: { publicUrl } } = supabase.storage
+                .from('products')
+                .getPublicUrl(filePath);
+
+            if (isEditing) {
+                setEditingProduct({ ...editingProduct, image: publicUrl });
+            } else {
+                setNewItem({ ...newItem, image: publicUrl });
+            }
+            toast.success('Image uploaded successfully');
+        } catch (error) {
+            console.error('Error uploading image:', error);
+            // Detailed troubleshooting for the user
+            const errorMsg = error.message || 'Unknown error';
+            toast.error(
+                <div className="text-xs">
+                    <p className="font-bold mb-1">Upload Failed: {errorMsg}</p>
+                    <p>To fix this, go to your Supabase Dashboard:</p>
+                    <ol className="list-decimal ml-4 mt-1 space-y-1">
+                        <li>Go to <strong>Storage</strong> and create a bucket named <strong>"products"</strong>.</li>
+                        <li>Set the bucket to <strong>"Public"</strong>.</li>
+                        <li>Add a <strong>Policy</strong> allowing "INSERT" and "SELECT" for authenticated users.</li>
+                    </ol>
+                </div>,
+                { duration: 10000 }
+            );
+        } finally {
+            setIsUploading(false);
+        }
+    };
+
+    const handleAdminLogin = async (e) => {
+        e.preventDefault();
+        setIsLoggingIn(true);
+
+        try {
+            const result = await supabase.auth.signInWithPassword({
+                email: adminLoginData.email,
+                password: adminLoginData.password
+            });
+
+            if (result.error) {
+                console.error('Admin Auth Error:', result.error);
+
+                // Handle body stream error
+                if (result.error.message && result.error.message.includes('body stream')) {
+                    toast.loading('Syncing admin session...');
+
+                    for (let i = 0; i < 5; i++) {
+                        await new Promise(resolve => setTimeout(resolve, 1000));
+                        const { data: { session } } = await supabase.auth.getSession();
+
+                        if (session) {
+                            const { data: profile } = await supabase
+                                .from('user_profiles')
+                                .select('role')
+                                .eq('id', session.user.id)
+                                .single();
+
+                            if (profile?.role === 'admin') {
+                                toast.dismiss();
+                                setIsAuthenticated(true);
+                                toast.success('Admin login confirmed');
+                                loadOrders();
+                                loadProducts();
+                                return;
+                            } else {
+                                await supabase.auth.signOut();
+                                toast.dismiss();
+                                toast.error('Account does not have admin privileges');
+                                return;
+                            }
+                        }
+                    }
+                    toast.dismiss();
+                    toast.info('Admin sync established. Refreshing to dashboard...');
+                    setTimeout(() => window.location.reload(), 1000);
+                    return;
+                }
+
+                toast.error(result.error.message || 'Login failed');
+                return;
+            }
+
+            if (result.data?.user) {
+                // Small delay to ensure session is fully established in the client
+                await new Promise(resolve => setTimeout(resolve, 300));
+
+                let profile = null;
+                let profileError = null;
+
+                // Attempt to get profile with retries for "body stream" error
+                for (let i = 0; i < 3; i++) {
+                    try {
+                        const { data, error } = await supabase
+                            .from('user_profiles')
+                            .select('role')
+                            .eq('id', result.data.user.id)
+                            .single();
+
+                        if (error && (error.message?.includes('body stream') || error.message?.includes('Failed to execute'))) {
+                            console.warn(`Profile fetch attempt ${i + 1} failed with stream error, retrying...`);
+                            await new Promise(r => setTimeout(r, 1000));
+                            continue;
+                        }
+
+                        profile = data;
+                        profileError = error;
+                        break;
+                    } catch (e) {
+                        if (e.message?.includes('body stream') || e.message?.includes('Failed to execute')) {
+                            console.warn(`Profile fetch catch ${i + 1} failed with stream error, retrying...`);
+                            await new Promise(r => setTimeout(r, 1000));
+                            continue;
+                        }
+                        profileError = e;
+                        break;
+                    }
+                }
+
+                // If profile is missing (PGRST116), try to create it automatically
+                if (profileError && profileError.code === 'PGRST116') {
+                    console.log('Profile missing, attempting to create default profile...');
+                    const { error: insertError } = await supabase
+                        .from('user_profiles')
+                        .insert([{
+                            id: result.data.user.id,
+                            email: result.data.user.email,
+                            full_name: result.data.user.user_metadata?.full_name || '',
+                            role: 'customer' // Default to customer
+                        }]);
+
+                    if (!insertError) {
+                        // Re-fetch the newly created profile
+                        const { data: newProfile, error: reFetchError } = await supabase
+                            .from('user_profiles')
+                            .select('role')
+                            .eq('id', result.data.user.id)
+                            .single();
+
+                        if (!reFetchError) {
+                            profile = newProfile;
+                            profileError = null;
+                        }
+                    } else {
+                        console.error('Failed to auto-create profile:', insertError);
+                    }
+                }
+
+                // Authorized Admin Emails
+                const AUTHORIZED_ADMINS = ['flowerlifestyle@gmail.com'];
+                const userEmail = result.data.user.email;
+
+                if (profile?.role === 'admin' || AUTHORIZED_ADMINS.includes(userEmail)) {
+                    // If they have the correct email but are marked as customer, upgrade them
+                    if (profile?.role !== 'admin') {
+                        console.log('Authorized admin detected with customer role, upgrading...');
+                        const { error: upgradeError } = await supabase
+                            .from('user_profiles')
+                            .update({ role: 'admin' })
+                            .eq('id', result.data.user.id);
+
+                        if (upgradeError) {
+                            console.error('Failed to auto-upgrade admin:', upgradeError);
+                        } else {
+                            toast.success('Administrator privileges activated');
+                        }
+                    }
+
+                    setIsAuthenticated(true);
+                    toast.success('Admin login successful');
+                    loadOrders();
+                    loadProducts();
+                    loadUsers();
+                } else {
+                    console.log('Admin check failed:', { profile, profileError, userEmail });
+                    await supabase.auth.signOut();
+
+                    if (profileError) {
+                        const errorMsg = profileError.message || 'Unknown profile error';
+                        if (errorMsg.includes('body stream') || errorMsg.includes('Failed to execute')) {
+                            toast.error('Connection synchronization error. Please refresh the page and try logging in again.');
+                        } else {
+                            toast.error(`Auth success but profile error: ${errorMsg}. Please ensure your profile exists in the database.`);
+                        }
+                    } else {
+                        toast.error(`Access denied. Your account has the "${profile?.role || 'customer'}" role. Administrator privileges are required.`);
+                    }
+                }
+            }
+        } catch (error) {
+            console.error('Admin Login Fatal Error:', error);
+            if (error.message && error.message.includes('body stream')) {
+                toast.loading('Retrying connection...');
+                await new Promise(resolve => setTimeout(resolve, 1500));
+                const { data: { session } } = await supabase.auth.getSession();
+                if (session) {
+                    const { data: profile } = await supabase.from('user_profiles').select('role').eq('id', session.user.id).single();
+                    if (profile?.role === 'admin') {
+                        toast.dismiss();
+                        setIsAuthenticated(true);
+                        toast.success('Admin login successful!');
+                        loadOrders();
+                        loadProducts();
+                        loadUsers();
+                        return;
+                    }
+                }
+                toast.dismiss();
+                toast.error('Connection error. Please refresh and try again.');
+            } else {
+                toast.error('An unexpected error occurred during admin login.');
+            }
+        } finally {
+            setIsLoggingIn(false);
+        }
+    };
+
+    const loadUsers = async () => {
+        setDataLoading(prev => ({ ...prev, users: true }));
+        try {
+            // Ensure session is valid before querying
+            const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+            if (sessionError) {
+                console.error('Session error:', sessionError);
+                throw new Error(`Session error: ${sessionError.message}`);
+            }
+            if (!session) {
+                throw new Error('No active session. Please log in again.');
+            }
+
+            console.log('Loading users with session:', session.user.email);
+            // Query without order by to avoid RLS recursion issues, then sort in JavaScript
+            // Use select * to get all available columns
+            const { data, error } = await supabase
+                .from('user_profiles')
+                .select('*');
+            
+            if (error) {
+                console.error('Supabase query error:', error);
+                console.error('Error details:', JSON.stringify(error, null, 2));
+                // Check for RLS policy errors
+                if (error.code === 'PGRST301' || error.message?.includes('permission denied') || error.message?.includes('row-level security') || error.message?.includes('recursion')) {
+                    toast.error('RLS policy error. Please run fix_database_columns.sql in Supabase SQL Editor.');
+                } else if (error.message?.includes('does not exist')) {
+                    toast.error('Database schema mismatch. Please run fix_database_columns.sql in Supabase SQL Editor.');
+                } else {
+                    const errorMsg = error.message || error.details || 'Unknown error';
+                    toast.error(`Failed to load users: ${errorMsg}`);
+                }
+                setUsers([]);
+                return;
+            }
+            
+            // Sort by email as fallback if created_at doesn't exist
+            const sortedData = data ? [...data].sort((a, b) => {
+                // Try to sort by created_at if available, otherwise by email
+                if (a.created_at && b.created_at) {
+                    return new Date(b.created_at) - new Date(a.created_at);
+                }
+                return (a.email || '').localeCompare(b.email || '');
+            }) : [];
+            
+            console.log('Users loaded:', sortedData.length);
+            setUsers(sortedData);
+        } catch (error) {
+            console.error('Error loading users:', error);
+            toast.error(`Failed to load user profiles: ${error.message}`);
+            setUsers([]);
+        } finally {
+            setDataLoading(prev => ({ ...prev, users: false }));
+        }
+    };
+
+    const loadOrders = async () => {
+        setDataLoading(prev => ({ ...prev, orders: true }));
+        try {
+            // Ensure session is valid before querying
+            const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+            if (sessionError) {
+                console.error('Session error:', sessionError);
+                throw new Error(`Session error: ${sessionError.message}`);
+            }
+            if (!session) {
+                throw new Error('No active session. Please log in again.');
+            }
+
+            console.log('Loading orders with session:', session.user.email);
+            // Query orders - use select * to avoid column mismatch errors
             const { data, error } = await supabase
                 .from('orders')
-                .select(`
-                    *,
-                    order_items (
-                        *
-                    )
-                `)
-                .order('created_at', { ascending: false });
-
-            if (error) throw error;
-            setOrders(data || []);
+                .select('*, order_items(*)');
+            
+            if (error) {
+                console.error('Supabase query error:', error);
+                console.error('Error details:', JSON.stringify(error, null, 2));
+                // Check for RLS policy errors
+                if (error.code === 'PGRST301' || error.message?.includes('permission denied') || error.message?.includes('row-level security') || error.message?.includes('recursion')) {
+                    toast.error('RLS policy error. Please run fix_database_columns.sql in Supabase SQL Editor.');
+                } else {
+                    const errorMsg = error.message || error.details || 'Unknown error';
+                    toast.error(`Failed to load orders: ${errorMsg}`);
+                }
+                setOrders([]);
+                return;
+            }
+            
+            // Sort by created_at in JavaScript if available
+            const sortedData = data ? [...data].sort((a, b) => {
+                if (a.created_at && b.created_at) {
+                    return new Date(b.created_at) - new Date(a.created_at);
+                }
+                return 0;
+            }) : [];
+            
+            console.log('Orders loaded:', sortedData.length);
+            setOrders(sortedData);
         } catch (error) {
             console.error('Error loading orders:', error);
-            toast.error('Failed to load orders');
+            toast.error(`Failed to load orders: ${error.message}`);
+            setOrders([]);
+        } finally {
+            setDataLoading(prev => ({ ...prev, orders: false }));
         }
     };
 
     const loadProducts = async () => {
         try {
+            setDataLoading(prev => ({ ...prev, products: true }));
+            console.log('Loading products...');
+            
+            // Ensure session is valid before querying
+            const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+            if (sessionError) {
+                console.error('Session error:', sessionError);
+                throw new Error(`Session error: ${sessionError.message}`);
+            }
+            if (!session) {
+                throw new Error('No active session. Please log in again.');
+            }
+            
+            console.log('Loading products with session:', session.user.email);
+            // Query products without order by to avoid potential RLS issues
             const { data, error } = await supabase
                 .from('products')
-                .select('*')
-                .order('created_at', { ascending: false });
-
-            if (error) throw error;
-            setProducts(data || []);
+                .select('*');
+            
+            if (error) {
+                console.error('Supabase query error:', error);
+                console.error('Error details:', JSON.stringify(error, null, 2));
+                // Check for RLS policy errors
+                if (error.code === 'PGRST301' || error.message?.includes('permission denied') || error.message?.includes('row-level security') || error.message?.includes('recursion')) {
+                    toast.error('RLS policy error. Please run fix_database_columns.sql in Supabase SQL Editor.');
+                } else {
+                    const errorMsg = error.message || error.details || 'Unknown error';
+                    toast.error(`Database error: ${errorMsg}`);
+                }
+                setProducts([]);
+                return;
+            }
+            
+            // Sort by created_at in JavaScript if available
+            const sortedData = data ? [...data].sort((a, b) => {
+                if (a.created_at && b.created_at) {
+                    return new Date(b.created_at) - new Date(a.created_at);
+                }
+                return (a.name || '').localeCompare(b.name || '');
+            }) : [];
+            
+            console.log('Products loaded:', sortedData.length);
+            setProducts(sortedData);
+            
+            if (sortedData.length === 0) {
+                toast.info('No products found. Add some products first.');
+            }
+            
         } catch (error) {
-            console.error('Error loading products:', error);
-            toast.error('Failed to load products');
+            console.error('Load error:', error);
+            toast.error(`Failed to connect to database: ${error.message}`);
+            setProducts([]);
+        } finally {
+            setDataLoading(prev => ({ ...prev, products: false }));
+        }
+    };
+
+    // Reload data when tabs change to ensure freshness
+    useEffect(() => {
+        if (isAuthenticated) {
+            if (activeTab === 'users') loadUsers();
+            if (activeTab === 'orders') loadOrders();
+            if (activeTab === 'manage-products' || activeTab === 'products') loadProducts();
+        }
+    }, [activeTab, isAuthenticated]);
+
+    const runEmergencyTest = async () => {
+        toast.loading('Running database connection test...');
+        try {
+            // Test 1: Simple select
+            const { data, error, status, statusText } = await supabase.from('products').select('*');
+            console.log('EMERGENCY TEST RESULTS:', { data, error, status, statusText });
+
+            if (error) {
+                toast.error(`Low-level error: ${error.message} (Status: ${status})`);
+            } else {
+                toast.success(`Success! Database returned ${data?.length || 0} items.`);
+                if (data?.length === 0) {
+                    toast.info('Database is literally empty. Try adding a product first.');
+                }
+                setProducts(data || []);
+            }
+        } catch (err) {
+            console.error('EMERGENCY FATAL:', err);
+            toast.error(`Fatal connection error: ${err.message}`);
         }
     };
 
     const handleStatusChange = async (orderId, newStatus) => {
         try {
+            // Ensure session is valid before updating
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) {
+                throw new Error('No active session. Please log in again.');
+            }
+
             const { error } = await supabase
                 .from('orders')
                 .update({
@@ -106,14 +603,14 @@ const AdminPage = () => {
                     updated_at: new Date().toISOString()
                 })
                 .eq('id', orderId);
-
+            
             if (error) throw error;
-
+            
             toast.success(`Order status updated to ${newStatus}`);
-            loadOrders(); // Reload orders
+            loadOrders();
         } catch (error) {
             console.error('Error updating order:', error);
-            toast.error('Failed to update order status');
+            toast.error(`Failed to update order status: ${error.message}`);
         }
     };
 
@@ -128,16 +625,15 @@ const AdminPage = () => {
         e.preventDefault();
 
         try {
-            // Validate required fields
             if (!newItem.name.trim() || !newItem.price || !newItem.image.trim()) {
                 toast.error('Name, price, and image URL are required');
                 return;
             }
 
-            // Validate price is positive
-            if (parseFloat(newItem.price) <= 0) {
-                toast.error('Price must be greater than 0');
-                return;
+            // Ensure session is valid before inserting
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) {
+                throw new Error('No active session. Please log in again.');
             }
 
             const productData = {
@@ -154,39 +650,42 @@ const AdminPage = () => {
             const { error } = await supabase
                 .from('products')
                 .insert([productData]);
-
+            
             if (error) throw error;
-
             toast.success(`Product "${newItem.name}" added successfully!`);
             setNewItem({ name: '', description: '', price: '', category: 'roses', image: '', stock: 100 });
-            loadProducts();
+            await loadProducts();
+            setActiveTab('manage-products');
         } catch (error) {
             console.error('Error adding product:', error);
-            toast.error('Failed to add product');
+            toast.error(`Failed to add product: ${error.message}`);
         }
     };
 
     const handleUpdateProduct = async (productId, updatedData) => {
         try {
-            // Validate required fields
             if (!updatedData.name || !updatedData.price) {
                 toast.error('Name and price are required');
                 return;
             }
 
-            // Ensure numeric values are properly formatted
+            // Ensure session is valid before updating
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) {
+                throw new Error('No active session. Please log in again.');
+            }
+
             const cleanedData = {
                 ...updatedData,
                 price: parseFloat(updatedData.price),
-                stock: parseInt(updatedData.stock) || 0,
-                updated_at: new Date().toISOString()
+                stock: parseInt(updatedData.stock) || 0
             };
 
             const { error } = await supabase
                 .from('products')
                 .update(cleanedData)
                 .eq('id', productId);
-
+            
             if (error) throw error;
 
             toast.success('Product updated successfully!');
@@ -202,13 +701,13 @@ const AdminPage = () => {
         if (!confirm(`Are you sure you want to delete "${productName}"?`)) return;
 
         try {
-            const { error } = await supabase
+            const client = createFreshClient();
+            const { error } = await client
                 .from('products')
                 .delete()
                 .eq('id', productId);
-
+            
             if (error) throw error;
-
             toast.success(`Product "${productName}" deleted successfully!`);
             loadProducts();
         } catch (error) {
@@ -251,22 +750,68 @@ const AdminPage = () => {
     // Show login prompt if not authenticated
     if (!isAuthenticated) {
         return (
-            <div className="min-h-screen bg-gradient-to-br from-pink-50 to-purple-50">
+            <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 flex flex-col">
                 <Header />
-                <main className="container mx-auto px-4 py-16">
-                    <div className="max-w-md mx-auto">
-                        <div className="bg-white rounded-2xl shadow-xl border border-pink-100 p-8 text-center">
-                            <div className="w-16 h-16 bg-pink-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <Lock className="w-8 h-8 text-pink-600" />
+                <main className="flex-1 container mx-auto px-4 py-16 flex items-center justify-center">
+                    <div className="w-full max-w-md">
+                        <div className="bg-white rounded-2xl shadow-2xl border border-gray-100 p-8">
+                            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                                <Lock className="w-8 h-8 text-gray-700" />
                             </div>
-                            <h1 className="text-2xl font-bold text-gray-900 mb-2">Admin Access Required</h1>
-                            <p className="text-gray-500 mb-6">Please log in with an admin account to access this page</p>
-                            <Button
-                                onClick={() => navigate('/login')}
-                                className="w-full py-3 bg-pink-600 hover:bg-pink-700"
-                            >
-                                Go to Login
-                            </Button>
+                            <h1 className="text-2xl font-bold text-gray-900 text-center mb-2">Admin Portal</h1>
+                            <p className="text-gray-500 text-center mb-8 text-sm">Please sign in to manage your flower shop</p>
+
+                            <form onSubmit={handleAdminLogin} className="space-y-4" autoComplete="off">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Admin Email</label>
+                                    <input
+                                        type="email"
+                                        value={adminLoginData.email}
+                                        onChange={(e) => setAdminLoginData({ ...adminLoginData, email: e.target.value })}
+                                        className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-gray-900 focus:ring-1 focus:ring-gray-900 outline-none transition-all"
+                                        placeholder="admin@example.com"
+                                        required
+                                        autoComplete="email"
+                                    />
+                                </div>
+                                <div className="relative">
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Secret Password</label>
+                                    <div className="relative">
+                                        <input
+                                            type={showPassword ? "text" : "password"}
+                                            value={adminLoginData.password}
+                                            onChange={(e) => setAdminLoginData({ ...adminLoginData, password: e.target.value })}
+                                            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-gray-900 focus:ring-1 focus:ring-gray-900 outline-none transition-all pr-12"
+                                            placeholder="••••••••"
+                                            required
+                                            autoComplete="current-password"
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowPassword(!showPassword)}
+                                            className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none"
+                                        >
+                                            {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                                        </button>
+                                    </div>
+                                </div>
+                                <Button
+                                    type="submit"
+                                    disabled={isLoggingIn}
+                                    className="w-full py-4 bg-gray-900 hover:bg-black text-white rounded-xl mt-4"
+                                >
+                                    {isLoggingIn ? 'Verifying...' : 'Login as Administrator'}
+                                </Button>
+                            </form>
+
+                            <div className="mt-8 pt-6 border-t border-gray-50 text-center">
+                                <button
+                                    onClick={() => navigate('/')}
+                                    className="text-sm text-gray-500 hover:text-gray-800 transition-colors"
+                                >
+                                    Return to Home Page
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </main>
@@ -281,20 +826,61 @@ const AdminPage = () => {
             <Header />
             <main className="container mx-auto px-4 py-8">
                 <div className="max-w-7xl mx-auto">
-                    <div className="flex justify-between items-center mb-8">
+                    <div className="flex justify-between items-center mb-4">
                         <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
-                        <Button
-                            onClick={handleLogout}
-                            variant="outline"
-                            className="border-pink-300 text-pink-600 hover:bg-pink-50"
-                        >
-                            <LogOut className="w-4 h-4 mr-2" />
-                            Logout
-                        </Button>
+                        <div className="flex gap-4">
+                            <Button
+                                onClick={() => {
+                                    loadOrders();
+                                    loadProducts();
+                                    loadUsers();
+                                    toast.success('Dashboard data refreshed');
+                                }}
+                                variant="outline"
+                                className="border-gray-200"
+                            >
+                                Refresh Data
+                            </Button>
+                            <Button
+                                onClick={handleLogout}
+                                variant="outline"
+                                className="border-pink-300 text-pink-600 hover:bg-pink-50"
+                            >
+                                <LogOut className="w-4 h-4 mr-2" />
+                                Logout
+                            </Button>
+                        </div>
+                    </div>
+
+                    {/* Diagnostic Bar */}
+                    <div className="bg-blue-50 border border-blue-100 rounded-xl p-3 mb-8 flex flex-wrap gap-4 text-xs text-blue-800">
+                        <div className="flex items-center gap-1">
+                            <span className="font-bold">Account:</span> {currentUser.email}
+                        </div>
+                        <div className="flex items-center gap-1">
+                            <span className="font-bold">Role Status:</span> {currentUser.role?.toUpperCase()}
+                        </div>
+                        <div className="flex items-center gap-1 ml-auto">
+                            <Button onClick={runEmergencyTest} size="xs" variant="ghost" className="h-6 text-[10px] bg-blue-100 font-bold hover:bg-blue-200">
+                                Run Connection Test
+                            </Button>
+                            <span className="font-bold ml-2">Total Items:</span>
+                            <span className="px-1.5 py-0.5 bg-blue-100 rounded ml-1">{products.length} Products</span>
+                            <span className="px-1.5 py-0.5 bg-blue-100 rounded ml-1">{orders.length} Orders</span>
+                            <span className="px-1.5 py-0.5 bg-blue-100 rounded ml-1">{users.length} Users</span>
+                        </div>
                     </div>
 
                     {/* Tabs */}
                     <div className="flex gap-4 mb-6">
+                        <Button
+                            onClick={() => setActiveTab('users')}
+                            variant={activeTab === 'users' ? 'default' : 'outline'}
+                            className={activeTab === 'users' ? 'bg-pink-600' : ''}
+                        >
+                            <User className="w-4 h-4 mr-2" />
+                            Users
+                        </Button>
                         <Button
                             onClick={() => setActiveTab('orders')}
                             variant={activeTab === 'orders' ? 'default' : 'outline'}
@@ -321,13 +907,67 @@ const AdminPage = () => {
                         </Button>
                     </div>
 
+                    {/* Users Tab */}
+                    {activeTab === 'users' && (
+                        <div className="bg-white rounded-2xl shadow-sm border border-pink-100 p-8">
+                            <h2 className="text-2xl font-bold mb-6">User Profiles</h2>
+                            {dataLoading.users ? (
+                                <div className="flex justify-center py-12">
+                                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-pink-600"></div>
+                                </div>
+                            ) : users.length === 0 ? (
+                                <div className="text-center py-12">
+                                    <p className="text-gray-500 mb-4">No users found or access denied by database</p>
+                                    <Button onClick={loadUsers} variant="outline" size="sm">Reload Users</Button>
+                                </div>
+                            ) : (
+                                <div className="overflow-x-auto">
+                                    <table className="w-full text-left">
+                                        <thead>
+                                            <tr className="border-b border-gray-100">
+                                                <th className="pb-4 font-semibold text-gray-900">Name</th>
+                                                <th className="pb-4 font-semibold text-gray-900">Email</th>
+                                                <th className="pb-4 font-semibold text-gray-900">Phone</th>
+                                                <th className="pb-4 font-semibold text-gray-900">Role</th>
+                                                <th className="pb-4 font-semibold text-gray-900">Joined</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className="divide-y divide-gray-50">
+                                            {users.map((user) => (
+                                                <tr key={user.id} className="hover:bg-gray-50 transition-colors">
+                                                    <td className="py-4 text-gray-800">{user.full_name || 'N/A'}</td>
+                                                    <td className="py-4 text-gray-600">{user.email}</td>
+                                                    <td className="py-4 text-gray-600">{user.phone || 'N/A'}</td>
+                                                    <td className="py-4">
+                                                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${user.role === 'admin' ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700'
+                                                            }`}>
+                                                            {user.role}
+                                                        </span>
+                                                    </td>
+                                                    <td className="py-4 text-gray-500 text-sm">{user.created_at ? formatDate(user.created_at) : 'N/A'}</td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            )}
+                        </div>
+                    )}
+
                     {/* Orders Tab */}
                     {activeTab === 'orders' && (
                         <div className="bg-white rounded-2xl shadow-sm border border-pink-100 p-8">
                             <h2 className="text-2xl font-bold mb-6">Order Management</h2>
 
-                            {orders.length === 0 ? (
-                                <p className="text-gray-500 text-center py-8">No orders yet</p>
+                            {dataLoading.orders ? (
+                                <div className="flex justify-center py-12">
+                                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-pink-600"></div>
+                                </div>
+                            ) : orders.length === 0 ? (
+                                <div className="text-center py-12">
+                                    <p className="text-gray-500 mb-4">No orders found yet</p>
+                                    <Button onClick={loadOrders} variant="outline" size="sm">Reload Orders</Button>
+                                </div>
                             ) : (
                                 <div className="space-y-4">
                                     {orders.map((order) => (
@@ -429,7 +1069,10 @@ const AdminPage = () => {
                             <h2 className="text-2xl font-bold mb-6">Manage Products</h2>
 
                             {products.length === 0 ? (
-                                <p className="text-gray-500 text-center py-8">No products available</p>
+                                <div className="text-center py-12">
+                                    <p className="text-gray-500 mb-4">No flowers available in the catalogue or access blocked</p>
+                                    <Button onClick={loadProducts} variant="outline" size="sm">Reload Products</Button>
+                                </div>
                             ) : (
                                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                                     {products.map((product) => (
@@ -475,6 +1118,35 @@ const AdminPage = () => {
                                                         className="w-full px-3 py-2 border rounded-lg text-sm"
                                                         placeholder="Stock"
                                                     />
+                                                    <div className="space-y-2">
+                                                        <label className="text-xs font-medium text-gray-500">Image</label>
+                                                        <div className="flex flex-col gap-2">
+                                                            <div className="flex gap-2">
+                                                                <input
+                                                                    type="file"
+                                                                    accept="image/*"
+                                                                    onChange={(e) => handleFileUpload(e, true)}
+                                                                    className="hidden"
+                                                                    id={`edit-image-upload-${product.id}`}
+                                                                />
+                                                                <label
+                                                                    htmlFor={`edit-image-upload-${product.id}`}
+                                                                    className="flex-1 flex items-center justify-center gap-1 px-3 py-2 border border-dashed border-gray-300 rounded-lg text-xs hover:border-pink-500 hover:bg-pink-50 cursor-pointer"
+                                                                >
+                                                                    <Upload className="w-3 h-3 text-gray-400" />
+                                                                    Change
+                                                                </label>
+                                                            </div>
+                                                            <input
+                                                                type="url"
+                                                                value={editingProduct.image}
+                                                                onChange={(e) => setEditingProduct({ ...editingProduct, image: e.target.value })}
+                                                                className="w-full px-3 py-2 border rounded-lg text-xs"
+                                                                placeholder="Image URL"
+                                                                required
+                                                            />
+                                                        </div>
+                                                    </div>
                                                     <div className="flex gap-2">
                                                         <Button
                                                             size="sm"
@@ -489,6 +1161,7 @@ const AdminPage = () => {
                                                                     description: editingProduct.description?.trim() || '',
                                                                     price: parseFloat(editingProduct.price),
                                                                     category: editingProduct.category,
+                                                                    image: editingProduct.image,
                                                                     stock: parseInt(editingProduct.stock) || 0
                                                                 });
                                                             }}
@@ -625,15 +1298,63 @@ const AdminPage = () => {
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Image URL</label>
-                                    <input
-                                        type="url"
-                                        value={newItem.image}
-                                        onChange={(e) => setNewItem({ ...newItem, image: e.target.value })}
-                                        className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-pink-500 focus:ring-2 focus:ring-pink-100 outline-none"
-                                        placeholder="https://images.unsplash.com/..."
-                                        required
-                                    />
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Product Image</label>
+                                    <div className="space-y-4">
+                                        <div className="flex flex-col md:flex-row gap-4">
+                                            <div className="flex-1">
+                                                <label className="block text-xs text-gray-500 mb-1">Option 1: Upload Image</label>
+                                                <div className="relative">
+                                                    <input
+                                                        type="file"
+                                                        accept="image/*"
+                                                        onChange={(e) => handleFileUpload(e)}
+                                                        className="hidden"
+                                                        id="product-image-upload"
+                                                        disabled={isUploading}
+                                                    />
+                                                    <label
+                                                        htmlFor="product-image-upload"
+                                                        className={`w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl border border-dashed border-gray-300 hover:border-pink-500 hover:bg-pink-50 cursor-pointer transition-all ${isUploading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                                    >
+                                                        {isUploading ? (
+                                                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-pink-600"></div>
+                                                        ) : (
+                                                            <Upload className="w-5 h-5 text-gray-400" />
+                                                        )}
+                                                        <span className="text-sm text-gray-600">{isUploading ? 'Uploading...' : 'Choose File'}</span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div className="flex items-center justify-center md:pt-4 text-gray-400 font-medium">OR</div>
+                                            <div className="flex-1">
+                                                <label className="block text-xs text-gray-500 mb-1">Option 2: Image URL</label>
+                                                <input
+                                                    type="url"
+                                                    value={newItem.image}
+                                                    onChange={(e) => setNewItem({ ...newItem, image: e.target.value })}
+                                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-pink-500 focus:ring-2 focus:ring-pink-100 outline-none"
+                                                    placeholder="https://images.unsplash.com/..."
+                                                />
+                                            </div>
+                                        </div>
+
+                                        {newItem.image && (
+                                            <div className="relative w-32 h-32 rounded-lg overflow-hidden border border-gray-200 bg-gray-50">
+                                                <img
+                                                    src={newItem.image}
+                                                    alt="Preview"
+                                                    className="w-full h-full object-cover"
+                                                />
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setNewItem({ ...newItem, image: '' })}
+                                                    className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 shadow-md hover:bg-red-600 transition-colors"
+                                                >
+                                                    <X className="w-3 h-3" />
+                                                </button>
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
 
                                 <div className="pt-4">

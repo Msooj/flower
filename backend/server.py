@@ -23,10 +23,36 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# Supabase connection
-supabase_url = os.environ.get("SUPABASE_URL", "")
-supabase_key = os.environ.get("SUPABASE_KEY", "")
-supabase: Client = create_client(supabase_url, supabase_key)
+# Supabase connection - moved to function to avoid module-level issues
+def get_supabase_client():
+    supabase_url = os.environ.get("SUPABASE_URL", "")
+    supabase_key = os.environ.get("SUPABASE_KEY", "")
+    
+    if not supabase_url:
+        logger.warning("SUPABASE_URL not found in environment variables")
+    if not supabase_key:
+        logger.warning("SUPABASE_KEY not found in environment variables")
+    
+    if not supabase_url or not supabase_key:
+        logger.error("Supabase credentials missing. Please check your .env file.")
+        raise ValueError("Supabase credentials are required")
+    
+    try:
+        client = create_client(supabase_url, supabase_key)
+        # Test connection
+        test_response = client.table('products').select('id').limit(1).execute()
+        logger.info("Supabase connection successful")
+        return client
+    except Exception as e:
+        logger.error(f"Failed to connect to Supabase: {e}")
+        raise
+
+# For backward compatibility - will raise error if Supabase not configured
+try:
+    supabase = get_supabase_client()
+except Exception as e:
+    logger.error(f"Failed to initialize Supabase client: {e}")
+    supabase = None
 
 # Create the main app without a prefix
 app = FastAPI()
@@ -62,6 +88,59 @@ class MpesaCallbackResponse(BaseModel):
     mpesa_receipt_number: Optional[str] = None
     transaction_date: Optional[str] = None
     phone_number: Optional[str] = None
+
+class Product(BaseModel):
+    id: Optional[str] = None
+    name: str
+    description: Optional[str] = None
+    price: float
+    original_price: Optional[float] = None
+    category: str
+    image: Optional[str] = None
+    badge: Optional[str] = None
+    rating: Optional[float] = 5.0
+    reviews: Optional[int] = 0
+    stock: Optional[int] = 100
+    created_at: Optional[str] = None
+    updated_at: Optional[str] = None
+
+class OrderItem(BaseModel):
+    id: Optional[str] = None
+    order_id: Optional[str] = None
+    product_id: str
+    product_name: str
+    quantity: int
+    price: float
+    created_at: Optional[str] = None
+
+class Order(BaseModel):
+    id: Optional[str] = None
+    user_id: Optional[str] = None
+    customer_name: str
+    customer_email: str
+    customer_phone: Optional[str] = None
+    customer_address: str
+    personalized_message: Optional[str] = None
+    delivery_date: Optional[str] = None
+    delivery_time: Optional[str] = None
+    total_amount: float
+    status: str = 'pending'
+    payment_method: Optional[str] = 'cash'
+    payment_phone_number: Optional[str] = None
+    payment_status: Optional[str] = 'pending'
+    order_items: Optional[List[OrderItem]] = None
+    created_at: Optional[str] = None
+    updated_at: Optional[str] = None
+
+class UserProfile(BaseModel):
+    id: str
+    email: str
+    full_name: Optional[str] = None
+    phone: Optional[str] = None
+    address: Optional[str] = None
+    role: str = 'customer'
+    created_at: Optional[str] = None
+    updated_at: Optional[str] = None
 
 # M-Pesa Configuration
 MPESA_CONSUMER_KEY = os.environ.get("MPESA_CONSUMER_KEY", "")
@@ -127,15 +206,20 @@ async def create_status_check(input: StatusCheckCreate):
 
 @api_router.get("/status", response_model=List[StatusCheck])
 async def get_status_checks():
-    response = supabase.table('status_checks').select("*").execute()
-    status_checks = response.data
-    
-    # Convert ISO string timestamps back to datetime objects
-    for check in status_checks:
-        if isinstance(check.get('timestamp'), str):
-            check['timestamp'] = datetime.fromisoformat(check['timestamp'])
-    
-    return status_checks
+    try:
+        response = supabase.table('status_checks').select("*").execute()
+        status_checks = response.data or []
+        
+        # Convert ISO string timestamps back to datetime objects
+        for check in status_checks:
+            if isinstance(check.get('timestamp'), str):
+                check['timestamp'] = datetime.fromisoformat(check['timestamp'])
+        
+        return status_checks
+    except Exception as e:
+        logger.error(f"Error fetching status checks: {e}")
+        # Return empty list if table doesn't exist or other error
+        return []
 
 @api_router.post("/mpesa/stk-push")
 async def initiate_stk_push(payment_request: MpesaPaymentRequest):
@@ -291,13 +375,109 @@ async def check_payment_status(checkout_request_id: str):
         logger.error(f"Payment status check error: {e}")
         raise HTTPException(status_code=500, detail="Failed to check payment status")
 
+@api_router.get("/products", response_model=List[Product])
+async def get_products():
+    """Get all products"""
+    if not supabase:
+        raise HTTPException(status_code=503, detail="Database connection not available")
+    try:
+        response = supabase.table('products').select('*').order('created_at', ascending=False).execute()
+        if hasattr(response, 'data'):
+            return response.data or []
+        return []
+    except Exception as e:
+        logger.error(f"Error fetching products: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to fetch products: {str(e)}")
+
+@api_router.post("/products", response_model=Product)
+async def create_product(product: Product):
+    """Create a new product"""
+    try:
+        product_data = product.model_dump(exclude={'id', 'created_at', 'updated_at'})
+        product_data['created_at'] = datetime.now(timezone.utc).isoformat()
+        product_data['updated_at'] = datetime.now(timezone.utc).isoformat()
+        
+        response = supabase.table('products').insert([product_data]).execute()
+        return response.data[0] if response.data else product_data
+    except Exception as e:
+        logger.error(f"Error creating product: {e}")
+        raise HTTPException(status_code=500, detail="Failed to create product")
+
+@api_router.put("/products/{product_id}", response_model=Product)
+async def update_product(product_id: str, product: Product):
+    """Update an existing product"""
+    try:
+        product_data = product.model_dump(exclude={'id', 'created_at', 'updated_at'})
+        product_data['updated_at'] = datetime.now(timezone.utc).isoformat()
+        
+        response = supabase.table('products').update(product_data).eq('id', product_id).execute()
+        return response.data[0] if response.data else product_data
+    except Exception as e:
+        logger.error(f"Error updating product: {e}")
+        raise HTTPException(status_code=500, detail="Failed to update product")
+
+@api_router.delete("/products/{product_id}")
+async def delete_product(product_id: str):
+    """Delete a product"""
+    try:
+        supabase.table('products').delete().eq('id', product_id).execute()
+        return {"success": True, "message": "Product deleted successfully"}
+    except Exception as e:
+        logger.error(f"Error deleting product: {e}")
+        raise HTTPException(status_code=500, detail="Failed to delete product")
+
+@api_router.get("/orders", response_model=List[Order])
+async def get_orders():
+    """Get all orders with order items"""
+    if not supabase:
+        raise HTTPException(status_code=503, detail="Database connection not available")
+    try:
+        response = supabase.table('orders').select('*, order_items(*)').order('created_at', ascending=False).execute()
+        if hasattr(response, 'data'):
+            return response.data or []
+        return []
+    except Exception as e:
+        logger.error(f"Error fetching orders: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to fetch orders: {str(e)}")
+
+class OrderStatusUpdate(BaseModel):
+    status: str
+
+@api_router.put("/orders/{order_id}")
+async def update_order(order_id: str, update: OrderStatusUpdate):
+    """Update order status"""
+    try:
+        update_data = {
+            'status': update.status,
+            'updated_at': datetime.now(timezone.utc).isoformat()
+        }
+        response = supabase.table('orders').update(update_data).eq('id', order_id).execute()
+        return {"success": True, "message": "Order updated successfully", "data": response.data}
+    except Exception as e:
+        logger.error(f"Error updating order: {e}")
+        raise HTTPException(status_code=500, detail="Failed to update order")
+
+@api_router.get("/users", response_model=List[UserProfile])
+async def get_users():
+    """Get all user profiles"""
+    if not supabase:
+        raise HTTPException(status_code=503, detail="Database connection not available")
+    try:
+        response = supabase.table('user_profiles').select('*').order('created_at', ascending=False).execute()
+        if hasattr(response, 'data'):
+            return response.data or []
+        return []
+    except Exception as e:
+        logger.error(f"Error fetching users: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to fetch users: {str(e)}")
+
 # Include the router in the main app
 app.include_router(api_router)
 
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
-    allow_origins=os.environ.get('CORS_ORIGINS', '*').split(','),
+    allow_origins=["*"],
     allow_methods=["*"],
     allow_headers=["*"],
 )

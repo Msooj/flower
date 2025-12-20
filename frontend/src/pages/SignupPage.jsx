@@ -48,15 +48,24 @@ const SignupPage = () => {
       });
 
       if (result.error) {
+        console.error('Signup error:', result.error);
         if (result.error.message && result.error.message.includes('body stream')) {
-          const { data: { session } } = await supabase.auth.getSession();
-          if (session) {
-            toast.success('Account created! You can now log in.');
-            setTimeout(() => navigate('/login'), 2000);
-            return;
+          toast.loading('Syncing your account...');
+
+          for (let i = 0; i < 5; i++) {
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session) {
+              toast.dismiss();
+              toast.success('Account created! Welcome.');
+              setTimeout(() => navigate('/flowers'), 1000);
+              return;
+            }
           }
-          toast.error('Connection interrupted. Please try again.');
-          setIsLoading(false);
+
+          toast.dismiss();
+          toast.info('Signup processing... refreshing to shop.');
+          setTimeout(() => window.location.reload(), 1500);
           return;
         }
 
@@ -65,15 +74,20 @@ const SignupPage = () => {
         return;
       }
 
-      if (result.data?.user) {
-        toast.success('Account created! You can now log in.');
+      if (result.data?.session) {
+        toast.success('Account created and logged in! Welcome.');
+        setTimeout(() => {
+          navigate('/flowers');
+        }, 2000);
+      } else if (result.data?.user) {
+        toast.success('Account created! Please log in.');
         setTimeout(() => {
           navigate('/login');
         }, 2000);
       } else {
-        toast.success('Account created! You can now log in.');
+        toast.success('Account created!');
         setTimeout(() => {
-          navigate('/login');
+          navigate('/flowers');
         }, 2000);
       }
     } catch (error) {
@@ -81,8 +95,8 @@ const SignupPage = () => {
       if (error.message && error.message.includes('body stream')) {
         const { data: { session } } = await supabase.auth.getSession();
         if (session) {
-          toast.success('Account created! You can now log in.');
-          setTimeout(() => navigate('/login'), 2000);
+          toast.success('Account created! Welcome.');
+          setTimeout(() => navigate('/flowers'), 2000);
           return;
         }
         toast.error('Connection issue - please try again');
@@ -93,14 +107,21 @@ const SignupPage = () => {
     }
   };
 
-  const handleGoogleSignup = () => {
+  const handleGoogleSignup = async () => {
     setIsLoading(true);
-    // Simulate Google OAuth (mock)
-    setTimeout(() => {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/flowers`
+        }
+      });
+      if (error) throw error;
+    } catch (error) {
+      console.error('Google signup error:', error);
+      toast.error(error.message || 'Failed to start Google signup');
       setIsLoading(false);
-      toast.success('Google signup successful!');
-      navigate('/');
-    }, 1500);
+    }
   };
 
   const benefits = [
@@ -121,10 +142,15 @@ const SignupPage = () => {
         >
           {/* Mobile Logo */}
           <Link to="/" className="lg:hidden block mb-8 text-center">
-            <span className="text-2xl font-bold">
-              <span className="text-pink-600">Flower</span>
-              <span className="text-pink-400">Lifestyle</span>
-            </span>
+            <div className="inline-flex items-center gap-2">
+              <div className="w-10 h-10 bg-pink-100 rounded-full flex items-center justify-center">
+                <span className="text-2xl">🌸</span>
+              </div>
+              <span className="text-2xl font-bold">
+                <span className="text-pink-600">Flower</span>
+                <span className="text-pink-400">Lifestyle</span>
+              </span>
+            </div>
           </Link>
 
           <div className="text-center mb-8">
@@ -158,7 +184,7 @@ const SignupPage = () => {
             </div>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4" autoComplete="off">
             {/* Name */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
@@ -170,6 +196,7 @@ const SignupPage = () => {
                   onChange={handleChange}
                   placeholder="Enter your full name"
                   className="w-full pl-11 pr-4 py-3 rounded-xl border border-pink-200 focus:border-pink-400 focus:ring-2 focus:ring-pink-100 outline-none transition-all"
+                  autoComplete="off"
                   required
                 />
                 <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -187,6 +214,7 @@ const SignupPage = () => {
                   onChange={handleChange}
                   placeholder="Enter your email"
                   className="w-full pl-11 pr-4 py-3 rounded-xl border border-pink-200 focus:border-pink-400 focus:ring-2 focus:ring-pink-100 outline-none transition-all"
+                  autoComplete="off"
                   required
                 />
                 <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -204,6 +232,7 @@ const SignupPage = () => {
                   onChange={handleChange}
                   placeholder="+254 7XX XXX XXX"
                   className="w-full pl-11 pr-4 py-3 rounded-xl border border-pink-200 focus:border-pink-400 focus:ring-2 focus:ring-pink-100 outline-none transition-all"
+                  autoComplete="off"
                   required
                 />
                 <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -221,6 +250,7 @@ const SignupPage = () => {
                   onChange={handleChange}
                   placeholder="Create a password"
                   className="w-full pl-11 pr-12 py-3 rounded-xl border border-pink-200 focus:border-pink-400 focus:ring-2 focus:ring-pink-100 outline-none transition-all"
+                  autoComplete="off"
                   required
                   minLength={8}
                 />
@@ -309,10 +339,13 @@ const SignupPage = () => {
         />
         <div className="absolute inset-0 bg-gradient-to-l from-pink-600/80 to-pink-500/60" />
         <div className="absolute inset-0 flex flex-col justify-center px-12">
-          <Link to="/" className="absolute top-8 right-8">
+          <Link to="/" className="absolute top-8 right-8 flex items-center gap-2">
             <span className="text-2xl font-bold text-white">
               Flower<span className="text-pink-200">Lifestyle</span>
             </span>
+            <div className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center border border-white/30">
+              <span className="text-2xl">🌸</span>
+            </div>
           </Link>
           <motion.div
             initial={{ opacity: 0, y: 30 }}

@@ -205,8 +205,8 @@ export const whyChooseUs = [
 export const contactInfo = {
   phone: "0742370307",
   whatsapp: "0742370307",
-  email: "hello@flowerlifestyle.co.ke",
-  address: "123 Flower Lane, Westlands, Nairobi",
+  email: "flowerlifestyle@gmail.com",
+  address: "City Market, Nairobi",
   hours: "Mon - Sat: 8AM - 7PM, Sun: 9AM - 5PM",
   instagram: "https://www.instagram.com/flowerlifestyle_giftshop/"
 };

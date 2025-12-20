@@ -2,7 +2,7 @@
 
 ## Your Supabase Connection Details
 - **URL:** https://duazdpldzqodpucqoyta.supabase.co
-- **Anon Key:** sb_publishable_aUd0PD0wpnKSN7cLOO2cbw_i52hwuzN
+- **Anon Key:** eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQw54Hh7uK0JBFkGx7_98
 
 ## Setup Instructions
 
@@ -71,7 +71,7 @@ VITE_SUPABASE_ANON_KEY=sb_publishable_aUd0PD0wpnKSN7cLOO2cbw_i52hwuzN
 ### Backend (.env)
 ```
 SUPABASE_URL="https://duazdpldzqodpucqoyta.supabase.co"
-SUPABASE_KEY="sb_publishable_aUd0PD0wpnKSN7cLOO2cbw_i52hwuzN"
+SUPABASE_KEY="sb_secret_iF-1ETcZDuO-VvpjS3nvVg_0hGbK0aQ"
 ```
 
 ## Next Steps

@@ -14,17 +14,32 @@ if (!supabaseKey) console.error('CRITICAL: VITE_SUPABASE_ANON_KEY is missing in 
 const url = supabaseUrl || 'https://placeholder.supabase.co';
 const key = supabaseKey || 'placeholder-key';
 
-if (key && !key.startsWith('ey')) {
-  console.warn('WARNING: VITE_SUPABASE_ANON_KEY does not appear to be a valid Supabase JWT. It should start with "ey".');
+if (key && !key.startsWith('ey') && !key.startsWith('sb')) {
+  console.warn('WARNING: VITE_SUPABASE_ANON_KEY does not appear to be a valid Supabase key. It should start with "ey" (legacy) or "sb" (new).');
 }
 
 export const supabase = createClient(url, key, {
   auth: {
     autoRefreshToken: true,
     persistSession: true,
-    detectSessionInUrl: true
+    detectSessionInUrl: false,
+    storage: typeof window !== 'undefined' ? window.localStorage : undefined,
+    storageKey: 'supabase.auth.token'
+  },
+  db: {
+    schema: 'public'
+  },
+  global: {
+    headers: {
+      'x-client-info': 'flower-shop-admin'
+    }
   }
 })
+
+// Use the same client instance to avoid multiple instances
+export const createFreshClient = () => {
+  return supabase
+}
 
 export const safeAuthCall = async (authPromise) => {
   try {

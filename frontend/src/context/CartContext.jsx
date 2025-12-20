@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { toast } from 'sonner';
+import { supabase } from '../lib/supabase';
 
 const CartContext = createContext();
 
@@ -8,23 +9,75 @@ export const useCart = () => {
 };
 
 export const CartProvider = ({ children }) => {
-    const [cart, setCart] = useState(() => {
+    const [userId, setUserId] = useState(null);
+    const [cart, setCart] = useState([]);
+
+    // Get current user and listen for auth changes
+    useEffect(() => {
+        const getInitialSession = async () => {
+            const { data: { session } } = await supabase.auth.getSession();
+            setUserId(session?.user?.id || 'anonymous');
+        };
+
+        getInitialSession();
+
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+            setUserId(session?.user?.id || 'anonymous');
+        });
+
+        return () => subscription.unsubscribe();
+    }, []);
+
+    // Load cart when userId changes
+    useEffect(() => {
+        if (!userId) return;
+
         try {
-            const savedCart = localStorage.getItem('flower_cart');
-            return savedCart ? JSON.parse(savedCart) : [];
+            const savedCart = localStorage.getItem(`flower_cart_${userId}`);
+            // If we're logging in from anonymous to a real user, we might want to merge carts
+            // For now, just load the user's specific cart
+            setCart(savedCart ? JSON.parse(savedCart) : []);
+
+            // If we just logged in, check if there's an anonymous cart to merge
+            if (userId !== 'anonymous') {
+                const anonCart = localStorage.getItem('flower_cart_anonymous');
+                if (anonCart) {
+                    const parsedAnon = JSON.parse(anonCart);
+                    if (parsedAnon.length > 0) {
+                        setCart(prev => {
+                            const newCart = [...prev];
+                            parsedAnon.forEach(anonItem => {
+                                const existing = newCart.find(item => item.id === anonItem.id);
+                                if (existing) {
+                                    existing.quantity += anonItem.quantity;
+                                } else {
+                                    newCart.push(anonItem);
+                                }
+                            });
+                            return newCart;
+                        });
+                        localStorage.removeItem('flower_cart_anonymous');
+                        toast.success('Your persistent cart has been merged');
+                    }
+                }
+            }
         } catch (e) {
             console.error("Failed to parse cart from storage", e);
-            return [];
+            setCart([]);
         }
-    });
+    }, [userId]);
 
+    // Save cart whenever it changes
     useEffect(() => {
+        if (!userId) return;
         try {
+            localStorage.setItem(`flower_cart_${userId}`, JSON.stringify(cart));
+            // Backup for legacy compatibility (though we should avoid it)
             localStorage.setItem('flower_cart', JSON.stringify(cart));
         } catch (e) {
             console.error("Failed to save cart to storage", e);
         }
-    }, [cart]);
+    }, [cart, userId]);
 
     const addToCart = (product) => {
         setCart((prevCart) => {
@@ -59,10 +112,13 @@ export const CartProvider = ({ children }) => {
 
     const clearCart = () => {
         setCart([]);
+        if (userId) {
+            localStorage.removeItem(`flower_cart_${userId}`);
+        }
     };
 
-    const cartTotal = cart.reduce((total, item) => total + item.price * item.quantity, 0);
-    const cartCount = cart.reduce((count, item) => count + item.quantity, 0);
+    const cartTotal = cart.reduce((total, item) => total + (item.price || 0) * (item.quantity || 0), 0);
+    const cartCount = cart.reduce((count, item) => count + (item.quantity || 0), 0);
 
     return (
         <CartContext.Provider

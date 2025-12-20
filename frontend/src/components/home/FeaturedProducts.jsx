@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { Heart, ShoppingBag, Star, Eye } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
-import { featuredProducts } from '../../data/mock';
+import { featuredProducts as mockFeaturedProducts } from '../../data/mock';
+import { supabase } from '../../lib/supabase';
 
 import { useCart } from '../../context/CartContext';
 import { toast } from 'sonner';
@@ -80,7 +81,7 @@ const ProductCard = ({ product, index }) => {
             <Button
               size="icon"
               className="bg-white text-gray-700 hover:bg-gray-100 rounded-full shadow-lg"
-              onClick={() => toast.info('Quick view coming soon!')}
+              onClick={() => navigate(`/flowers?search=${encodeURIComponent(product.name)}`)}
             >
               <Eye className="w-5 h-5" />
             </Button>
@@ -139,6 +140,48 @@ const ProductCard = ({ product, index }) => {
 
 const FeaturedProducts = () => {
   const navigate = useNavigate();
+  const [products, setProducts] = useState(mockFeaturedProducts);
+
+  useEffect(() => {
+    const fetchFeatured = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('products')
+          .select('*')
+          .order('created_at', { ascending: false })
+          .limit(4);
+
+        if (error) {
+          console.error('Featured products Supabase error:', error);
+          return;
+        }
+
+        if (data && data.length > 0) {
+          // Normalize product data to match expected structure
+          const normalizedProducts = data.map(p => ({
+            id: p.id,
+            name: p.name,
+            price: parseFloat(p.price) || 0,
+            originalPrice: p.original_price ? parseFloat(p.original_price) : null,
+            image: p.image || '',
+            category: p.category || 'roses',
+            badge: p.badge || null,
+            rating: parseFloat(p.rating) || 5.0,
+            reviews: parseInt(p.reviews) || 0
+          }));
+          setProducts(normalizedProducts);
+          console.log('HOME: Showing featured products from Supabase');
+        } else {
+          console.warn('HOME: No products in database, falling back to mock featured products');
+        }
+      } catch (err) {
+        console.error('Featured products fetch fatal error:', err);
+        // Keep mock data as graceful fallback
+      }
+    };
+
+    fetchFeatured();
+  }, []);
 
   return (
     <section className="py-16 bg-gradient-to-b from-white to-pink-50">
@@ -180,7 +223,7 @@ const FeaturedProducts = () => {
         </div>
 
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-          {featuredProducts.map((product, index) => (
+          {products.map((product, index) => (
             <ProductCard key={product.id} product={product} index={index} />
           ))}
         </div>

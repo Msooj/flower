@@ -8,22 +8,87 @@ import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { allProducts, categories } from '../data/mock';
+import { supabase } from '../lib/supabase';
 
 import { useCart } from '../context/CartContext';
+import { useWishlist } from '../context/WishlistContext';
 import { toast } from 'sonner';
+import { useEffect } from 'react';
 
 const FlowersPage = () => {
   const { addToCart } = useCart();
+  const { toggleWishlist, isInWishlist } = useWishlist();
   const [searchParams, setSearchParams] = useSearchParams();
-  const [searchQuery, setSearchQuery] = useState('');
+  const initialSearch = searchParams.get('search') || '';
+  const [searchQuery, setSearchQuery] = useState(initialSearch);
   const [sortBy, setSortBy] = useState('featured');
   const [gridSize, setGridSize] = useState('large');
   const [showFilters, setShowFilters] = useState(false);
+  const [dbProducts, setDbProducts] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      let usedDb = false;
+      try {
+        setIsLoading(true);
+        const { data, error } = await supabase
+          .from('products')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (error) {
+          console.error('Products fetch error:', error);
+          setDbProducts(allProducts);
+          return;
+        }
+        
+        if (data && data.length > 0) {
+          // Ensure all products have required fields
+          const normalizedProducts = data.map(p => ({
+            id: p.id,
+            name: p.name,
+            price: parseFloat(p.price) || 0,
+            originalPrice: p.original_price ? parseFloat(p.original_price) : null,
+            image: p.image || '',
+            category: p.category || 'roses',
+            badge: p.badge || null,
+            rating: parseFloat(p.rating) || 5.0,
+            reviews: parseInt(p.reviews) || 0,
+            stock: parseInt(p.stock) || 0,
+            description: p.description || ''
+          }));
+          setDbProducts(normalizedProducts);
+          usedDb = true;
+        } else {
+          setDbProducts(allProducts);
+        }
+      } catch (error) {
+        console.error('Error fetching products:', error);
+        setDbProducts(allProducts); // Fallback
+      } finally {
+        setIsLoading(false);
+        if (usedDb) {
+          console.log('SHOP: Displaying products from Supabase');
+        } else {
+          console.warn('SHOP: Database is empty or unreachable, showing Demo/Mock products');
+        }
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
+  // Keep searchQuery in sync with ?search= in URL
+  useEffect(() => {
+    const urlSearch = searchParams.get('search') || '';
+    setSearchQuery(urlSearch);
+  }, [searchParams]);
 
   const activeCategory = searchParams.get('category') || 'all';
 
   const filteredProducts = useMemo(() => {
-    let products = [...allProducts];
+    let products = dbProducts.length > 0 ? [...dbProducts] : [...allProducts];
 
     // Filter by category
     if (activeCategory && activeCategory !== 'all') {
@@ -58,7 +123,7 @@ const FlowersPage = () => {
     }
 
     return products;
-  }, [activeCategory, searchQuery, sortBy]);
+  }, [dbProducts, activeCategory, searchQuery, sortBy]);
 
   const formatPrice = (price) => `KSh ${price.toLocaleString()}`;
 
@@ -247,10 +312,26 @@ const FlowersPage = () => {
                         )}
                         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />
                         <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <Button size="icon" className="bg-white text-pink-500 hover:bg-pink-500 hover:text-white rounded-full shadow-lg h-9 w-9" onClick={() => toast.success('Added to wishlist!')}>
-                            <Heart className="w-4 h-4" />
+                          <Button
+                            size="icon"
+                            className={`rounded-full shadow-lg h-9 w-9 ${isInWishlist(product.id)
+                              ? 'bg-pink-500 text-white hover:bg-pink-600'
+                              : 'bg-white text-pink-500 hover:bg-pink-500 hover:text-white'
+                              }`}
+                            onClick={() => toggleWishlist(product)}
+                          >
+                            <Heart className={`w-4 h-4 ${isInWishlist(product.id) ? 'fill-current' : ''}`} />
                           </Button>
-                          <Button size="icon" className="bg-white text-gray-700 hover:bg-gray-100 rounded-full shadow-lg h-9 w-9" onClick={() => toast.info('Quick view coming soon!')}>
+                          <Button 
+                            size="icon" 
+                            className="bg-white text-gray-700 hover:bg-gray-100 rounded-full shadow-lg h-9 w-9" 
+                            onClick={() => {
+                              // Scroll to top and highlight the product
+                              window.scrollTo({ top: 0, behavior: 'smooth' });
+                              setSearchQuery(product.name);
+                              toast.success(`Viewing ${product.name}`);
+                            }}
+                          >
                             <Eye className="w-4 h-4" />
                           </Button>
                           <Button size="icon" className="bg-pink-500 text-white hover:bg-pink-600 rounded-full shadow-lg h-9 w-9" onClick={() => {

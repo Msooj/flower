@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Mail, Lock, Eye, EyeOff, ArrowRight } from 'lucide-react';
@@ -14,6 +14,23 @@ const LoginPage = () => {
     email: '',
     password: ''
   });
+  const [dbStatus, setDbStatus] = useState('Checking database connection...');
+
+  useEffect(() => {
+    const checkConnection = async () => {
+      try {
+        const { data, error } = await supabase.from('status_checks').select('id').limit(1);
+        if (error) {
+          setDbStatus(`Database connection issue: ${error.message}`);
+        } else {
+          setDbStatus('✅ Database connected');
+        }
+      } catch (err) {
+        setDbStatus(`Database connection failed: ${err.message}`);
+      }
+    };
+    checkConnection();
+  }, []);
 
   const handleChange = (e) => {
     setFormData(prev => ({
@@ -25,10 +42,23 @@ const LoginPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
+
     if (!formData.email || !formData.password) {
       toast.error('Please enter both email and password.');
       setIsLoading(false);
       return;
+    }
+
+    // Clear any previous session info to start fresh
+    try {
+      const { data: { session: existingSession } } = await supabase.auth.getSession();
+      if (existingSession) {
+        toast.info('You are already signed in. Redirecting...');
+        navigate('/flowers');
+        return;
+      }
+    } catch (e) {
+      console.warn('Silent session check failed');
     }
 
     try {
@@ -38,22 +68,35 @@ const LoginPage = () => {
       });
 
       if (result.error) {
-        // Handle the specific body stream error if it appears here
+        console.error('Supabase Auth Error:', result.error);
+
+        // This is a known browser/Supabase sync issue
         if (result.error.message && result.error.message.includes('body stream')) {
-          // Retry checking session multiple times
-          for (let i = 0; i < 3; i++) {
-            // Wait 500ms before each check
-            await new Promise(resolve => setTimeout(resolve, 500));
+          toast.loading('Syncing session, please wait...');
+
+          // Wait and check session multiple times
+          for (let i = 0; i < 5; i++) {
+            await new Promise(resolve => setTimeout(resolve, 1000));
             const { data: { session } } = await supabase.auth.getSession();
             if (session) {
-              toast.success('Login successful!');
-              navigate('/');
+              const { data: profile } = await supabase.from('user_profiles').select('role').eq('id', session.user.id).single();
+              if (profile?.role === 'admin') {
+                await supabase.auth.signOut();
+                toast.dismiss();
+                toast.error('Admin accounts must log in via the Admin portal.');
+                setIsLoading(false);
+                return;
+              }
+              toast.dismiss();
+              toast.success('Login confirmed! Welcome.');
+              navigate('/flowers');
               return;
             }
           }
 
-          toast.error('Connection interrupted. Please try again.');
-          setIsLoading(false);
+          toast.dismiss();
+          toast.info('Completing login, please wait...');
+          setTimeout(() => window.location.reload(), 1000);
           return;
         }
 
@@ -62,46 +105,130 @@ const LoginPage = () => {
         return;
       }
 
-      if (!result.data || !result.data.user) {
-        toast.error('Login failed');
-        setIsLoading(false);
-        return;
-      }
+      if (result.data?.user) {
+        // Small delay to ensure session is fully established in the client
+        await new Promise(resolve => setTimeout(resolve, 300));
 
-      toast.success('Login successful! Welcome back.');
+        // Fetch user profile to check role
+        let profile = null;
+        let profileError = null;
 
-      setTimeout(() => {
-        navigate('/');
-      }, 500);
-    } catch (error) {
-      console.error('Login error:', error);
-      if (error.message && error.message.includes('body stream')) {
-        // Check session again with retry
+        // Attempt to get profile with retries for "body stream" error
         for (let i = 0; i < 3; i++) {
-          await new Promise(resolve => setTimeout(resolve, 500));
-          const { data: { session } } = await supabase.auth.getSession();
-          if (session) {
-            toast.success('Login successful!');
-            navigate('/');
-            return;
+          try {
+            const { data, error } = await supabase
+              .from('user_profiles')
+              .select('role')
+              .eq('id', result.data.user.id)
+              .single();
+
+            if (error && (error.message?.includes('body stream') || error.message?.includes('Failed to execute'))) {
+              console.warn(`Profile fetch attempt ${i + 1} failed with stream error, retrying...`);
+              await new Promise(r => setTimeout(r, 1000));
+              continue;
+            }
+
+            profile = data;
+            profileError = error;
+            break;
+          } catch (e) {
+            if (e.message?.includes('body stream') || e.message?.includes('Failed to execute')) {
+              console.warn(`Profile fetch catch ${i + 1} failed with stream error, retrying...`);
+              await new Promise(r => setTimeout(r, 1000));
+              continue;
+            }
+            profileError = e;
+            break;
           }
         }
-        toast.error('Connection issue - please try again');
+
+        // Auto-create profile if missing
+        if (profileError && profileError.code === 'PGRST116') {
+          console.log('Profile missing, creating default profile...');
+          const { error: insertError } = await supabase
+            .from('user_profiles')
+            .insert([{
+              id: result.data.user.id,
+              email: result.data.user.email,
+              full_name: result.data.user.user_metadata?.full_name || '',
+              role: 'customer'
+            }]);
+
+          if (!insertError) {
+            const { data: newProfile } = await supabase
+              .from('user_profiles')
+              .select('role')
+              .eq('id', result.data.user.id)
+              .single();
+            profile = newProfile;
+          }
+        }
+
+        if (profile?.role === 'admin') {
+          // Log out immediately if they are an admin
+          await supabase.auth.signOut();
+          toast.error('Admins must use the Admin Portal at /admin to log in.');
+          setIsLoading(false);
+          return;
+        }
+
+        toast.success('Login successful! Welcome back.');
+        setTimeout(() => navigate('/flowers'), 500);
       } else {
-        toast.error(error.message || 'Failed to login');
+        // Fallback for edge cases where data is returned but session is missing in the object
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+          // Check role in fallback too
+          const { data: profile } = await supabase.from('user_profiles').select('role').eq('id', session.user.id).single();
+          if (profile?.role === 'admin') {
+            await supabase.auth.signOut();
+            toast.error('Admins must use the Admin Portal.');
+            setIsLoading(false);
+            return;
+          }
+          toast.success('Login successful!');
+          navigate('/flowers');
+        } else {
+          toast.error('Login failed - session not established');
+          setIsLoading(false);
+        }
+      }
+    } catch (error) {
+      console.error('Fatal Login error:', error);
+      if (error.message && error.message.includes('body stream')) {
+        toast.loading('Retrying connection...');
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+          toast.dismiss();
+          toast.success('Login successful!');
+          navigate('/flowers');
+          return;
+        }
+        toast.dismiss();
+        toast.error('Connection interrupted. Please refresh and try again.');
+      } else {
+        toast.error('An unexpected error occurred. Please try again.');
       }
       setIsLoading(false);
     }
   };
 
-  const handleGoogleLogin = () => {
+  const handleGoogleLogin = async () => {
     setIsLoading(true);
-    // Simulate Google OAuth (mock)
-    setTimeout(() => {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/flowers`
+        }
+      });
+      if (error) throw error;
+    } catch (error) {
+      console.error('Google login error:', error);
+      toast.error(error.message || 'Failed to start Google login');
       setIsLoading(false);
-      toast.success('Google login successful!');
-      navigate('/');
-    }, 1500);
+    }
   };
 
   return (
@@ -115,7 +242,10 @@ const LoginPage = () => {
         />
         <div className="absolute inset-0 bg-gradient-to-r from-pink-600/80 to-pink-500/60" />
         <div className="absolute inset-0 flex flex-col justify-center px-12">
-          <Link to="/" className="absolute top-8 left-8">
+          <Link to="/" className="absolute top-8 left-8 flex items-center gap-2">
+            <div className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center border border-white/30">
+              <span className="text-2xl">🌸</span>
+            </div>
             <span className="text-2xl font-bold text-white">
               Flower<span className="text-pink-200">Lifestyle</span>
             </span>
@@ -144,15 +274,23 @@ const LoginPage = () => {
         >
           {/* Mobile Logo */}
           <Link to="/" className="lg:hidden block mb-8 text-center">
-            <span className="text-2xl font-bold">
-              <span className="text-pink-600">Flower</span>
-              <span className="text-pink-400">Lifestyle</span>
-            </span>
+            <div className="inline-flex items-center gap-2">
+              <div className="w-10 h-10 bg-pink-100 rounded-full flex items-center justify-center">
+                <span className="text-2xl">🌸</span>
+              </div>
+              <span className="text-2xl font-bold">
+                <span className="text-pink-600">Flower</span>
+                <span className="text-pink-400">Lifestyle</span>
+              </span>
+            </div>
           </Link>
 
           <div className="text-center mb-8">
             <h2 className="text-3xl font-bold text-gray-900 mb-2">Sign In</h2>
             <p className="text-gray-600">Welcome back! Please enter your details.</p>
+            <p className={`mt-2 text-xs ${dbStatus.includes('✅') ? 'text-emerald-500' : 'text-amber-500'}`}>
+              {dbStatus}
+            </p>
           </div>
 
           {/* Google Sign In */}
@@ -181,7 +319,7 @@ const LoginPage = () => {
             </div>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-5" autoComplete="off">
             {/* Email */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
