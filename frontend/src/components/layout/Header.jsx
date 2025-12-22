@@ -98,7 +98,7 @@ const Header = () => {
                 className="flex items-center gap-3"
               >
                 <img 
-                  src="/logo.pngF"
+                  src="/WhatsApp_Image_2025-12-21_at_6.52.59_PM.pngF"
                               alt="Flower Lifestyle Logo"
                   className="h-12 w-auto"
                 />
