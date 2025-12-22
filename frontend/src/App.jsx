@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "./App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Toaster } from "./components/ui/sonner";
@@ -12,16 +12,28 @@ import CartPage from "./pages/CartPage";
 import WishlistPage from "./pages/WishlistPage";
 import AdminPage from "./pages/AdminPage";
 import OrdersPage from "./pages/OrdersPage";
+import WhatsAppButton from "./components/common/WhatsAppButton";
 
 function App() {
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   return (
     <div className="App">
       <CartProvider>
         <WishlistProvider>
           <BrowserRouter>
             <Routes>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/flowers" element={<FlowersPage />} />
+              <Route path="/" element={<HomePage isMobile={isMobile} />} />
+              <Route path="/flowers" element={<FlowersPage isMobile={isMobile} />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/signup" element={<SignupPage />} />
               <Route path="/cart" element={<CartPage />} />
@@ -30,6 +42,7 @@ function App() {
               <Route path="/admin" element={<AdminPage />} />
             </Routes>
           </BrowserRouter>
+          <WhatsAppButton />
           <Toaster position="top-right" richColors />
         </WishlistProvider>
       </CartProvider>

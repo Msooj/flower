@@ -522,7 +522,7 @@ const CartPage = () => {
                             </Button>
 
                             <p className="mt-4 text-xs text-center text-gray-400">
-                                Secure checkout • Free delivery
+                                Secure checkout • We deliver cointrywide
                             </p>
                         </div>
                     </div>

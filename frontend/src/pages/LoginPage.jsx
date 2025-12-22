@@ -274,11 +274,13 @@ const LoginPage = () => {
         >
           {/* Mobile Logo */}
           <Link to="/" className="lg:hidden block mb-8 text-center">
-            <div className="inline-flex items-center gap-2">
-              <div className="w-10 h-10 bg-pink-100 rounded-full flex items-center justify-center">
-                <span className="text-2xl">🌸</span>
-              </div>
-              <span className="text-2xl font-bold">
+            <div className="inline-flex items-center gap-3">
+              <img 
+                src="/WhatsApp_Image_2025-12-21_at_6.52.59_PM.png" 
+                alt="Flower Lifestyle Logo" 
+                className="h-12 w-auto"
+              />
+              <span className="text-2xl md:text-3xl font-bold tracking-tight">
                 <span className="text-pink-600">Flower</span>
                 <span className="text-pink-400">Lifestyle</span>
               </span>

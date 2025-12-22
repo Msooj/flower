@@ -78,7 +78,7 @@ const Header = () => {
       <div className="bg-pink-600 text-white py-2 px-4 text-center text-sm">
         <div className="container mx-auto flex items-center justify-center gap-2">
           <Phone className="w-4 h-4" />
-          <span>Free delivery on orders over KSh 5,000 | Call us: {contactInfo.phone}</span>
+          <span>We deliver country wide! | Call us: {contactInfo.phone}</span>
         </div>
       </div>
 
@@ -95,11 +95,13 @@ const Header = () => {
             <Link to="/" className="flex items-center gap-2">
               <motion.div
                 whileHover={{ scale: 1.02 }}
-                className="flex items-center gap-2"
+                className="flex items-center gap-3"
               >
-                <div className="w-10 h-10 bg-pink-100 rounded-full flex items-center justify-center">
-                  <span className="text-2xl">🌸</span>
-                </div>
+                <img 
+                  src="/WhatsApp_Image_2025-12-21_at_6.52.59_PM.png" 
+                  alt="Flower Lifestyle Logo" 
+                  className="h-12 w-auto"
+                />
                 <span className="text-2xl md:text-3xl font-bold tracking-tight">
                   <span className="text-pink-600">Flower</span>
                   <span className="text-pink-400">Lifestyle</span>

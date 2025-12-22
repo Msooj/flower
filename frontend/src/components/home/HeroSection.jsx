@@ -4,17 +4,17 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowRight, Truck, Award, Heart } from 'lucide-react';
 import { Button } from '../ui/button';
 
-const HeroSection = () => {
+const HeroSection = ({ isMobile = false }) => {
   const navigate = useNavigate();
 
   return (
     <section className="relative overflow-hidden bg-gradient-to-br from-pink-50 via-white to-pink-100">
       {/* Decorative Elements */}
-      <div className="absolute top-20 left-10 w-72 h-72 bg-pink-200 rounded-full blur-3xl opacity-30" />
-      <div className="absolute bottom-20 right-10 w-96 h-96 bg-pink-300 rounded-full blur-3xl opacity-20" />
+      <div className="absolute top-10 left-5 w-48 h-48 md:top-20 md:left-10 md:w-72 md:h-72 bg-pink-200 rounded-full blur-3xl opacity-30" />
+      <div className="absolute -bottom-10 -right-10 w-64 h-64 md:bottom-20 md:right-10 md:w-96 md:h-96 bg-pink-300 rounded-full blur-3xl opacity-20" />
       
-      <div className="container mx-auto px-4 py-16 md:py-24">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
+      <div className={`container mx-auto px-4 ${isMobile ? 'py-8' : 'py-16 md:py-24'}`}>
+        <div className="grid lg:grid-cols-2 gap-8 md:gap-12 items-center">
           {/* Text Content */}
           <motion.div
             initial={{ opacity: 0, x: -50 }}
@@ -22,26 +22,28 @@ const HeroSection = () => {
             transition={{ duration: 0.6 }}
             className="relative z-10"
           >
-            <motion.span
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="inline-block px-4 py-2 bg-pink-100 text-pink-600 rounded-full text-sm font-medium mb-6"
-            >
-              Fresh Flowers Delivered Daily
-            </motion.span>
+            {!isMobile && (
+              <motion.span
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+                className="inline-block px-4 py-2 bg-pink-100 text-pink-600 rounded-full text-sm font-medium mb-4 md:mb-6"
+              >
+                Fresh Flowers Delivered Daily
+              </motion.span>
+            )}
             
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight mb-6">
+            <h1 className={`${isMobile ? 'text-3xl' : 'text-4xl md:text-5xl lg:text-6xl'} font-bold text-gray-900 leading-tight mb-4 md:mb-6`}>
               Beautiful Blooms for
               <span className="block text-gradient">Every Occasion</span>
             </h1>
             
-            <p className="text-lg text-gray-600 mb-8 max-w-lg leading-relaxed">
+            <p className="text-base md:text-lg text-gray-600 mb-6 md:mb-8 max-w-lg leading-relaxed">
               Discover handcrafted floral arrangements that speak from the heart. 
               From romantic roses to celebration bouquets, we deliver joy right to your doorstep.
             </p>
             
-            <div className="flex flex-col sm:flex-row gap-4 mb-12">
+            <div className={`flex flex-col sm:flex-row gap-3 md:gap-4 ${isMobile ? 'mb-8' : 'mb-12'}`}>
               <Button
                 size="lg"
                 className="bg-pink-500 hover:bg-pink-600 text-white rounded-full px-8 group"

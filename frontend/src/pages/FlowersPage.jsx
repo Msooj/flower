@@ -15,7 +15,7 @@ import { useWishlist } from '../context/WishlistContext';
 import { toast } from 'sonner';
 import { useEffect } from 'react';
 
-const FlowersPage = () => {
+const FlowersPage = ({ isMobile = false }) => {
   const { addToCart } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -85,7 +85,16 @@ const FlowersPage = () => {
     setSearchQuery(urlSearch);
   }, [searchParams]);
 
+  // Get active category from URL or default to 'all'
   const activeCategory = searchParams.get('category') || 'all';
+
+  // State for mobile category dropdown
+  const [selectedCategory, setSelectedCategory] = useState(activeCategory);
+
+  // Update selected category when URL changes
+  useEffect(() => {
+    setSelectedCategory(activeCategory);
+  }, [activeCategory]);
 
   const filteredProducts = useMemo(() => {
     let products = dbProducts.length > 0 ? [...dbProducts] : [...allProducts];
@@ -154,11 +163,11 @@ const FlowersPage = () => {
 
       <main className="container mx-auto px-4 py-8">
         {/* Page Header */}
-        <div className="text-center mb-10">
+        <div className="text-center mb-6 md:mb-10">
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-3xl md:text-4xl font-bold text-gray-900 mb-4"
+            className="text-2xl md:text-4xl font-bold text-gray-900 mb-3 md:mb-4"
           >
             {activeCategory === 'all' ? 'All Flowers' :
               categories.find(c => c.slug === activeCategory)?.name || 'Shop Flowers'}
@@ -167,15 +176,40 @@ const FlowersPage = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="text-gray-600 max-w-2xl mx-auto"
+            className="text-gray-600 max-w-2xl mx-auto text-sm md:text-base"
           >
             Browse our stunning collection of handcrafted floral arrangements
           </motion.p>
+          
+          {/* Mobile Category Dropdown */}
+          {isMobile && (
+            <div className="mt-4 mb-6">
+              <Select 
+                value={selectedCategory} 
+                onValueChange={(value) => {
+                  setSelectedCategory(value);
+                  handleCategoryChange(value);
+                }}
+              >
+                <SelectTrigger className="w-full rounded-xl border-pink-200">
+                  <SelectValue placeholder="Select a category" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Categories</SelectItem>
+                  {categories.map((category) => (
+                    <SelectItem key={category.slug} value={category.slug}>
+                      {category.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
         </div>
 
         {/* Filters & Search Bar */}
         <div className="bg-white rounded-2xl shadow-sm border border-pink-100 p-4 mb-8">
-          <div className="flex flex-col lg:flex-row gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
             {/* Search */}
             <div className="flex-1 relative">
               <input
