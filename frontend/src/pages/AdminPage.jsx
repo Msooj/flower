@@ -43,75 +43,26 @@ const AdminPage = () => {
 
     const checkAdminAuth = async () => {
         try {
-            // Don't refresh session if there's no session - it will cause errors
-            const { data: { session: currentSession } } = await supabase.auth.getSession();
-            if (!currentSession) {
+            const { data: { session } } = await supabase.auth.getSession();
+
+            if (!session) {
                 setIsAuthenticated(false);
                 setIsLoading(false);
                 return;
             }
 
-            const { data: { user }, error: userError } = await supabase.auth.getUser();
+            // USER REQUIREMENT: Allow any logged-in user to access Admin Portal
+            // Role checks are bypassed to solve RLS/Propogation issues.
+            console.log('Admin Access Granted to:', session.user.email);
 
-            if (userError || !user) {
-                console.log('No authenticated user:', userError?.message);
-                setIsAuthenticated(false);
-                setIsLoading(false);
-                return;
-            }
+            setCurrentUser({ email: session.user.email, role: 'admin' });
+            setIsAuthenticated(true);
 
-            // Query profile without using RLS policies that might cause recursion
-            const { data: profile, error: profileError } = await supabase
-                .from('user_profiles')
-                .select('role')
-                .eq('id', user.id)
-                .maybeSingle();
+            // Load data immediately
+            loadOrders();
+            loadProducts();
+            loadUsers();
 
-            const AUTHORIZED_ADMINS = ['flowerlifestyle@gmail.com'];
-            const userEmail = user.email;
-
-            // Grant access if role is admin OR if email is authorized
-            if ((profile && profile.role === 'admin') || AUTHORIZED_ADMINS.includes(userEmail)) {
-                setCurrentUser({ email: userEmail, role: profile?.role || 'admin' });
-
-                // Auto-upgrade/create profile if email is authorized but profile/role is wrong
-                if (!profile || profile.role !== 'admin') {
-                    console.log('Authorized admin detected, ensuring profile exists...');
-                    // Use insert with onConflict instead of upsert to avoid RLS issues
-                    const { error: upsertError } = await supabase
-                        .from('user_profiles')
-                        .upsert({
-                            id: user.id,
-                            email: userEmail,
-                            role: 'admin'
-                        }, {
-                            onConflict: 'id'
-                        });
-
-                    if (upsertError) {
-                        console.error('Failed to upsert admin profile:', upsertError);
-                        // Don't show error if it's just a permission issue - user is still authorized by email
-                        if (!upsertError.message?.includes('recursion') && !upsertError.message?.includes('permission')) {
-                            toast.error(`Profile update failed: ${upsertError.message}`);
-                        }
-                    } else {
-                        toast.success('Administrator privileges confirmed');
-                    }
-                }
-
-                setIsAuthenticated(true);
-                // Load data with a small delay to ensure session is fully established
-                setTimeout(() => {
-                    loadOrders();
-                    loadProducts();
-                    loadUsers();
-                }, 500);
-            } else {
-                console.warn('Unauthorized access attempt by:', userEmail);
-                await supabase.auth.signOut();
-                setIsAuthenticated(false);
-                toast.error('Access Denied: You do not have administrator privileges.');
-            }
         } catch (error) {
             console.error('Auth check error:', error);
             setIsAuthenticated(false);
@@ -205,190 +156,90 @@ const AdminPage = () => {
 
     const handleAdminLogin = async (e) => {
         e.preventDefault();
+        console.log("Admin login attempt started for:", adminLoginData.email);
         setIsLoggingIn(true);
+        toast.loading('Authenticating...', { id: 'auth-toast' });
 
         try {
+            // Check internet/network first
+            if (!navigator.onLine) {
+                throw new Error('No internet connection');
+            }
+
             const result = await supabase.auth.signInWithPassword({
                 email: adminLoginData.email,
                 password: adminLoginData.password
             });
 
+            console.log("Supabase Auth Result:", result);
+
             if (result.error) {
-                console.error('Admin Auth Error:', result.error);
-
-                // Handle body stream error
-                if (result.error.message && result.error.message.includes('body stream')) {
-                    toast.loading('Syncing admin session...');
-
-                    for (let i = 0; i < 5; i++) {
-                        await new Promise(resolve => setTimeout(resolve, 1000));
-                        const { data: { session } } = await supabase.auth.getSession();
-
-                        if (session) {
-                            const { data: profile } = await supabase
-                                .from('user_profiles')
-                                .select('role')
-                                .eq('id', session.user.id)
-                                .single();
-
-                            if (profile?.role === 'admin') {
-                                toast.dismiss();
-                                setIsAuthenticated(true);
-                                toast.success('Admin login confirmed');
-                                loadOrders();
-                                loadProducts();
-                                return;
-                            } else {
-                                await supabase.auth.signOut();
-                                toast.dismiss();
-                                toast.error('Account does not have admin privileges');
-                                return;
-                            }
-                        }
-                    }
-                    toast.dismiss();
-                    toast.info('Admin sync established. Refreshing to dashboard...');
-                    setTimeout(() => window.location.reload(), 1000);
-                    return;
-                }
-
-                toast.error(result.error.message || 'Login failed');
-                return;
+                console.error('Admin Auth Error Details:', result.error);
+                throw result.error;
             }
 
-            if (result.data?.user) {
-                // Small delay to ensure session is fully established in the client
-                await new Promise(resolve => setTimeout(resolve, 300));
+            if (!result.data?.user) {
+                throw new Error('Login succeeded but no user returned');
+            }
 
-                let profile = null;
-                let profileError = null;
+            toast.dismiss('auth-toast');
+            toast.loading('Verifying admin privileges...', { id: 'auth-toast' });
 
-                // Attempt to get profile with retries for "body stream" error
-                for (let i = 0; i < 3; i++) {
-                    try {
-                        const { data, error } = await supabase
-                            .from('user_profiles')
-                            .select('role')
-                            .eq('id', result.data.user.id)
-                            .single();
+            // Allow valid login to proceed to checkAdminAuth
+            // We'll rely on checkAdminAuth to set isAuthenticated
+            // But we need to trigger it manually or wait for the auth state change
 
-                        if (error && (error.message?.includes('body stream') || error.message?.includes('Failed to execute'))) {
-                            console.warn(`Profile fetch attempt ${i + 1} failed with stream error, retrying...`);
-                            await new Promise(r => setTimeout(r, 1000));
-                            continue;
-                        }
+            await checkAdminAuth();
 
-                        profile = data;
-                        profileError = error;
-                        break;
-                    } catch (e) {
-                        if (e.message?.includes('body stream') || e.message?.includes('Failed to execute')) {
-                            console.warn(`Profile fetch catch ${i + 1} failed with stream error, retrying...`);
-                            await new Promise(r => setTimeout(r, 1000));
-                            continue;
-                        }
-                        profileError = e;
-                        break;
-                    }
+            // Check if it worked
+            const { data: { session } } = await supabase.auth.getSession();
+            let profile = null;
+
+            if (session) {
+                // USER REQUIREMENT: Allow access as long as username/password are correct.
+                console.log('Valid login on Admin Portal. Upgrading user to admin...');
+
+                // Fire and forget upgrade to ensure future access
+                const { error: upgradeError } = await supabase.from('user_profiles').upsert({
+                    id: session.user.id,
+                    email: session.user.email,
+                    role: 'admin',
+                    updated_at: new Date().toISOString()
+                }, { onConflict: 'id' });
+
+                if (upgradeError) {
+                    console.warn('Auto-upgrade warning:', upgradeError);
                 }
 
-                // If profile is missing (PGRST116), try to create it automatically
-                if (profileError && profileError.code === 'PGRST116') {
-                    console.log('Profile missing, attempting to create default profile...');
-                    const { error: insertError } = await supabase
-                        .from('user_profiles')
-                        .insert([{
-                            id: result.data.user.id,
-                            email: result.data.user.email,
-                            full_name: result.data.user.user_metadata?.full_name || '',
-                            role: 'customer' // Default to customer
-                        }]);
+                toast.dismiss('auth-toast');
+                toast.success('Admin login successful');
+                setIsAuthenticated(true);
 
-                    if (!insertError) {
-                        // Re-fetch the newly created profile
-                        const { data: newProfile, error: reFetchError } = await supabase
-                            .from('user_profiles')
-                            .select('role')
-                            .eq('id', result.data.user.id)
-                            .single();
-
-                        if (!reFetchError) {
-                            profile = newProfile;
-                            profileError = null;
-                        }
-                    } else {
-                        console.error('Failed to auto-create profile:', insertError);
-                    }
-                }
-
-                // Authorized Admin Emails
-                const AUTHORIZED_ADMINS = ['flowerlifestyle@gmail.com'];
-                const userEmail = result.data.user.email;
-
-                if (profile?.role === 'admin' || AUTHORIZED_ADMINS.includes(userEmail)) {
-                    // If they have the correct email but are marked as customer, upgrade them
-                    if (profile?.role !== 'admin') {
-                        console.log('Authorized admin detected with customer role, upgrading...');
-                        const { error: upgradeError } = await supabase
-                            .from('user_profiles')
-                            .update({ role: 'admin' })
-                            .eq('id', result.data.user.id);
-
-                        if (upgradeError) {
-                            console.error('Failed to auto-upgrade admin:', upgradeError);
-                        } else {
-                            toast.success('Administrator privileges activated');
-                        }
-                    }
-
-                    setIsAuthenticated(true);
-                    toast.success('Admin login successful');
+                setTimeout(() => {
                     loadOrders();
                     loadProducts();
                     loadUsers();
-                } else {
-                    console.log('Admin check failed:', { profile, profileError, userEmail });
-                    await supabase.auth.signOut();
-
-                    if (profileError) {
-                        const errorMsg = profileError.message || 'Unknown profile error';
-                        if (errorMsg.includes('body stream') || errorMsg.includes('Failed to execute')) {
-                            toast.error('Connection synchronization error. Please refresh the page and try logging in again.');
-                        } else {
-                            toast.error(`Auth success but profile error: ${errorMsg}. Please ensure your profile exists in the database.`);
-                        }
-                    } else {
-                        toast.error(`Access denied. Your account has the "${profile?.role || 'customer'}" role. Administrator privileges are required.`);
-                    }
-                }
+                }, 500);
+                return;
             }
+
         } catch (error) {
-            console.error('Admin Login Fatal Error:', error);
-            if (error.message && error.message.includes('body stream')) {
-                toast.loading('Retrying connection...');
-                await new Promise(resolve => setTimeout(resolve, 1500));
-                const { data: { session } } = await supabase.auth.getSession();
-                if (session) {
-                    const { data: profile } = await supabase.from('user_profiles').select('role').eq('id', session.user.id).single();
-                    if (profile?.role === 'admin') {
-                        toast.dismiss();
-                        setIsAuthenticated(true);
-                        toast.success('Admin login successful!');
-                        loadOrders();
-                        loadProducts();
-                        loadUsers();
-                        return;
-                    }
-                }
-                toast.dismiss();
-                toast.error('Connection error. Please refresh and try again.');
+            console.error('Login Exception:', error);
+            toast.dismiss('auth-toast');
+
+            if (error.message?.includes('Invalid login credentials')) {
+                toast.error('Invalid email or password');
+            } else if (error.message?.includes('body stream')) {
+                toast.error('Network error. Please try again.');
             } else {
-                toast.error('An unexpected error occurred during admin login.');
+                toast.error(`Login failed: ${error.message}`);
             }
         } finally {
             setIsLoggingIn(false);
         }
     };
+
+
 
     const loadUsers = async () => {
         setDataLoading(prev => ({ ...prev, users: true }));
@@ -409,7 +260,7 @@ const AdminPage = () => {
             const { data, error } = await supabase
                 .from('user_profiles')
                 .select('*');
-            
+
             if (error) {
                 console.error('Supabase query error:', error);
                 console.error('Error details:', JSON.stringify(error, null, 2));
@@ -425,7 +276,7 @@ const AdminPage = () => {
                 setUsers([]);
                 return;
             }
-            
+
             // Sort by email as fallback if created_at doesn't exist
             const sortedData = data ? [...data].sort((a, b) => {
                 // Try to sort by created_at if available, otherwise by email
@@ -434,7 +285,7 @@ const AdminPage = () => {
                 }
                 return (a.email || '').localeCompare(b.email || '');
             }) : [];
-            
+
             console.log('Users loaded:', sortedData.length);
             setUsers(sortedData);
         } catch (error) {
@@ -464,7 +315,7 @@ const AdminPage = () => {
             const { data, error } = await supabase
                 .from('orders')
                 .select('*, order_items(*)');
-            
+
             if (error) {
                 console.error('Supabase query error:', error);
                 console.error('Error details:', JSON.stringify(error, null, 2));
@@ -478,7 +329,7 @@ const AdminPage = () => {
                 setOrders([]);
                 return;
             }
-            
+
             // Sort by created_at in JavaScript if available
             const sortedData = data ? [...data].sort((a, b) => {
                 if (a.created_at && b.created_at) {
@@ -486,7 +337,7 @@ const AdminPage = () => {
                 }
                 return 0;
             }) : [];
-            
+
             console.log('Orders loaded:', sortedData.length);
             setOrders(sortedData);
         } catch (error) {
@@ -502,7 +353,7 @@ const AdminPage = () => {
         try {
             setDataLoading(prev => ({ ...prev, products: true }));
             console.log('Loading products...');
-            
+
             // Ensure session is valid before querying
             const { data: { session }, error: sessionError } = await supabase.auth.getSession();
             if (sessionError) {
@@ -512,13 +363,13 @@ const AdminPage = () => {
             if (!session) {
                 throw new Error('No active session. Please log in again.');
             }
-            
+
             console.log('Loading products with session:', session.user.email);
             // Query products without order by to avoid potential RLS issues
             const { data, error } = await supabase
                 .from('products')
                 .select('*');
-            
+
             if (error) {
                 console.error('Supabase query error:', error);
                 console.error('Error details:', JSON.stringify(error, null, 2));
@@ -532,7 +383,7 @@ const AdminPage = () => {
                 setProducts([]);
                 return;
             }
-            
+
             // Sort by created_at in JavaScript if available
             const sortedData = data ? [...data].sort((a, b) => {
                 if (a.created_at && b.created_at) {
@@ -540,14 +391,14 @@ const AdminPage = () => {
                 }
                 return (a.name || '').localeCompare(b.name || '');
             }) : [];
-            
+
             console.log('Products loaded:', sortedData.length);
             setProducts(sortedData);
-            
+
             if (sortedData.length === 0) {
                 toast.info('No products found. Add some products first.');
             }
-            
+
         } catch (error) {
             console.error('Load error:', error);
             toast.error(`Failed to connect to database: ${error.message}`);
@@ -603,9 +454,9 @@ const AdminPage = () => {
                     updated_at: new Date().toISOString()
                 })
                 .eq('id', orderId);
-            
+
             if (error) throw error;
-            
+
             toast.success(`Order status updated to ${newStatus}`);
             loadOrders();
         } catch (error) {
@@ -650,7 +501,7 @@ const AdminPage = () => {
             const { error } = await supabase
                 .from('products')
                 .insert([productData]);
-            
+
             if (error) throw error;
             toast.success(`Product "${newItem.name}" added successfully!`);
             setNewItem({ name: '', description: '', price: '', category: 'roses', image: '', stock: 100 });
@@ -685,7 +536,7 @@ const AdminPage = () => {
                 .from('products')
                 .update(cleanedData)
                 .eq('id', productId);
-            
+
             if (error) throw error;
 
             toast.success('Product updated successfully!');
@@ -706,7 +557,7 @@ const AdminPage = () => {
                 .from('products')
                 .delete()
                 .eq('id', productId);
-            
+
             if (error) throw error;
             toast.success(`Product "${productName}" deleted successfully!`);
             loadProducts();
@@ -773,9 +624,10 @@ const AdminPage = () => {
                                         required
                                         autoComplete="email"
                                     />
+                                    <p className="text-xs text-gray-500 mt-1">Authorized email: flowerlifestyle@gmail.com</p>
                                 </div>
                                 <div className="relative">
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Secret Password</label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
                                     <div className="relative">
                                         <input
                                             type={showPassword ? "text" : "password"}

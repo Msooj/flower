@@ -1,7 +1,13 @@
 {
     "short_name": "Flower Lifestyle",
     "name": "Flower Lifestyle - Fresh Floral Arrangements",
-    "icons": [],
+    "icons": [
+        {
+            "src": "/WhatsApp_Image_2025-12-21_at_6.52.59_PM.png",
+            "sizes": "any",
+            "type": "image/png"
+        }
+    ],
     "start_url": ".",
     "display": "standalone",
     "theme_color": "#ec4899",

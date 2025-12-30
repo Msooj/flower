@@ -9,26 +9,33 @@ const Footer = () => {
 
   return (
     <footer className="bg-gradient-to-b from-pink-50 to-pink-100">
-      {/* Newsletter Section */}
-      <div className="border-b border-pink-200">
-        <div className="container mx-auto px-4 py-12">
-          <div className="max-w-2xl mx-auto text-center">
-            <h3 className="text-2xl md:text-3xl font-bold text-gray-800 mb-3">
-              Join the Flower Lifestyle
+      {/* Location Map */}
+      <div className="border-b border-pink-200 bg-white">
+        <div className="container mx-auto px-4 py-8">
+          <div className="text-center mb-6">
+            <h3 className="text-xl md:text-2xl font-bold text-gray-800 flex items-center justify-center gap-2">
+              <MapPin className="text-pink-500" />
+              Visit Us at City Market, Nairobi CBD
             </h3>
-            <p className="text-gray-600 mb-6">
-              Subscribe for exclusive offers, flower care tips, and be the first to know about new arrivals.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
-              <input
-                type="email"
-                placeholder="Enter your email"
-                className="flex-1 px-4 py-3 rounded-full border border-pink-300 focus:border-pink-500 focus:ring-2 focus:ring-pink-100 outline-none"
-              />
-              <Button className="bg-pink-500 hover:bg-pink-600 text-white rounded-full px-6">
-                <Send className="w-4 h-4 mr-2" />
-                Subscribe
-              </Button>
+          </div>
+          <div className="w-full h-[350px] rounded-2xl overflow-hidden shadow-sm border border-pink-100 relative group">
+            <iframe
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1994.4099589032735!2d36.81913927496574!3d-1.2841499987036324!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x182f10d7a96e545b%3A0x1c1e57c6b758203d!2sCity%20Market!5e0!3m2!1sen!2ske!4v1709123456789!5m2!1sen!2ske"
+              width="100%"
+              height="100%"
+              style={{ border: 0 }}
+              allowFullScreen=""
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              title="Flower Lifestyle Location"
+              className="grayscale-[20%] group-hover:grayscale-0 transition-all duration-500"
+            ></iframe>
+            {/* Custom Red Pin Overlay */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
+              <div className="relative">
+                <MapPin className="w-12 h-12 text-red-600 fill-white drop-shadow-lg animate-bounce" />
+                <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-4 h-1.5 bg-black/30 rounded-full blur-[2px]"></div>
+              </div>
             </div>
           </div>
         </div>
@@ -46,7 +53,7 @@ const Footer = () => {
               </span>
             </Link>
             <p className="text-gray-600 mb-4 leading-relaxed">
-              Bringing beauty and joy through fresh, handcrafted floral arrangements. 
+              Bringing beauty and joy through fresh, handcrafted floral arrangements.
               Every bouquet tells a story of love and elegance.
             </p>
             <div className="flex gap-3">

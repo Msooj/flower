@@ -46,7 +46,7 @@ const CategoriesSection = () => {
               transition={{ delay: index * 0.1 }}
             >
               <Link
-                to={`/flowers?category=${category.slug}`}
+                to={category.slug === 'custom-orders' ? '/custom-order' : `/flowers?category=${category.slug}`}
                 className="group block"
               >
                 <div className="relative rounded-2xl overflow-hidden aspect-square mb-3">

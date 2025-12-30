@@ -22,9 +22,10 @@ export const supabase = createClient(url, key, {
   auth: {
     autoRefreshToken: true,
     persistSession: true,
-    detectSessionInUrl: false,
+    detectSessionInUrl: true, // Enable OAuth redirect detection
     storage: typeof window !== 'undefined' ? window.localStorage : undefined,
-    storageKey: 'supabase.auth.token'
+    storageKey: 'supabase.auth.token',
+    flowType: 'pkce' // Use PKCE flow for better security
   },
   db: {
     schema: 'public'

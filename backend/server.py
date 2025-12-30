@@ -1,4 +1,4 @@
-from fastapi import FastAPI, APIRouter, HTTPException
+from fastapi import FastAPI, APIRouter, HTTPException, Request
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from supabase import create_client, Client
@@ -12,6 +12,9 @@ from datetime import datetime, timezone
 import requests
 import base64
 import json
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.util import get_remote_address
+from slowapi.errors import RateLimitExceeded
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -56,6 +59,11 @@ except Exception as e:
 
 # Create the main app without a prefix
 app = FastAPI()
+
+# Rate Limiter Setup (Security: Prevent abuse)
+limiter = Limiter(key_func=get_remote_address)
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
@@ -186,7 +194,8 @@ def format_phone_number(phone: str) -> str:
 
 # Add your routes to the router instead of directly to app
 @api_router.get("/")
-async def root():
+@limiter.limit("20/minute")
+async def root(request: Request):
     return {"message": "Flower Shop API - M-Pesa Integration Active"}
 
 @api_router.post("/status", response_model=StatusCheck)
@@ -222,7 +231,8 @@ async def get_status_checks():
         return []
 
 @api_router.post("/mpesa/stk-push")
-async def initiate_stk_push(payment_request: MpesaPaymentRequest):
+@limiter.limit("5/minute")
+async def initiate_stk_push(request: Request, payment_request: MpesaPaymentRequest):
     """Initiate M-Pesa STK Push payment"""
     try:
         access_token = get_mpesa_access_token()

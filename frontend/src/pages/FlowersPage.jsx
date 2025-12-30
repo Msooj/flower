@@ -42,7 +42,7 @@ const FlowersPage = ({ isMobile = false }) => {
           setDbProducts(allProducts);
           return;
         }
-        
+
         if (data && data.length > 0) {
           // Ensure all products have required fields
           const normalizedProducts = data.map(p => ({
@@ -180,12 +180,12 @@ const FlowersPage = ({ isMobile = false }) => {
           >
             Browse our stunning collection of handcrafted floral arrangements
           </motion.p>
-          
+
           {/* Mobile Category Dropdown */}
           {isMobile && (
             <div className="mt-4 mb-6">
-              <Select 
-                value={selectedCategory} 
+              <Select
+                value={selectedCategory}
                 onValueChange={(value) => {
                   setSelectedCategory(value);
                   handleCategoryChange(value);
@@ -300,7 +300,11 @@ const FlowersPage = ({ isMobile = false }) => {
               </p>
             </div>
 
-            {filteredProducts.length === 0 ? (
+            {isLoading ? (
+              <div className="flex justify-center items-center py-20">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-500"></div>
+              </div>
+            ) : filteredProducts.length === 0 ? (
               <div className="text-center py-16 bg-white rounded-2xl border border-pink-100">
                 <p className="text-gray-500 text-lg">No products found matching your criteria.</p>
                 <Button
@@ -356,9 +360,9 @@ const FlowersPage = ({ isMobile = false }) => {
                           >
                             <Heart className={`w-4 h-4 ${isInWishlist(product.id) ? 'fill-current' : ''}`} />
                           </Button>
-                          <Button 
-                            size="icon" 
-                            className="bg-white text-gray-700 hover:bg-gray-100 rounded-full shadow-lg h-9 w-9" 
+                          <Button
+                            size="icon"
+                            className="bg-white text-gray-700 hover:bg-gray-100 rounded-full shadow-lg h-9 w-9"
                             onClick={() => {
                               // Scroll to top and highlight the product
                               window.scrollTo({ top: 0, behavior: 'smooth' });
