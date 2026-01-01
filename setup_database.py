@@ -13,8 +13,8 @@ ROOT_DIR = Path(__file__).parent / 'backend'
 load_dotenv(ROOT_DIR / '.env')
 
 # Get Supabase credentials
-SUPABASE_URL = "https://duazdpldzqodpucqoyta.supabase.co"
-SUPABASE_KEY = "sb_publishable_aUd0PD0wpnKSN7cLOO2cbw_i52hwuzN"
+SUPABASE_URL = os.environ.get("SUPABASE_URL")
+SUPABASE_KEY = os.environ.get("SUPABASE_KEY")
 
 print(f"Connecting to Supabase at: {SUPABASE_URL}")
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
@@ -201,7 +201,7 @@ if __name__ == "__main__":
     print("\n⚠️  IMPORTANT: Schema creation requires SQL Editor")
     print("\nTo create the database tables:")
     print("1. Go to: https://supabase.com/dashboard")
-    print("2. Select your project (duazdpldzqodpucqoyta)")
+    print("2. Select your project")
     print("3. Click 'SQL Editor' in the sidebar")
     print("4. Copy the contents of 'database_setup.sql'")
     print("5. Paste and click 'Run'")

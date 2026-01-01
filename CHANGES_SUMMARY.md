@@ -203,8 +203,8 @@ Run this SQL script in Supabase SQL Editor to add the required columns.
 3. **Environment Variables**
    - Verify `.env` has correct Supabase credentials:
      ```
-     VITE_SUPABASE_URL=https://duazdpldzqodpucqoyta.supabase.co
-     VITE_SUPABASE_ANON_KEY=sb_publishable_aUd0PD0wpnKSN7cLOO2cbw_i52hwuzN
+     VITE_SUPABASE_URL=YOUR_SUPABASE_URL
+     VITE_SUPABASE_ANON_KEY=YOUR_SUPABASE_ANON_KEY
      ```
 
 4. **Test the Application**

@@ -1,33 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Supabase Connection Test</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        .result { margin: 10px 0; padding: 10px; border-radius: 5px; }
-        .success { background-color: #d4edda; color: #155724; }
-        .error { background-color: #f8d7da; color: #721c24; }
-        .info { background-color: #d1ecf1; color: #0c5460; }
-        button { padding: 10px 20px; margin: 5px; cursor: pointer; }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        .result {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            cursor: pointer;
+        }
     </style>
 </head>
+
 <body>
     <h1>Flower Shop - Supabase Connection Test</h1>
-    
+
     <button onclick="testProducts()">Test Products</button>
     <button onclick="testInsert()">Test Insert</button>
     <button onclick="clearResults()">Clear Results</button>
-    
+
     <div id="results"></div>
 
     <script>
-        const supabaseUrl = 'https://duazdpldzqodpucqoyta.supabase.co';
-        const supabaseKey = 'sb_publishable_aUd0PD0wpnKSN7cLOO2cbw_i52hwuzN';
+        const supabaseUrl = 'YOUR_SUPABASE_URL';
+        const supabaseKey = 'YOUR_SUPABASE_ANON_KEY';
         const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
-        
+
         function addResult(message, type = 'info') {
             const results = document.getElementById('results');
             const div = document.createElement('div');
@@ -36,16 +63,16 @@
             results.appendChild(div);
             results.scrollTop = results.scrollHeight;
         }
-        
+
         async function testProducts() {
             addResult('Testing products fetch...', 'info');
-            
+
             try {
                 const { data, error } = await supabase
                     .from('products')
                     .select('*')
                     .limit(10);
-                
+
                 if (error) {
                     addResult(`❌ Error: ${error.message}`, 'error');
                 } else {
@@ -58,10 +85,10 @@
                 addResult(`❌ Fatal error: ${err.message}`, 'error');
             }
         }
-        
+
         async function testInsert() {
             addResult('Testing product insert...', 'info');
-            
+
             const testProduct = {
                 name: 'Test Rose Bouquet',
                 description: 'Test product for connection verification',
@@ -70,25 +97,25 @@
                 image: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=300',
                 stock: 5
             };
-            
+
             try {
                 const { data, error } = await supabase
                     .from('products')
                     .insert([testProduct])
                     .select();
-                
+
                 if (error) {
                     addResult(`❌ Insert error: ${error.message}`, 'error');
                 } else {
                     addResult(`✅ Insert successful! Product ID: ${data[0]?.id}`, 'success');
-                    
+
                     // Clean up
                     if (data[0]?.id) {
                         const { error: deleteError } = await supabase
                             .from('products')
                             .delete()
                             .eq('id', data[0].id);
-                        
+
                         if (deleteError) {
                             addResult(`⚠️ Cleanup failed: ${deleteError.message}`, 'error');
                         } else {
@@ -100,11 +127,11 @@
                 addResult(`❌ Fatal insert error: ${err.message}`, 'error');
             }
         }
-        
+
         function clearResults() {
             document.getElementById('results').innerHTML = '';
         }
-        
+
         // Auto-test on load
         window.onload = () => {
             addResult('🌸 Flower Shop Connection Tester Ready', 'success');
@@ -112,4 +139,5 @@
         };
     </script>
 </body>
+
 </html>

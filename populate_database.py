@@ -9,8 +9,8 @@ ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / 'backend' / '.env')
 
 # Supabase connection
-supabase_url = os.environ.get("SUPABASE_URL", "https://duazdpldzqodpucqoyta.supabase.co")
-supabase_key = os.environ.get("SUPABASE_KEY", "sb_publishable_aUd0PD0wpnKSN7cLOO2cbw_i52hwuzN")
+supabase_url = os.environ.get("SUPABASE_URL")
+supabase_key = os.environ.get("SUPABASE_KEY")
 
 if not supabase_url or not supabase_key:
     print("Error: SUPABASE_URL and SUPABASE_KEY must be set in .env file")

@@ -21,7 +21,7 @@ const CategoriesSection = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.1 }}
-            className="text-3xl md:text-4xl font-bold text-gray-900 mb-4"
+            className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-2 md:mb-4"
           >
             Shop by Occasion
           </motion.h2>
@@ -30,35 +30,34 @@ const CategoriesSection = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.2 }}
-            className="text-gray-600 max-w-2xl mx-auto"
+            className="text-gray-600 max-w-2xl mx-auto text-sm md:text-base"
           >
-            Find the perfect arrangement for every special moment in life
+            Find the perfect arrangement for every special moment
           </motion.p>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-6">
+        <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-8 gap-2 md:gap-4 lg:gap-6">
           {categories.map((category, index) => (
             <motion.div
               key={category.id}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: index * 0.1 }}
+              transition={{ delay: index * 0.05 }}
             >
               <Link
                 to={category.slug === 'custom-orders' ? '/custom-order' : `/flowers?category=${category.slug}`}
                 className="group block"
               >
-                <div className="relative rounded-2xl overflow-hidden aspect-square mb-3">
+                <div className="relative rounded-xl md:rounded-2xl overflow-hidden aspect-square mb-2">
                   <img
                     src={category.image}
                     alt={category.name}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-pink-900/60 via-pink-900/20 to-transparent" />
-                  <div className="absolute inset-0 bg-pink-500/0 group-hover:bg-pink-500/20 transition-colors duration-300" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-pink-900/40 via-transparent to-transparent" />
                 </div>
-                <h3 className="text-center font-semibold text-gray-800 group-hover:text-pink-600 transition-colors">
+                <h3 className="text-center font-medium text-xs md:text-sm text-gray-800 group-hover:text-pink-600 transition-colors line-clamp-1">
                   {category.name}
                 </h3>
               </Link>

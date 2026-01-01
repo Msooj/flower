@@ -75,13 +75,8 @@ const Footer = () => {
             <ul className="space-y-3">
               {['Shop All Flowers', 'Birthday Flowers', 'Romance & Love', 'Anniversary', 'Sympathy Flowers', 'Gift Combos'].map(
                 (link) => (
-                  <li key={link}>
-                    <Link
-                      to="/flowers"
-                      className="text-gray-600 hover:text-pink-600 transition-colors"
-                    >
-                      {link}
-                    </Link>
+                  <li key={link} className="text-gray-600">
+                    {link}
                   </li>
                 )
               )}
@@ -92,15 +87,10 @@ const Footer = () => {
           <div>
             <h4 className="text-lg font-semibold text-gray-800 mb-4">Customer Service</h4>
             <ul className="space-y-3">
-              {['Track Your Order', 'Delivery Information', 'Returns & Refunds', 'FAQs', 'Privacy Policy', 'Terms of Service'].map(
+              {['Delivery Information', 'Returns & Refunds', 'FAQs', 'Privacy Policy', 'Terms of Service'].map(
                 (link) => (
-                  <li key={link}>
-                    <Link
-                      to="#"
-                      className="text-gray-600 hover:text-pink-600 transition-colors"
-                    >
-                      {link}
-                    </Link>
+                  <li key={link} className="text-gray-600">
+                    {link}
                   </li>
                 )
               )}
@@ -115,18 +105,18 @@ const Footer = () => {
                 <Phone className="w-5 h-5 text-pink-500 mt-0.5" />
                 <div>
                   <p className="text-gray-800 font-medium">Phone / WhatsApp</p>
-                  <a href={`tel:${contactInfo.phone}`} className="text-gray-600 hover:text-pink-600">
+                  <span className="text-gray-600">
                     {contactInfo.phone}
-                  </a>
+                  </span>
                 </div>
               </li>
               <li className="flex items-start gap-3">
                 <Mail className="w-5 h-5 text-pink-500 mt-0.5" />
                 <div>
                   <p className="text-gray-800 font-medium">Email</p>
-                  <a href={`mailto:${contactInfo.email}`} className="text-gray-600 hover:text-pink-600">
+                  <span className="text-gray-600">
                     {contactInfo.email}
-                  </a>
+                  </span>
                 </div>
               </li>
               <li className="flex items-start gap-3">

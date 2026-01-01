@@ -35,7 +35,7 @@ This guide will help you set up Google Sign-In for your Flower Shop application.
      - `http://localhost:5173` (for development)
      - `https://yourdomain.com` (for production)
    - **Authorized redirect URIs**:
-     - `https://duazdpldzqodpucqoyta.supabase.co/auth/v1/callback`
+     - `https://YOUR_SUPABASE_PROJECT_ID.supabase.co/auth/v1/callback`
      - (Get this from your Supabase dashboard → Authentication → Providers → Google)
 5. Click **Create**
 6. **Important**: Copy your **Client ID** and **Client Secret**
@@ -53,7 +53,7 @@ This guide will help you set up Google Sign-In for your Flower Shop application.
 2. **Client ID**: Paste your Google OAuth Client ID
 3. **Client Secret**: Paste your Google OAuth Client Secret
 4. **Redirect URL**: Copy this URL and add it to your Google Cloud Console (you already did this in Step 1.3)
-   - It should be: `https://duazdpldzqodpucqoyta.supabase.co/auth/v1/callback`
+   - It should be: `https://YOUR_SUPABASE_PROJECT_ID.supabase.co/auth/v1/callback`
 5. Click **Save**
 
 ## Step 3: Update Database for Custom Orders

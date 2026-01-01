@@ -97,9 +97,9 @@ const Header = () => {
                 whileHover={{ scale: 1.02 }}
                 className="flex items-center gap-3"
               >
-                <img 
+                <img
                   src="/WhatsApp_Image_2025-12-21_at_6.52.59_PM.png"
-                              alt="Flower Lifestyle Logo"
+                  alt="Flower Lifestyle Logo"
                   className="h-12 w-auto"
                 />
                 <span className="text-2xl md:text-3xl font-bold tracking-tight">
@@ -139,6 +139,12 @@ const Header = () => {
                   My Orders
                 </Link>
               )}
+              <Link
+                to="/about"
+                className={`relative text-sm font-medium transition-colors hover:text-pink-600 ${location.pathname === '/about' ? 'text-pink-600' : 'text-gray-700'}`}
+              >
+                About Us
+              </Link>
             </nav>
 
             {/* Right Actions */}
@@ -297,6 +303,15 @@ const Header = () => {
                       {link.name}
                     </Link>
                   ))}
+                  <Link
+                    to="/about"
+                    className={`px-4 py-3 rounded-lg font-medium transition-colors ${location.pathname === '/about'
+                      ? 'bg-pink-50 text-pink-600'
+                      : 'text-gray-700 hover:bg-pink-50 hover:text-pink-600'
+                      }`}
+                  >
+                    About Us
+                  </Link>
                   <div className="border-t border-pink-100 my-2 pt-2 flex flex-col gap-2">
                     {user ? (
                       <>

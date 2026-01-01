@@ -8,17 +8,16 @@ import WhyChooseUs from '../components/home/WhyChooseUs';
 import PromoSection from '../components/home/PromoSection';
 import TestimonialsSection from '../components/home/TestimonialsSection';
 
-const HomePage = () => {
+const HomePage = ({ isMobile }) => {
   return (
     <div className="min-h-screen bg-white">
       <Header />
       <main>
-        <HeroSection />
-        <CategoriesSection />
-        <FeaturedProducts />
-        <PromoSection />
-        <WhyChooseUs />
-        <TestimonialsSection />
+        <HeroSection isMobile={isMobile} />
+        <CategoriesSection isMobile={isMobile} />
+        <FeaturedProducts isMobile={isMobile} />
+        <WhyChooseUs isMobile={isMobile} />
+        <TestimonialsSection isMobile={isMobile} />
       </main>
       <Footer />
     </div>

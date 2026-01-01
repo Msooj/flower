@@ -32,6 +32,7 @@ const FlowersPage = ({ isMobile = false }) => {
       let usedDb = false;
       try {
         setIsLoading(true);
+        setDbProducts([]); // Clear existing to prevent flicker
         const { data, error } = await supabase
           .from('products')
           .select('*')
@@ -259,8 +260,8 @@ const FlowersPage = ({ isMobile = false }) => {
         </div>
 
         <div className="flex flex-col lg:flex-row gap-8">
-          {/* Sidebar - Categories */}
-          <aside className="w-full lg:w-64 shrink-0">
+          {/* Sidebar - Categories (Hidden on mobile as we have the dropdown at the top) */}
+          <aside className="hidden lg:block w-64 shrink-0">
             <div className="bg-white rounded-2xl shadow-sm border border-pink-100 p-4 sticky top-24">
               <h3 className="font-semibold text-gray-800 mb-4 flex items-center gap-2">
                 <Filter className="w-5 h-5 text-pink-500" />

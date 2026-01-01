@@ -1,15 +1,15 @@
 # Supabase Database Setup Guide
 
 ## Your Supabase Connection Details
-- **URL:** https://duazdpldzqodpucqoyta.supabase.co
-- **Anon Key:** eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQw54Hh7uK0JBFkGx7_98
+- **URL:** [Your Supabase Project URL]
+- **Anon Key:** [Your Supabase Anon Key]
 
 ## Setup Instructions
 
 ### 1. Access Supabase SQL Editor
 1. Go to https://supabase.com/dashboard
 2. Sign in to your account
-3. Select your project (duazdpldzqodpucqoyta)
+3. Select your project ([Your Project Name])
 4. Click on "SQL Editor" in the left sidebar
 
 ### 2. Run the Database Setup Script
@@ -64,14 +64,14 @@ For API health monitoring
 
 ### Frontend (.env)
 ```
-VITE_SUPABASE_URL=https://duazdpldzqodpucqoyta.supabase.co
-VITE_SUPABASE_ANON_KEY=sb_publishable_aUd0PD0wpnKSN7cLOO2cbw_i52hwuzN
+VITE_SUPABASE_URL=YOUR_SUPABASE_URL
+VITE_SUPABASE_ANON_KEY=YOUR_SUPABASE_ANON_KEY
 ```
 
 ### Backend (.env)
 ```
-SUPABASE_URL="https://duazdpldzqodpucqoyta.supabase.co"
-SUPABASE_KEY="sb_secret_iF-1ETcZDuO-VvpjS3nvVg_0hGbK0aQ"
+SUPABASE_URL="YOUR_SUPABASE_URL"
+SUPABASE_KEY="YOUR_SUPABASE_SERVICE_ROLE_KEY"
 ```
 
 ## Next Steps

@@ -38,7 +38,7 @@ I've built a complete flower shop system with all the features you requested:
 ### STEP 1: Set Up Supabase Database
 
 1. **Go to**: https://supabase.com/dashboard
-2. **Sign in** and select your project (duazdpldzqodpucqoyta)
+2. **Sign in** and select your project ([Your Project Name])
 3. **Click "SQL Editor"** in the sidebar
 4. **Copy the entire contents** of `database_setup.sql`
 5. **Paste and click "Run"**
@@ -55,8 +55,8 @@ This will create:
 
 1. **Go to** Supabase Dashboard → Authentication → Users
 2. **Click "Add User"** or **"Invite User"**
-3. **Email**: flowerlifestyle@gmail.com
-4. **Password**: syndicate1812
+3. **Email**: [Your Admin Email]
+4. **Password**: [Your Admin Password]
 5. After creating, **go to SQL Editor** and run:
 ```sql
 UPDATE user_profiles 
@@ -83,7 +83,7 @@ Your servers are already running:
 
 #### Test Admin Flow:
 1. Go to `/login`
-2. Login with: flowerlifestyle@gmail.com / syndicate1812
+2. Login with: [Your Admin Email] / [Your Admin Password]
 3. You'll be redirected to `/admin`
 4. Click "Orders" tab
 5. You'll see all customer orders with:
@@ -101,14 +101,16 @@ Your servers are already running:
 VITE_BACKEND_URL=http://localhost:8000
 VITE_ADMIN_USERNAME=flowerlifestyle@gmail.com
 VITE_ADMIN_PASSWORD=syndicate1812
-VITE_SUPABASE_URL=https://duazdpldzqodpucqoyta.supabase.co
-VITE_SUPABASE_ANON_KEY=sb_publishable_aUd0PD0wpnKSN7cLOO2cbw_i52hwuzN
+VITE_ADMIN_USERNAME=YOUR_ADMIN_EMAIL
+VITE_ADMIN_PASSWORD=YOUR_ADMIN_PASSWORD
+VITE_SUPABASE_URL=YOUR_SUPABASE_URL
+VITE_SUPABASE_ANON_KEY=YOUR_SUPABASE_ANON_KEY
 ```
 
 ### Backend (.env)
 ```
-SUPABASE_URL="https://duazdpldzqodpucqoyta.supabase.co"
-SUPABASE_KEY="sb_publishable_aUd0PD0wpnKSN7cLOO2cbw_i52hwuzN"
+SUPABASE_URL="YOUR_SUPABASE_URL"
+SUPABASE_KEY="YOUR_SUPABASE_SERVICE_ROLE_KEY"
 CORS_ORIGINS="*"
 ```
 
