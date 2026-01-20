@@ -8,7 +8,7 @@ const CustomOrderPage = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-pink-50 to-white">
       <Header />
-      
+
       <main className="container mx-auto px-4 py-12 md:py-16">
         <div className="max-w-4xl mx-auto text-center mb-12">
           <motion.h1
@@ -30,7 +30,10 @@ const CustomOrderPage = () => {
 
         <div className="bg-white rounded-2xl shadow-sm border border-pink-100 overflow-hidden mb-12">
           <div className="grid md:grid-cols-2 gap-8">
-            <div className="bg-pink-50 p-8 flex flex-col justify-center">
+            <div className="p-8 order-1 md:order-2">
+              <CustomOrderForm />
+            </div>
+            <div className="bg-pink-50 p-8 flex flex-col justify-center order-2 md:order-1">
               <h2 className="text-2xl font-bold text-gray-900 mb-4">How It Works</h2>
               <ul className="space-y-4">
                 <li className="flex items-start gap-3">
@@ -79,9 +82,6 @@ const CustomOrderPage = () => {
                 </li>
               </ul>
             </div>
-            <div className="p-8">
-              <CustomOrderForm />
-            </div>
           </div>
         </div>
 
@@ -91,8 +91,8 @@ const CustomOrderPage = () => {
             Our floral design team is here to help you create the perfect arrangement for any occasion.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a 
-              href="tel:+254742370307" 
+            <a
+              href="tel:+254742370307"
               className="inline-flex items-center justify-center px-6 py-3 bg-white text-pink-600 font-medium rounded-lg shadow-sm hover:bg-gray-50 transition-colors"
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
@@ -100,8 +100,8 @@ const CustomOrderPage = () => {
               </svg>
               Call Us: +254 742 370 307
             </a>
-            <a 
-              href="mailto:custom@flowerlifestyle.com" 
+            <a
+              href="mailto:custom@flowerlifestyle.com"
               className="inline-flex items-center justify-center px-6 py-3 bg-pink-600 text-white font-medium rounded-lg shadow-sm hover:bg-pink-700 transition-colors"
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
@@ -113,7 +113,7 @@ const CustomOrderPage = () => {
           </div>
         </div>
       </main>
-      
+
       <Footer />
     </div>
   );
