@@ -460,7 +460,6 @@ const AdminPage = () => {
             toast.success(`Order status updated to ${newStatus}`);
             loadOrders();
         } catch (error) {
-            console.error('Error updating order:', error);
             toast.error(`Failed to update order status: ${error.message}`);
         }
     };
@@ -469,7 +468,7 @@ const AdminPage = () => {
         await supabase.auth.signOut();
         setIsAuthenticated(false);
         toast.info('Logged out successfully');
-        navigate('/login');
+        navigate('/');
     };
 
     const handleAddItem = async (e) => {
@@ -961,7 +960,11 @@ const AdminPage = () => {
                                                         <option value="roses">Roses</option>
                                                         <option value="birthday">Birthday</option>
                                                         <option value="romance">Romance</option>
+                                                        <option value="anniversary">Anniversary</option>
+                                                        <option value="combos">Combos</option>
+                                                        <option value="money-bouquet">Money Bouquet</option>
                                                         <option value="sympathy">Sympathy</option>
+                                                        <option value="custom-orders">Custom Orders</option>
                                                     </select>
                                                     <input
                                                         type="number"
@@ -1134,7 +1137,11 @@ const AdminPage = () => {
                                             <option value="roses">Roses</option>
                                             <option value="birthday">Birthday</option>
                                             <option value="romance">Romance</option>
+                                            <option value="anniversary">Anniversary</option>
+                                            <option value="combos">Combos</option>
+                                            <option value="money-bouquet">Money Bouquet</option>
                                             <option value="sympathy">Sympathy</option>
+                                            <option value="custom-orders">Custom Orders</option>
                                         </select>
                                     </div>
                                     <div>

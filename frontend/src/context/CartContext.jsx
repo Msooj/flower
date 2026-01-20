@@ -33,14 +33,14 @@ export const CartProvider = ({ children }) => {
         if (!userId) return;
 
         try {
-            const savedCart = localStorage.getItem(`flower_cart_${userId}`);
+            const savedCart = sessionStorage.getItem(`flower_cart_${userId}`);
             // If we're logging in from anonymous to a real user, we might want to merge carts
             // For now, just load the user's specific cart
             setCart(savedCart ? JSON.parse(savedCart) : []);
 
             // If we just logged in, check if there's an anonymous cart to merge
             if (userId !== 'anonymous') {
-                const anonCart = localStorage.getItem('flower_cart_anonymous');
+                const anonCart = sessionStorage.getItem('flower_cart_anonymous');
                 if (anonCart) {
                     const parsedAnon = JSON.parse(anonCart);
                     if (parsedAnon.length > 0) {
@@ -56,8 +56,8 @@ export const CartProvider = ({ children }) => {
                             });
                             return newCart;
                         });
-                        localStorage.removeItem('flower_cart_anonymous');
-                        toast.success('Your persistent cart has been merged');
+                        sessionStorage.removeItem('flower_cart_anonymous');
+                        toast.success('Your temporary cart has been merged');
                     }
                 }
             }
@@ -71,9 +71,9 @@ export const CartProvider = ({ children }) => {
     useEffect(() => {
         if (!userId) return;
         try {
-            localStorage.setItem(`flower_cart_${userId}`, JSON.stringify(cart));
+            sessionStorage.setItem(`flower_cart_${userId}`, JSON.stringify(cart));
             // Backup for legacy compatibility (though we should avoid it)
-            localStorage.setItem('flower_cart', JSON.stringify(cart));
+            sessionStorage.setItem('flower_cart', JSON.stringify(cart));
         } catch (e) {
             console.error("Failed to save cart to storage", e);
         }
@@ -113,7 +113,7 @@ export const CartProvider = ({ children }) => {
     const clearCart = () => {
         setCart([]);
         if (userId) {
-            localStorage.removeItem(`flower_cart_${userId}`);
+            sessionStorage.removeItem(`flower_cart_${userId}`);
         }
     };
 
