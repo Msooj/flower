@@ -48,7 +48,7 @@ const CategoriesSection = () => {
               className="flex-shrink-0 w-20 md:w-auto"
             >
               <Link
-                to={category.slug === 'custom-orders' ? '/custom-order' : `/flowers?category=${category.slug}`}
+                to={`/flowers?category=${category.slug}`}
                 className="group block"
               >
                 <div className="relative rounded-full md:rounded-2xl overflow-hidden aspect-square mb-2 border-2 border-transparent group-hover:border-pink-500 transition-all duration-300 shadow-sm">

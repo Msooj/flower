@@ -13,7 +13,6 @@ import CartPage from "./pages/CartPage";
 import WishlistPage from "./pages/WishlistPage";
 import AdminPage from "./pages/AdminPage";
 import OrdersPage from "./pages/OrdersPage";
-import CustomOrderPage from "./pages/CustomOrderPage";
 import AboutPage from "./pages/AboutPage";
 import WhatsAppButton from "./components/common/WhatsAppButton";
 import { useAuthCallback } from "./hooks/useAuthCallback";
@@ -51,7 +50,6 @@ function App() {
                 <Route path="/cart" element={<CartPage />} />
                 <Route path="/wishlist" element={<WishlistPage />} />
                 <Route path="/orders" element={<OrdersPage />} />
-                <Route path="/custom-order" element={<CustomOrderPage />} />
                 <Route path="/about" element={<AboutPage />} />
                 <Route path="/admin" element={<AdminPage />} />
               </Routes>

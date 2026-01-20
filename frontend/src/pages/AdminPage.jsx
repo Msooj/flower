@@ -963,8 +963,6 @@ const AdminPage = () => {
                                                         <option value="anniversary">Anniversary</option>
                                                         <option value="combos">Combos</option>
                                                         <option value="money-bouquet">Money Bouquet</option>
-                                                        <option value="sympathy">Sympathy</option>
-                                                        <option value="custom-orders">Custom Orders</option>
                                                     </select>
                                                     <input
                                                         type="number"
@@ -1140,8 +1138,6 @@ const AdminPage = () => {
                                             <option value="anniversary">Anniversary</option>
                                             <option value="combos">Combos</option>
                                             <option value="money-bouquet">Money Bouquet</option>
-                                            <option value="sympathy">Sympathy</option>
-                                            <option value="custom-orders">Custom Orders</option>
                                         </select>
                                     </div>
                                     <div>
