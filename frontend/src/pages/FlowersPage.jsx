@@ -29,10 +29,8 @@ const FlowersPage = ({ isMobile = false }) => {
 
   useEffect(() => {
     const fetchProducts = async () => {
-      let usedDb = false;
       try {
         setIsLoading(true);
-        setDbProducts([]); // Clear existing to prevent flicker
         const { data, error } = await supabase
           .from('products')
           .select('*')
@@ -40,7 +38,7 @@ const FlowersPage = ({ isMobile = false }) => {
 
         if (error) {
           console.error('Products fetch error:', error);
-          setDbProducts(allProducts);
+          setDbProducts([]);
           return;
         }
 
@@ -60,20 +58,14 @@ const FlowersPage = ({ isMobile = false }) => {
             description: p.description || ''
           }));
           setDbProducts(normalizedProducts);
-          usedDb = true;
         } else {
-          setDbProducts(allProducts);
+          setDbProducts([]);
         }
       } catch (error) {
         console.error('Error fetching products:', error);
-        setDbProducts(allProducts); // Fallback
+        setDbProducts([]);
       } finally {
         setIsLoading(false);
-        if (usedDb) {
-          console.log('SHOP: Displaying products from Supabase');
-        } else {
-          console.warn('SHOP: Database is empty or unreachable, showing Demo/Mock products');
-        }
       }
     };
 
@@ -98,7 +90,7 @@ const FlowersPage = ({ isMobile = false }) => {
   }, [activeCategory]);
 
   const filteredProducts = useMemo(() => {
-    let products = dbProducts.length > 0 ? [...dbProducts] : [...allProducts];
+    let products = [...dbProducts];
 
     // Filter by category
     if (activeCategory && activeCategory !== 'all') {
@@ -139,7 +131,6 @@ const FlowersPage = ({ isMobile = false }) => {
 
   const getBadgeColor = (badge) => {
     switch (badge) {
-      case 'Bestseller': return 'bg-pink-500 text-white';
       case 'New': return 'bg-emerald-500 text-white';
       case 'Sale': return 'bg-red-500 text-white';
       case 'Premium': return 'bg-amber-500 text-white';

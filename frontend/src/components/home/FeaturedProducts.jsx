@@ -140,11 +140,13 @@ const ProductCard = ({ product, index }) => {
 
 const FeaturedProducts = () => {
   const navigate = useNavigate();
-  const [products, setProducts] = useState(mockFeaturedProducts);
+  const [products, setProducts] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchFeatured = async () => {
       try {
+        setIsLoading(true);
         const { data, error } = await supabase
           .from('products')
           .select('*')
@@ -157,7 +159,7 @@ const FeaturedProducts = () => {
         }
 
         if (data && data.length > 0) {
-          // Normalize product data to match expected structure
+          // Normalize product data
           const normalizedProducts = data.map(p => ({
             id: p.id,
             name: p.name,
@@ -170,13 +172,13 @@ const FeaturedProducts = () => {
             reviews: parseInt(p.reviews) || 0
           }));
           setProducts(normalizedProducts);
-          console.log('HOME: Showing featured products from Supabase');
         } else {
-          console.warn('HOME: No products in database, falling back to mock featured products');
+          setProducts([]);
         }
       } catch (err) {
         console.error('Featured products fetch fatal error:', err);
-        // Keep mock data as graceful fallback
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -222,11 +224,21 @@ const FeaturedProducts = () => {
           </motion.div>
         </div>
 
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-          {products.map((product, index) => (
-            <ProductCard key={product.id} product={product} index={index} />
-          ))}
-        </div>
+        {isLoading ? (
+          <div className="flex justify-center items-center py-20">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-500"></div>
+          </div>
+        ) : products.length === 0 ? (
+          <div className="text-center py-16 bg-white rounded-2xl border border-pink-100">
+            <p className="text-gray-500 text-lg">No featured products available at the moment.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+            {products.map((product, index) => (
+              <ProductCard key={product.id} product={product} index={index} />
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );
