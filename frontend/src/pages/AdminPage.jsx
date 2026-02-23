@@ -10,6 +10,7 @@ import { useNavigate } from 'react-router-dom';
 const AdminPage = () => {
     const navigate = useNavigate();
     const [isAuthenticated, setIsAuthenticated] = useState(false);
+    // Start as false — show login form immediately, then check session in background
     const [isLoading, setIsLoading] = useState(true);
     const [activeTab, setActiveTab] = useState(() => localStorage.getItem('adminActiveTab') || 'orders');
     const [currentUser, setCurrentUser] = useState({ email: '', role: '' });
@@ -42,12 +43,19 @@ const AdminPage = () => {
     }, [activeTab]);
 
     const checkAdminAuth = async () => {
+        // Hard 4-second timeout — if Supabase is slow/unreachable, stop the spinner
+        const timeout = new Promise((_, reject) =>
+            setTimeout(() => reject(new Error('Auth check timed out')), 4000)
+        );
+
         try {
-            const { data: { session } } = await supabase.auth.getSession();
+            const { data: { session } } = await Promise.race([
+                supabase.auth.getSession(),
+                timeout
+            ]);
 
             if (!session) {
                 setIsAuthenticated(false);
-                setIsLoading(false);
                 return;
             }
 
@@ -55,17 +63,19 @@ const AdminPage = () => {
             setCurrentUser({ email: session.user.email, role: 'admin' });
             setIsAuthenticated(true);
 
-            // ✅ PERFORMANCE FIX: Only load the active tab's data on mount.
-            // The tab-switch useEffect below handles lazy loading of other tabs.
+            // Only load the active tab's data on mount (lazy-load the rest)
             const tab = localStorage.getItem('adminActiveTab') || 'orders';
             if (tab === 'users') loadUsers();
             else if (tab === 'manage-products' || tab === 'products') loadProducts();
-            else loadOrders(); // default
+            else loadOrders();
 
         } catch (error) {
-            console.error('Auth check error:', error);
+            console.error('Auth check error:', error.message);
             setIsAuthenticated(false);
-            toast.error(`Authentication error: ${error.message}`);
+            // Only show error toast if it's a real error, not a timeout
+            if (!error.message.includes('timed out')) {
+                toast.error(`Authentication error: ${error.message}`);
+            }
         } finally {
             setIsLoading(false);
         }
@@ -601,10 +611,11 @@ const AdminPage = () => {
 
     if (isLoading) {
         return (
-            <div className="min-h-screen flex items-center justify-center">
-                <div className="text-center">
+            <div className="min-h-screen flex items-center justify-center bg-gray-50">
+                <div className="text-center px-4">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-600 mx-auto"></div>
-                    <p className="mt-4 text-gray-600">Loading...</p>
+                    <p className="mt-4 text-gray-700 font-medium">Checking session...</p>
+                    <p className="mt-1 text-gray-400 text-sm">This will only take a moment</p>
                 </div>
             </div>
         );
