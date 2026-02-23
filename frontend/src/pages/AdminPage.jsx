@@ -51,17 +51,16 @@ const AdminPage = () => {
                 return;
             }
 
-            // USER REQUIREMENT: Allow any logged-in user to access Admin Portal
-            // Role checks are bypassed to solve RLS/Propogation issues.
             console.log('Admin Access Granted to:', session.user.email);
-
             setCurrentUser({ email: session.user.email, role: 'admin' });
             setIsAuthenticated(true);
 
-            // Load data immediately
-            loadOrders();
-            loadProducts();
-            loadUsers();
+            // ✅ PERFORMANCE FIX: Only load the active tab's data on mount.
+            // The tab-switch useEffect below handles lazy loading of other tabs.
+            const tab = localStorage.getItem('adminActiveTab') || 'orders';
+            if (tab === 'users') loadUsers();
+            else if (tab === 'manage-products' || tab === 'products') loadProducts();
+            else loadOrders(); // default
 
         } catch (error) {
             console.error('Auth check error:', error);
@@ -465,10 +464,24 @@ const AdminPage = () => {
     };
 
     const handleLogout = async () => {
-        await supabase.auth.signOut();
-        setIsAuthenticated(false);
-        toast.info('Logged out successfully');
-        navigate('/');
+        try {
+            // Clear state first so UI updates immediately
+            setIsAuthenticated(false);
+            setCurrentUser({ email: '', role: '' });
+
+            // Clear any persisted admin tab
+            localStorage.removeItem('adminActiveTab');
+
+            // Sign out from Supabase
+            await supabase.auth.signOut();
+
+            toast.success('Logged out successfully');
+        } catch (error) {
+            console.error('Logout error:', error);
+        } finally {
+            // Always redirect — use window.location for reliability on all deployments
+            window.location.href = '/';
+        }
     };
 
     const handleAddItem = async (e) => {
