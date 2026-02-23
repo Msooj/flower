@@ -43,39 +43,35 @@ const AdminPage = () => {
     }, [activeTab]);
 
     const checkAdminAuth = async () => {
-        // Hard 4-second timeout — if Supabase is slow/unreachable, stop the spinner
-        const timeout = new Promise((_, reject) =>
-            setTimeout(() => reject(new Error('Auth check timed out')), 4000)
+        const timeout = new Promise((resolve) =>
+            setTimeout(() => resolve({ data: { session: null }, timedOut: true }), 5000)
         );
 
         try {
-            const { data: { session } } = await Promise.race([
+            const result = await Promise.race([
                 supabase.auth.getSession(),
                 timeout
             ]);
+
+            const session = result?.data?.session;
 
             if (!session) {
                 setIsAuthenticated(false);
                 return;
             }
 
-            console.log('Admin Access Granted to:', session.user.email);
             setCurrentUser({ email: session.user.email, role: 'admin' });
             setIsAuthenticated(true);
 
-            // Only load the active tab's data on mount (lazy-load the rest)
+            // Load only the active tab on mount — other tabs load lazily on switch
             const tab = localStorage.getItem('adminActiveTab') || 'orders';
-            if (tab === 'users') loadUsers();
-            else if (tab === 'manage-products' || tab === 'products') loadProducts();
-            else loadOrders();
+            if (tab === 'users') loadUsers(session);
+            else if (tab === 'manage-products' || tab === 'products') loadProducts(session);
+            else loadOrders(session);
 
         } catch (error) {
             console.error('Auth check error:', error.message);
             setIsAuthenticated(false);
-            // Only show error toast if it's a real error, not a timeout
-            if (!error.message.includes('timed out')) {
-                toast.error(`Authentication error: ${error.message}`);
-            }
         } finally {
             setIsLoading(false);
         }
@@ -165,81 +161,45 @@ const AdminPage = () => {
 
     const handleAdminLogin = async (e) => {
         e.preventDefault();
-        console.log("Admin login attempt started for:", adminLoginData.email);
         setIsLoggingIn(true);
-        toast.loading('Authenticating...', { id: 'auth-toast' });
+        toast.loading('Signing in...', { id: 'auth-toast' });
 
         try {
-            // Check internet/network first
-            if (!navigator.onLine) {
-                throw new Error('No internet connection');
-            }
+            if (!navigator.onLine) throw new Error('No internet connection');
 
-            const result = await supabase.auth.signInWithPassword({
+            const { data, error } = await supabase.auth.signInWithPassword({
                 email: adminLoginData.email,
                 password: adminLoginData.password
             });
 
-            console.log("Supabase Auth Result:", result);
+            if (error) throw error;
+            if (!data?.session) throw new Error('Login succeeded but no session returned');
 
-            if (result.error) {
-                console.error('Admin Auth Error Details:', result.error);
-                throw result.error;
-            }
+            // Upgrade profile to admin (fire and forget)
+            supabase.from('user_profiles').upsert({
+                id: data.session.user.id,
+                email: data.session.user.email,
+                role: 'admin',
+                updated_at: new Date().toISOString()
+            }, { onConflict: 'id' }).then(({ error: e }) => {
+                if (e) console.warn('Profile upgrade warning:', e);
+            });
 
-            if (!result.data?.user) {
-                throw new Error('Login succeeded but no user returned');
-            }
-
+            setCurrentUser({ email: data.session.user.email, role: 'admin' });
+            setIsAuthenticated(true);
             toast.dismiss('auth-toast');
-            toast.loading('Verifying admin privileges...', { id: 'auth-toast' });
+            toast.success('Logged in successfully!');
 
-            // Allow valid login to proceed to checkAdminAuth
-            // We'll rely on checkAdminAuth to set isAuthenticated
-            // But we need to trigger it manually or wait for the auth state change
-
-            await checkAdminAuth();
-
-            // Check if it worked
-            const { data: { session } } = await supabase.auth.getSession();
-            let profile = null;
-
-            if (session) {
-                // USER REQUIREMENT: Allow access as long as username/password are correct.
-                console.log('Valid login on Admin Portal. Upgrading user to admin...');
-
-                // Fire and forget upgrade to ensure future access
-                const { error: upgradeError } = await supabase.from('user_profiles').upsert({
-                    id: session.user.id,
-                    email: session.user.email,
-                    role: 'admin',
-                    updated_at: new Date().toISOString()
-                }, { onConflict: 'id' });
-
-                if (upgradeError) {
-                    console.warn('Auto-upgrade warning:', upgradeError);
-                }
-
-                toast.dismiss('auth-toast');
-                toast.success('Admin login successful');
-                setIsAuthenticated(true);
-
-                setTimeout(() => {
-                    loadOrders();
-                    loadProducts();
-                    loadUsers();
-                }, 500);
-                return;
-            }
+            // Load data for the active tab right away (no extra getSession needed)
+            const tab = localStorage.getItem('adminActiveTab') || 'orders';
+            if (tab === 'users') loadUsers(data.session);
+            else if (tab === 'manage-products' || tab === 'products') loadProducts(data.session);
+            else loadOrders(data.session);
 
         } catch (error) {
-            console.error('Login Exception:', error);
             toast.dismiss('auth-toast');
-
             if (error.message?.includes('Invalid login credentials')) {
                 toast.error('Invalid email or password');
-            } else if (error.message?.includes('body stream')) {
-                toast.error('Network error. Please try again.');
             } else {
                 toast.error(`Login failed: ${error.message}`);
             }
@@ -250,22 +210,17 @@ const AdminPage = () => {
 
 
 
-    const loadUsers = async () => {
+    const loadUsers = async (existingSession = null) => {
         setDataLoading(prev => ({ ...prev, users: true }));
         try {
-            // Ensure session is valid before querying
-            const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-            if (sessionError) {
-                console.error('Session error:', sessionError);
-                throw new Error(`Session error: ${sessionError.message}`);
-            }
+            // Reuse a passed-in session to avoid an extra network round-trip
+            let session = existingSession;
             if (!session) {
-                throw new Error('No active session. Please log in again.');
+                const { data } = await supabase.auth.getSession();
+                session = data?.session;
             }
+            if (!session) throw new Error('No active session. Please log in again.');
 
-            console.log('Loading users with session:', session.user.email);
-            // Query without order by to avoid RLS recursion issues, then sort in JavaScript
-            // Use select * to get all available columns
             const { data, error } = await supabase
                 .from('user_profiles')
                 .select('*');
@@ -306,21 +261,16 @@ const AdminPage = () => {
         }
     };
 
-    const loadOrders = async () => {
+    const loadOrders = async (existingSession = null) => {
         setDataLoading(prev => ({ ...prev, orders: true }));
         try {
-            // Ensure session is valid before querying
-            const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-            if (sessionError) {
-                console.error('Session error:', sessionError);
-                throw new Error(`Session error: ${sessionError.message}`);
-            }
+            let session = existingSession;
             if (!session) {
-                throw new Error('No active session. Please log in again.');
+                const { data } = await supabase.auth.getSession();
+                session = data?.session;
             }
+            if (!session) throw new Error('No active session. Please log in again.');
 
-            console.log('Loading orders with session:', session.user.email);
-            // Query orders - use select * to avoid column mismatch errors
             const { data, error } = await supabase
                 .from('orders')
                 .select('*, order_items(*)');
@@ -358,23 +308,17 @@ const AdminPage = () => {
         }
     };
 
-    const loadProducts = async () => {
+    const loadProducts = async (existingSession = null) => {
         try {
             setDataLoading(prev => ({ ...prev, products: true }));
-            console.log('Loading products...');
 
-            // Ensure session is valid before querying
-            const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-            if (sessionError) {
-                console.error('Session error:', sessionError);
-                throw new Error(`Session error: ${sessionError.message}`);
-            }
+            let session = existingSession;
             if (!session) {
-                throw new Error('No active session. Please log in again.');
+                const { data } = await supabase.auth.getSession();
+                session = data?.session;
             }
+            if (!session) throw new Error('No active session. Please log in again.');
 
-            console.log('Loading products with session:', session.user.email);
-            // Query products without order by to avoid potential RLS issues
             const { data, error } = await supabase
                 .from('products')
                 .select('*');
@@ -475,21 +419,15 @@ const AdminPage = () => {
 
     const handleLogout = async () => {
         try {
-            // Clear state first so UI updates immediately
             setIsAuthenticated(false);
             setCurrentUser({ email: '', role: '' });
-
-            // Clear any persisted admin tab
             localStorage.removeItem('adminActiveTab');
-
-            // Sign out from Supabase
+            // Flag for useAuthCallback so it does NOT redirect to /login on SIGNED_OUT
+            sessionStorage.setItem('adminLogout', '1');
             await supabase.auth.signOut();
-
-            toast.success('Logged out successfully');
         } catch (error) {
             console.error('Logout error:', error);
         } finally {
-            // Always redirect — use window.location for reliability on all deployments
             window.location.href = '/';
         }
     };

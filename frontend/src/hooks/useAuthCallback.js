@@ -108,7 +108,13 @@ export const useAuthCallback = () => {
             }
 
             if (event === 'SIGNED_OUT') {
-                navigate('/login');
+                // Don't redirect if the admin triggered a manual logout
+                // (they use window.location.href = '/' themselves)
+                const isAdminLogout = sessionStorage.getItem('adminLogout');
+                sessionStorage.removeItem('adminLogout');
+                if (!isAdminLogout) {
+                    navigate('/login');
+                }
             }
         });
 
