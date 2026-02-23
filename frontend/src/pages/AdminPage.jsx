@@ -667,21 +667,24 @@ const AdminPage = () => {
                     </div>
 
                     {/* Diagnostic Bar */}
-                    <div className="bg-blue-50 border border-blue-100 rounded-xl p-3 mb-6 flex flex-wrap gap-2 sm:gap-4 text-xs text-blue-800">
-                        <div className="flex items-center gap-1 w-full sm:w-auto">
-                            <span className="font-bold">Account:</span>
-                            <span className="truncate max-w-[200px]">{currentUser.email}</span>
+                    <div className="bg-blue-50 border border-blue-100 rounded-xl p-3 mb-6 flex flex-col sm:flex-row flex-wrap gap-2 sm:gap-4 text-xs text-blue-800">
+                        <div className="flex items-center justify-between sm:justify-start gap-3 w-full sm:w-auto">
+                            <div className="flex items-center gap-1">
+                                <span className="font-bold">Account:</span>
+                                <span className="truncate max-w-[150px] sm:max-w-[200px]">{currentUser.email}</span>
+                            </div>
+                            <div className="flex items-center gap-1">
+                                <span className="font-bold">Role:</span> {currentUser.role?.toUpperCase()}
+                            </div>
                         </div>
-                        <div className="flex items-center gap-1">
-                            <span className="font-bold">Role:</span> {currentUser.role?.toUpperCase()}
-                        </div>
-                        <div className="flex items-center gap-2 flex-wrap sm:ml-auto">
+
+                        <div className="flex items-center gap-2 flex-wrap sm:ml-auto mt-2 sm:mt-0 pt-2 sm:pt-0 border-t sm:border-0 border-blue-100">
                             <Button onClick={runEmergencyTest} size="xs" variant="ghost" className="h-6 text-[10px] bg-blue-100 font-bold hover:bg-blue-200">
-                                Test DB
+                                DB Check
                             </Button>
-                            <span className="px-1.5 py-0.5 bg-blue-100 rounded">{products.length} Products</span>
-                            <span className="px-1.5 py-0.5 bg-blue-100 rounded">{orders.length} Orders</span>
-                            <span className="px-1.5 py-0.5 bg-blue-100 rounded">{users.length} Users</span>
+                            <span className="px-2 py-0.5 bg-blue-100 rounded whitespace-nowrap font-medium">{products.length} Products</span>
+                            <span className="px-2 py-0.5 bg-blue-100 rounded whitespace-nowrap font-medium">{orders.length} Orders</span>
+                            <span className="px-2 py-0.5 bg-blue-100 rounded whitespace-nowrap font-medium">{users.length} Users</span>
                         </div>
                     </div>
 
@@ -887,9 +890,9 @@ const AdminPage = () => {
                                     <Button onClick={loadProducts} variant="outline" size="sm">Reload Products</Button>
                                 </div>
                             ) : (
-                                <div className="grid grid-cols-2 gap-3 sm:gap-6">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                                     {products.map((product) => (
-                                        <div key={product.id} className="border border-gray-200 rounded-xl p-4 hover:shadow-lg transition-shadow">
+                                        <div key={product.id} className={`border border-gray-200 rounded-xl p-4 transition-all ${editingProduct?.id === product.id ? 'md:col-span-2 shadow-lg bg-pink-50/30' : 'hover:shadow-lg'}`}>
                                             {editingProduct?.id === product.id ? (
                                                 // Edit Mode
                                                 <div className="space-y-3">
@@ -897,7 +900,7 @@ const AdminPage = () => {
                                                         type="text"
                                                         value={editingProduct.name}
                                                         onChange={(e) => setEditingProduct({ ...editingProduct, name: e.target.value })}
-                                                        className="w-full px-3 py-2 border rounded-lg text-sm"
+                                                        className="w-full px-3 py-2 border rounded-lg text-sm bg-white"
                                                         placeholder="Product Name"
                                                     />
                                                     <textarea
@@ -986,7 +989,7 @@ const AdminPage = () => {
                                                         <Button
                                                             size="sm"
                                                             variant="outline"
-                                                            className="flex-1"
+                                                            className="flex-1 bg-white"
                                                             onClick={() => setEditingProduct(null)}
                                                         >
                                                             Cancel
