@@ -675,11 +675,12 @@ const AdminPage = () => {
     return (
         <div className="min-h-screen bg-gray-50">
             <Header />
-            <main className="container mx-auto px-4 py-8">
+            <main className="container mx-auto px-3 sm:px-4 py-4 sm:py-8">
                 <div className="max-w-7xl mx-auto">
-                    <div className="flex justify-between items-center mb-4">
-                        <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
-                        <div className="flex gap-4">
+                    {/* Dashboard Header */}
+                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-4">
+                        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Admin Dashboard</h1>
+                        <div className="flex gap-2 flex-wrap">
                             <Button
                                 onClick={() => {
                                     loadOrders();
@@ -688,80 +689,80 @@ const AdminPage = () => {
                                     toast.success('Dashboard data refreshed');
                                 }}
                                 variant="outline"
-                                className="border-gray-200"
+                                className="border-gray-200 text-xs sm:text-sm px-2 sm:px-4"
                             >
                                 Refresh Data
                             </Button>
-                            <Button
+                            <button
+                                type="button"
                                 onClick={handleLogout}
-                                variant="outline"
-                                className="border-pink-300 text-pink-600 hover:bg-pink-50"
+                                className="inline-flex items-center gap-1 px-3 sm:px-4 py-2 border border-pink-300 text-pink-600 hover:bg-pink-50 rounded-md text-xs sm:text-sm font-medium transition-colors"
                             >
-                                <LogOut className="w-4 h-4 mr-2" />
+                                <LogOut className="w-4 h-4" />
                                 Logout
-                            </Button>
+                            </button>
                         </div>
                     </div>
 
                     {/* Diagnostic Bar */}
-                    <div className="bg-blue-50 border border-blue-100 rounded-xl p-3 mb-8 flex flex-wrap gap-4 text-xs text-blue-800">
-                        <div className="flex items-center gap-1">
-                            <span className="font-bold">Account:</span> {currentUser.email}
+                    <div className="bg-blue-50 border border-blue-100 rounded-xl p-3 mb-6 flex flex-wrap gap-2 sm:gap-4 text-xs text-blue-800">
+                        <div className="flex items-center gap-1 w-full sm:w-auto">
+                            <span className="font-bold">Account:</span>
+                            <span className="truncate max-w-[200px]">{currentUser.email}</span>
                         </div>
                         <div className="flex items-center gap-1">
-                            <span className="font-bold">Role Status:</span> {currentUser.role?.toUpperCase()}
+                            <span className="font-bold">Role:</span> {currentUser.role?.toUpperCase()}
                         </div>
-                        <div className="flex items-center gap-1 ml-auto">
+                        <div className="flex items-center gap-2 flex-wrap sm:ml-auto">
                             <Button onClick={runEmergencyTest} size="xs" variant="ghost" className="h-6 text-[10px] bg-blue-100 font-bold hover:bg-blue-200">
-                                Run Connection Test
+                                Test DB
                             </Button>
-                            <span className="font-bold ml-2">Total Items:</span>
-                            <span className="px-1.5 py-0.5 bg-blue-100 rounded ml-1">{products.length} Products</span>
-                            <span className="px-1.5 py-0.5 bg-blue-100 rounded ml-1">{orders.length} Orders</span>
-                            <span className="px-1.5 py-0.5 bg-blue-100 rounded ml-1">{users.length} Users</span>
+                            <span className="px-1.5 py-0.5 bg-blue-100 rounded">{products.length} Products</span>
+                            <span className="px-1.5 py-0.5 bg-blue-100 rounded">{orders.length} Orders</span>
+                            <span className="px-1.5 py-0.5 bg-blue-100 rounded">{users.length} Users</span>
                         </div>
                     </div>
 
-                    {/* Tabs */}
-                    <div className="flex gap-4 mb-6">
+                    {/* Tabs — horizontally scrollable on mobile */}
+                    <div className="flex gap-2 mb-6 overflow-x-auto pb-2 -mx-3 px-3 sm:mx-0 sm:px-0">
                         <Button
                             onClick={() => setActiveTab('users')}
                             variant={activeTab === 'users' ? 'default' : 'outline'}
-                            className={activeTab === 'users' ? 'bg-pink-600' : ''}
+                            className={`whitespace-nowrap text-xs sm:text-sm flex-shrink-0 ${activeTab === 'users' ? 'bg-pink-600' : ''}`}
                         >
-                            <User className="w-4 h-4 mr-2" />
+                            <User className="w-4 h-4 mr-1 sm:mr-2" />
                             Users
                         </Button>
                         <Button
                             onClick={() => setActiveTab('orders')}
                             variant={activeTab === 'orders' ? 'default' : 'outline'}
-                            className={activeTab === 'orders' ? 'bg-pink-600' : ''}
+                            className={`whitespace-nowrap text-xs sm:text-sm flex-shrink-0 ${activeTab === 'orders' ? 'bg-pink-600' : ''}`}
                         >
-                            <Package className="w-4 h-4 mr-2" />
+                            <Package className="w-4 h-4 mr-1 sm:mr-2" />
                             Orders
                         </Button>
                         <Button
                             onClick={() => setActiveTab('manage-products')}
                             variant={activeTab === 'manage-products' ? 'default' : 'outline'}
-                            className={activeTab === 'manage-products' ? 'bg-pink-600' : ''}
+                            className={`whitespace-nowrap text-xs sm:text-sm flex-shrink-0 ${activeTab === 'manage-products' ? 'bg-pink-600' : ''}`}
                         >
-                            <Package className="w-4 h-4 mr-2" />
-                            Manage Products
+                            <Package className="w-4 h-4 mr-1 sm:mr-2" />
+                            Products
                         </Button>
                         <Button
                             onClick={() => setActiveTab('products')}
                             variant={activeTab === 'products' ? 'default' : 'outline'}
-                            className={activeTab === 'products' ? 'bg-pink-600' : ''}
+                            className={`whitespace-nowrap text-xs sm:text-sm flex-shrink-0 ${activeTab === 'products' ? 'bg-pink-600' : ''}`}
                         >
-                            <Plus className="w-4 h-4 mr-2" />
+                            <Plus className="w-4 h-4 mr-1 sm:mr-2" />
                             Add Product
                         </Button>
                     </div>
 
                     {/* Users Tab */}
                     {activeTab === 'users' && (
-                        <div className="bg-white rounded-2xl shadow-sm border border-pink-100 p-8">
-                            <h2 className="text-2xl font-bold mb-6">User Profiles</h2>
+                        <div className="bg-white rounded-2xl shadow-sm border border-pink-100 p-4 sm:p-8">
+                            <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">User Profiles</h2>
                             {dataLoading.users ? (
                                 <div className="flex justify-center py-12">
                                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-pink-600"></div>
@@ -772,30 +773,29 @@ const AdminPage = () => {
                                     <Button onClick={loadUsers} variant="outline" size="sm">Reload Users</Button>
                                 </div>
                             ) : (
-                                <div className="overflow-x-auto">
-                                    <table className="w-full text-left">
+                                <div className="overflow-x-auto -mx-4 sm:mx-0">
+                                    <table className="w-full text-left min-w-[500px]">
                                         <thead>
                                             <tr className="border-b border-gray-100">
-                                                <th className="pb-4 font-semibold text-gray-900">Name</th>
-                                                <th className="pb-4 font-semibold text-gray-900">Email</th>
-                                                <th className="pb-4 font-semibold text-gray-900">Phone</th>
-                                                <th className="pb-4 font-semibold text-gray-900">Role</th>
-                                                <th className="pb-4 font-semibold text-gray-900">Joined</th>
+                                                <th className="pb-3 px-4 sm:px-0 font-semibold text-gray-900 text-sm">Name</th>
+                                                <th className="pb-3 px-2 font-semibold text-gray-900 text-sm">Email</th>
+                                                <th className="pb-3 px-2 font-semibold text-gray-900 text-sm hidden sm:table-cell">Phone</th>
+                                                <th className="pb-3 px-2 font-semibold text-gray-900 text-sm">Role</th>
+                                                <th className="pb-3 px-2 font-semibold text-gray-900 text-sm hidden md:table-cell">Joined</th>
                                             </tr>
                                         </thead>
                                         <tbody className="divide-y divide-gray-50">
                                             {users.map((user) => (
                                                 <tr key={user.id} className="hover:bg-gray-50 transition-colors">
-                                                    <td className="py-4 text-gray-800">{user.full_name || 'N/A'}</td>
-                                                    <td className="py-4 text-gray-600">{user.email}</td>
-                                                    <td className="py-4 text-gray-600">{user.phone || 'N/A'}</td>
-                                                    <td className="py-4">
-                                                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${user.role === 'admin' ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700'
-                                                            }`}>
+                                                    <td className="py-3 px-4 sm:px-0 text-gray-800 text-sm">{user.full_name || 'N/A'}</td>
+                                                    <td className="py-3 px-2 text-gray-600 text-sm max-w-[150px] truncate">{user.email}</td>
+                                                    <td className="py-3 px-2 text-gray-600 text-sm hidden sm:table-cell">{user.phone || 'N/A'}</td>
+                                                    <td className="py-3 px-2">
+                                                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${user.role === 'admin' ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700'}`}>
                                                             {user.role}
                                                         </span>
                                                     </td>
-                                                    <td className="py-4 text-gray-500 text-sm">{user.created_at ? formatDate(user.created_at) : 'N/A'}</td>
+                                                    <td className="py-3 px-2 text-gray-500 text-xs hidden md:table-cell">{user.created_at ? formatDate(user.created_at) : 'N/A'}</td>
                                                 </tr>
                                             ))}
                                         </tbody>
@@ -807,8 +807,8 @@ const AdminPage = () => {
 
                     {/* Orders Tab */}
                     {activeTab === 'orders' && (
-                        <div className="bg-white rounded-2xl shadow-sm border border-pink-100 p-8">
-                            <h2 className="text-2xl font-bold mb-6">Order Management</h2>
+                        <div className="bg-white rounded-2xl shadow-sm border border-pink-100 p-4 sm:p-8">
+                            <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">Order Management</h2>
 
                             {dataLoading.orders ? (
                                 <div className="flex justify-center py-12">
@@ -822,22 +822,22 @@ const AdminPage = () => {
                             ) : (
                                 <div className="space-y-4">
                                     {orders.map((order) => (
-                                        <div key={order.id} className="border border-gray-200 rounded-xl p-6 hover:shadow-md transition-shadow">
-                                            <div className="flex justify-between items-start mb-4">
+                                        <div key={order.id} className="border border-gray-200 rounded-xl p-3 sm:p-6 hover:shadow-md transition-shadow">
+                                            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2 mb-3 sm:mb-4">
                                                 <div>
-                                                    <h3 className="font-bold text-lg">{order.customer_name}</h3>
+                                                    <h3 className="font-bold text-base sm:text-lg">{order.customer_name}</h3>
                                                     <p className="text-sm text-gray-500">{order.customer_email}</p>
                                                     <p className="text-sm text-gray-500">{order.customer_phone}</p>
                                                 </div>
-                                                <div className="text-right">
-                                                    <p className="text-2xl font-bold text-pink-600">
+                                                <div className="sm:text-right">
+                                                    <p className="text-xl sm:text-2xl font-bold text-pink-600">
                                                         KSh {order.total_amount.toLocaleString()}
                                                     </p>
-                                                    <p className="text-sm text-gray-500">{formatDate(order.created_at)}</p>
+                                                    <p className="text-xs text-gray-500">{formatDate(order.created_at)}</p>
                                                 </div>
                                             </div>
 
-                                            <div className="bg-gray-50 rounded-lg p-4 mb-4">
+                                            <div className="bg-gray-50 rounded-lg p-3 sm:p-4 mb-3 sm:mb-4">
                                                 <p className="text-sm font-medium text-gray-700 mb-1">Delivery Address:</p>
                                                 <p className="text-sm text-gray-600">{order.customer_address}</p>
 
@@ -856,7 +856,7 @@ const AdminPage = () => {
                                                 )}
                                             </div>
 
-                                            <div className="mb-4">
+                                            <div className="mb-3 sm:mb-4">
                                                 <p className="text-sm font-medium text-gray-700 mb-2">Items:</p>
                                                 {order.order_items && order.order_items.map((item, idx) => (
                                                     <div key={idx} className="text-sm text-gray-600">
@@ -865,7 +865,7 @@ const AdminPage = () => {
                                                 ))}
                                             </div>
 
-                                            <div className="flex items-center justify-between">
+                                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                                                 <div className="flex items-center gap-2">
                                                     <span className="text-sm font-medium">Status:</span>
                                                     <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusBadge(order.status)}`}>
@@ -873,35 +873,35 @@ const AdminPage = () => {
                                                     </span>
                                                 </div>
 
-                                                <div className="flex gap-2">
+                                                <div className="flex flex-wrap gap-2">
                                                     {order.status !== 'processing' && (
                                                         <Button
                                                             size="sm"
                                                             variant="outline"
-                                                            className="text-blue-600 border-blue-300"
+                                                            className="text-blue-600 border-blue-300 text-xs"
                                                             onClick={() => handleStatusChange(order.id, 'processing')}
                                                         >
-                                                            Mark Processing
+                                                            Processing
                                                         </Button>
                                                     )}
                                                     {order.status !== 'delivered' && (
                                                         <Button
                                                             size="sm"
-                                                            className="bg-green-600 hover:bg-green-700"
+                                                            className="bg-green-600 hover:bg-green-700 text-xs"
                                                             onClick={() => handleStatusChange(order.id, 'delivered')}
                                                         >
-                                                            <Check className="w-4 h-4 mr-1" />
-                                                            Mark Delivered
+                                                            <Check className="w-3 h-3 mr-1" />
+                                                            Delivered
                                                         </Button>
                                                     )}
                                                     {order.status !== 'cancelled' && order.status !== 'delivered' && (
                                                         <Button
                                                             size="sm"
                                                             variant="outline"
-                                                            className="text-red-600 border-red-300"
+                                                            className="text-red-600 border-red-300 text-xs"
                                                             onClick={() => handleStatusChange(order.id, 'cancelled')}
                                                         >
-                                                            <X className="w-4 h-4 mr-1" />
+                                                            <X className="w-3 h-3 mr-1" />
                                                             Cancel
                                                         </Button>
                                                     )}
@@ -916,8 +916,8 @@ const AdminPage = () => {
 
                     {/* Manage Products Tab */}
                     {activeTab === 'manage-products' && (
-                        <div className="bg-white rounded-2xl shadow-sm border border-pink-100 p-8">
-                            <h2 className="text-2xl font-bold mb-6">Manage Products</h2>
+                        <div className="bg-white rounded-2xl shadow-sm border border-pink-100 p-4 sm:p-8">
+                            <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">Manage Products</h2>
 
                             {products.length === 0 ? (
                                 <div className="text-center py-12">
@@ -925,7 +925,7 @@ const AdminPage = () => {
                                     <Button onClick={loadProducts} variant="outline" size="sm">Reload Products</Button>
                                 </div>
                             ) : (
-                                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                <div className="grid grid-cols-2 gap-3 sm:gap-6">
                                     {products.map((product) => (
                                         <div key={product.id} className="border border-gray-200 rounded-xl p-4 hover:shadow-lg transition-shadow">
                                             {editingProduct?.id === product.id ? (
@@ -1081,8 +1081,8 @@ const AdminPage = () => {
 
                     {/* Add Product Tab */}
                     {activeTab === 'products' && (
-                        <div className="bg-white rounded-2xl shadow-sm border border-pink-100 p-8">
-                            <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
+                        <div className="bg-white rounded-2xl shadow-sm border border-pink-100 p-4 sm:p-8">
+                            <h2 className="text-xl font-bold mb-4 sm:mb-6 flex items-center gap-2">
                                 <Plus className="w-5 h-5 text-pink-500" />
                                 Add New Product
                             </h2>
