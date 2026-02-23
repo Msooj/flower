@@ -167,10 +167,15 @@ const AdminPage = () => {
         try {
             if (!navigator.onLine) throw new Error('No internet connection');
 
-            const { data, error } = await supabase.auth.signInWithPassword({
+            const signInPromise = supabase.auth.signInWithPassword({
                 email: adminLoginData.email,
                 password: adminLoginData.password
             });
+            const abortTimeout = new Promise((_, reject) =>
+                setTimeout(() => reject(new Error('Network timeout. Your connection is too slow.')), 15000)
+            );
+
+            const { data, error } = await Promise.race([signInPromise, abortTimeout]);
 
             if (error) throw error;
             if (!data?.session) throw new Error('Login succeeded but no session returned');
@@ -688,8 +693,8 @@ const AdminPage = () => {
                         </div>
                     </div>
 
-                    {/* Tabs — horizontally scrollable on mobile */}
-                    <div className="flex gap-2 mb-6 overflow-x-auto pb-2 -mx-3 px-3 sm:mx-0 sm:px-0">
+                    {/* Tabs — perfectly arranged on mobile in a 2x2 grid, inline on desktop */}
+                    <div className="grid grid-cols-2 gap-2 mb-6 sm:flex sm:flex-wrap">
                         <Button
                             onClick={() => setActiveTab('users')}
                             variant={activeTab === 'users' ? 'default' : 'outline'}
@@ -1053,7 +1058,7 @@ const AdminPage = () => {
                             </h2>
 
                             <form onSubmit={handleAddItem} className="space-y-6">
-                                <div className="grid md:grid-cols-2 gap-6">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 mb-2">Product Name</label>
                                         <input
@@ -1089,7 +1094,7 @@ const AdminPage = () => {
                                     />
                                 </div>
 
-                                <div className="grid md:grid-cols-2 gap-6">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
                                         <select
@@ -1120,7 +1125,7 @@ const AdminPage = () => {
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-2">Product Image</label>
                                     <div className="space-y-4">
-                                        <div className="flex flex-col md:flex-row gap-4">
+                                        <div className="flex flex-col md:flex-row gap-3 sm:gap-4">
                                             <div className="flex-1">
                                                 <label className="block text-xs text-gray-500 mb-1">Option 1: Upload Image</label>
                                                 <div className="relative">
