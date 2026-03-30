@@ -78,19 +78,12 @@ const ProductCard = ({ product, index }) => {
             >
               <Heart className="w-5 h-5" />
             </Button>
-            <Button
-              size="icon"
-              className="bg-white text-gray-700 hover:bg-gray-100 rounded-full shadow-lg"
-              onClick={() => navigate(`/flowers?search=${encodeURIComponent(product.name)}`)}
-            >
-              <Eye className="w-5 h-5" />
-            </Button>
+
             <Button
               size="icon"
               className="bg-pink-500 text-white hover:bg-pink-600 rounded-full shadow-lg"
               onClick={() => {
                 addToCart(product);
-                toast.success('Added to cart!');
               }}
             >
               <ShoppingBag className="w-5 h-5" />
@@ -100,21 +93,7 @@ const ProductCard = ({ product, index }) => {
 
         {/* Content */}
         <div className="p-4">
-          {/* Rating */}
-          <div className="flex items-center gap-1 mb-2">
-            <div className="flex items-center">
-              {[...Array(5)].map((_, i) => (
-                <Star
-                  key={i}
-                  className={`w-4 h-4 ${i < Math.floor(product.rating)
-                    ? 'text-yellow-400 fill-yellow-400'
-                    : 'text-gray-300'
-                    }`}
-                />
-              ))}
-            </div>
-            <span className="text-sm text-gray-500">({product.reviews})</span>
-          </div>
+
 
           {/* Name */}
           <h3 className="font-semibold text-gray-800 mb-2 group-hover:text-pink-600 transition-colors line-clamp-1">

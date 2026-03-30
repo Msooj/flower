@@ -113,28 +113,7 @@ const HeroSection = ({ isMobile = false }) => {
                   <div className="absolute inset-0 bg-gradient-to-t from-pink-900/20 to-transparent" />
                 </div>
 
-                {/* Floating Card */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.6 }}
-                  className="absolute -bottom-6 -left-6 bg-white rounded-2xl shadow-xl p-4 md:p-6"
-                >
-                  <div className="flex items-center gap-4">
-                    <div className="w-16 h-16 rounded-xl overflow-hidden">
-                      <img
-                        src="https://images.unsplash.com/photo-1599215966323-88d801b84771?w=200"
-                        alt="Peony bouquet"
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-500">Bestseller</p>
-                      <p className="font-semibold text-gray-800">Pink Peony Bliss</p>
-                      <p className="text-pink-500 font-bold">KSh 6,800</p>
-                    </div>
-                  </div>
-                </motion.div>
+
 
                 {/* Rating Badge */}
                 <motion.div

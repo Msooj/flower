@@ -352,21 +352,9 @@ const FlowersPage = ({ isMobile = false }) => {
                           >
                             <Heart className={`w-4 h-4 ${isInWishlist(product.id) ? 'fill-current' : ''}`} />
                           </Button>
-                          <Button
-                            size="icon"
-                            className="bg-white text-gray-700 hover:bg-gray-100 rounded-full shadow-lg h-9 w-9"
-                            onClick={() => {
-                              // Scroll to top and highlight the product
-                              window.scrollTo({ top: 0, behavior: 'smooth' });
-                              setSearchQuery(product.name);
-                              toast.success(`Viewing ${product.name}`);
-                            }}
-                          >
-                            <Eye className="w-4 h-4" />
-                          </Button>
+
                           <Button size="icon" className="bg-pink-500 text-white hover:bg-pink-600 rounded-full shadow-lg h-9 w-9" onClick={() => {
                             addToCart(product);
-                            toast.success('Added to cart!');
                           }}>
                             <ShoppingBag className="w-4 h-4" />
                           </Button>
@@ -375,18 +363,7 @@ const FlowersPage = ({ isMobile = false }) => {
 
                       {/* Content */}
                       <div className="p-4">
-                        <div className="flex items-center gap-1 mb-2">
-                          {[...Array(5)].map((_, i) => (
-                            <Star
-                              key={i}
-                              className={`w-4 h-4 ${i < Math.floor(product.rating)
-                                ? 'text-yellow-400 fill-yellow-400'
-                                : 'text-gray-300'
-                                }`}
-                            />
-                          ))}
-                          <span className="text-sm text-gray-500">({product.reviews})</span>
-                        </div>
+
                         <h3 className="font-semibold text-gray-800 mb-2 group-hover:text-pink-600 transition-colors line-clamp-1">
                           {product.name}
                         </h3>

@@ -175,19 +175,26 @@ const Header = () => {
               </Button>
 
               {/* Cart */}
-              <Button
-                variant="ghost"
-                size="icon"
-                className="relative text-gray-700 hover:text-pink-600 hover:bg-pink-50"
-                onClick={() => navigate('/cart')}
+              <motion.div
+                key={`cart-icon-${cartCount}`}
+                initial={{ scale: 1 }}
+                animate={cartCount > 0 ? { scale: [1, 1.4, 1], rotate: [0, -10, 10, -10, 10, 0] } : {}}
+                transition={{ duration: 0.5 }}
               >
-                <ShoppingBag className="w-5 h-5" />
-                {cartCount > 0 && (
-                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-pink-500 text-white text-xs rounded-full flex items-center justify-center">
-                    {cartCount}
-                  </span>
-                )}
-              </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="relative text-gray-700 hover:text-pink-600 hover:bg-pink-50"
+                  onClick={() => navigate('/cart')}
+                >
+                  <ShoppingBag className="w-5 h-5" />
+                  {cartCount > 0 && (
+                    <span className="absolute -top-1 -right-1 w-5 h-5 bg-pink-500 text-white text-xs rounded-full flex items-center justify-center">
+                      {cartCount}
+                    </span>
+                  )}
+                </Button>
+              </motion.div>
 
               {/* Auth Buttons */}
               <div className="hidden md:flex items-center gap-2">

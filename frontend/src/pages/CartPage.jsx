@@ -118,40 +118,12 @@ const CartPage = () => {
 
             // Handle M-Pesa payment
             if (paymentMethod === 'mpesa') {
-                try {
-                    const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000';
-                    const mpesaResponse = await fetch(`${backendUrl}/api/mpesa/stk-push`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            phone_number: mpesaNumber,
-                            amount: cartTotal,
-                            order_id: order.id,
-                            account_reference: `Order-${order.id}`,
-                            transaction_desc: 'Flower Purchase'
-                        })
-                    });
-
-                    if (mpesaResponse.ok) {
-                        setPaymentStatus('pending');
-                        toast.success('Payment request sent to your phone. Please complete the M-Pesa transaction.');
-                        clearCart();
-                        setTimeout(() => {
-                            navigate('/');
-                        }, 3000);
-                    } else {
-                        throw new Error('M-Pesa payment initiation failed');
-                    }
-                } catch (mpesaError) {
-                    console.error('M-Pesa error:', mpesaError);
-                    toast.warning('Order created successfully, but M-Pesa payment failed. Please pay manually to: 0742 370 307');
-                    clearCart();
-                    setTimeout(() => {
-                        navigate('/');
-                    }, 3000);
-                }
+                setPaymentStatus('pending');
+                toast.success('Order placed successfully! Please pay manually to: 0742 370 307', { duration: 5000 });
+                clearCart();
+                setTimeout(() => {
+                    navigate('/');
+                }, 4000);
             } else {
                 clearCart();
                 toast.success('Order placed successfully! Payment will be collected on delivery.');
@@ -368,9 +340,9 @@ const CartPage = () => {
                                                 Please send the total amount of <span className="font-bold">KSh {cartTotal.toLocaleString()}</span> to the number below:
                                             </p>
                                             <div className="bg-white p-4 rounded-lg border border-green-200 text-center mb-4">
-                                                <p className="text-sm text-green-700 mb-2">Business Number:</p>
+                                                <p className="text-sm text-green-700 mb-2">Send Money:</p>
                                                 <p className="text-2xl font-bold text-gray-800 tracking-wider">0742 370 307</p>
-                                                <p className="text-xs text-green-600 mt-1">FlowerLifestyle</p>
+                                                <p className="text-xs text-green-600 mt-1">Ian Mwangi</p>
                                             </div>
 
                                             <label className="block text-sm font-medium text-green-800 mb-2">

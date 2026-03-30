@@ -1015,7 +1015,7 @@ const AdminPage = () => {
                                                     <p className="text-sm text-gray-600 mb-2 line-clamp-2">{product.description}</p>
                                                     <div className="flex justify-between items-center mb-2">
                                                         <span className="text-pink-600 font-bold">KSh {product.price?.toLocaleString()}</span>
-                                                        <span className="text-xs text-gray-500">Stock: {product.stock}</span>
+                                                        <span className="text-xs text-gray-500">Stock: Unlimited</span>
                                                     </div>
                                                     <span className="inline-block px-2 py-1 text-xs bg-pink-100 text-pink-600 rounded-full mb-3">
                                                         {product.category}
