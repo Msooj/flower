@@ -49,14 +49,12 @@ const HeroSection = ({ isMobile = false }) => {
               </motion.span>
             )}
 
-            <h1 className={`${isMobile ? 'text-3xl text-center' : 'text-4xl md:text-5xl lg:text-6xl'} font-bold text-gray-900 leading-tight mb-4 md:mb-6`}>
-              Beautiful Blooms for
-              <span className={`block text-gradient ${isMobile ? 'inline ml-2' : ''}`}>Every Occasion</span>
+            <h1 className={`${isMobile ? 'text-3xl text-center' : 'text-4xl md:text-5xl lg:text-5xl'} font-bold text-gray-900 leading-tight mb-4 md:mb-6`}>
+              Elevate your gifting with premium floral arrangements from <span className="text-gradient">FlowerLifestyle</span>, Kenya’s premier online florist.
             </h1>
 
             <p className={`text-base md:text-lg text-gray-600 mb-6 md:mb-8 max-w-lg leading-relaxed ${isMobile ? 'text-center' : ''}`}>
-              Discover handcrafted floral arrangements that speak from the heart.
-              From romantic roses to celebration bouquets, we deliver joy right to your doorstep.
+              Experience the luxury of hand-crafted bouquets with same-day delivery throughout Nairobi.
             </p>
 
             <div className={`flex flex-col sm:flex-row gap-3 md:gap-4 ${isMobile ? 'mb-8 justify-center' : 'mb-12'}`}>
