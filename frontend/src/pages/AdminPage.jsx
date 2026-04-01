@@ -4,7 +4,7 @@ import Footer from '../components/layout/Footer';
 import { Button } from '../components/ui/button';
 import { toast } from 'sonner';
 import { supabase, createFreshClient } from '../lib/supabase';
-import { Plus, Image, Lock, User, LogOut, Package, Check, X, Clock, Edit, Trash2, Eye, EyeOff, Upload } from 'lucide-react';
+import { Plus, Image, Lock, User, LogOut, Package, Check, X, Clock, Edit, Trash2, Eye, EyeOff, Upload, BarChart2, TrendingUp, ShoppingBag } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const AdminPage = () => {
@@ -532,6 +532,75 @@ const AdminPage = () => {
         }
     };
 
+    const handleDeleteOrder = async (orderId, customerName) => {
+        if (!confirm(`Delete order from "${customerName}"? This cannot be undone.`)) return;
+        try {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) throw new Error('No active session.');
+            // Delete child items first
+            await supabase.from('order_items').delete().eq('order_id', orderId);
+            const { error } = await supabase.from('orders').delete().eq('id', orderId);
+            if (error) throw error;
+            toast.success(`Order from "${customerName}" deleted.`);
+            loadOrders();
+        } catch (error) {
+            console.error('Error deleting order:', error);
+            toast.error(`Failed to delete order: ${error.message}`);
+        }
+    };
+
+    // ── Monthly Report helpers ──────────────────────────────────────────────
+    const getMonthlyStats = () => {
+        const now = new Date();
+        const months = [];
+        for (let i = 5; i >= 0; i--) {
+            const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+            months.push({
+                label: d.toLocaleString('default', { month: 'short', year: '2-digit' }),
+                year: d.getFullYear(),
+                month: d.getMonth(),
+                revenue: 0,
+                count: 0
+            });
+        }
+        orders.forEach(o => {
+            if (!o.created_at) return;
+            const d = new Date(o.created_at);
+            const m = months.find(m => m.year === d.getFullYear() && m.month === d.getMonth());
+            if (m) {
+                m.revenue += Number(o.total_amount) || 0;
+                m.count += 1;
+            }
+        });
+        return months;
+    };
+
+    const getTopProducts = () => {
+        const map = {};
+        orders.forEach(o => {
+            (o.order_items || []).forEach(item => {
+                const key = item.product_name || 'Unknown';
+                if (!map[key]) map[key] = { name: key, qty: 0, revenue: 0 };
+                map[key].qty += item.quantity || 0;
+                map[key].revenue += (item.price * item.quantity) || 0;
+            });
+        });
+        return Object.values(map).sort((a, b) => b.revenue - a.revenue).slice(0, 5);
+    };
+
+    const getCurrentMonthStats = () => {
+        const now = new Date();
+        const thisMonth = orders.filter(o => {
+            if (!o.created_at) return false;
+            const d = new Date(o.created_at);
+            return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth();
+        });
+        const revenue = thisMonth.reduce((s, o) => s + (Number(o.total_amount) || 0), 0);
+        const delivered = thisMonth.filter(o => o.status === 'delivered').length;
+        const pending = thisMonth.filter(o => o.status === 'pending').length;
+        return { total: thisMonth.length, revenue, delivered, pending };
+    };
+
     const getStatusBadge = (status) => {
         const statusStyles = {
             pending: 'bg-yellow-100 text-yellow-800',
@@ -693,8 +762,8 @@ const AdminPage = () => {
                         </div>
                     </div>
 
-                    {/* Tabs — perfectly arranged on mobile in a 2x2 grid, inline on desktop */}
-                    <div className="grid grid-cols-2 gap-2 mb-6 sm:flex sm:flex-wrap">
+                    {/* Tabs — 3-col on mobile, inline on desktop */}
+                    <div className="grid grid-cols-3 gap-2 mb-6 sm:flex sm:flex-wrap">
                         <Button
                             onClick={() => setActiveTab('users')}
                             variant={activeTab === 'users' ? 'default' : 'outline'}
@@ -710,6 +779,14 @@ const AdminPage = () => {
                         >
                             <Package className="w-4 h-4 mr-1 sm:mr-2" />
                             Orders
+                        </Button>
+                        <Button
+                            onClick={() => setActiveTab('report')}
+                            variant={activeTab === 'report' ? 'default' : 'outline'}
+                            className={`whitespace-nowrap text-xs sm:text-sm flex-shrink-0 ${activeTab === 'report' ? 'bg-pink-600' : ''}`}
+                        >
+                            <BarChart2 className="w-4 h-4 mr-1 sm:mr-2" />
+                            Report
                         </Button>
                         <Button
                             onClick={() => setActiveTab('manage-products')}
@@ -875,6 +952,15 @@ const AdminPage = () => {
                                                             Cancel
                                                         </Button>
                                                     )}
+                                                    <Button
+                                                        size="sm"
+                                                        variant="outline"
+                                                        className="text-red-700 border-red-400 bg-red-50 hover:bg-red-100 text-xs"
+                                                        onClick={() => handleDeleteOrder(order.id, order.customer_name)}
+                                                    >
+                                                        <Trash2 className="w-3 h-3 mr-1" />
+                                                        Delete
+                                                    </Button>
                                                 </div>
                                             </div>
                                         </div>
@@ -883,6 +969,125 @@ const AdminPage = () => {
                             )}
                         </div>
                     )}
+
+                    {/* ── Monthly Report Tab ─────────────────────────────────── */}
+                    {activeTab === 'report' && (() => {
+                        const monthlyStats = getMonthlyStats();
+                        const topProducts = getTopProducts();
+                        const current = getCurrentMonthStats();
+                        const maxRevenue = Math.max(...monthlyStats.map(m => m.revenue), 1);
+                        const now = new Date();
+                        const currentMonthLabel = now.toLocaleString('default', { month: 'long', year: 'numeric' });
+                        const totalRevenue = orders.reduce((s, o) => s + (Number(o.total_amount) || 0), 0);
+
+                        return (
+                            <div className="space-y-6">
+                                {/* This Month Summary Cards */}
+                                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                                    {[
+                                        { label: 'This Month Revenue', value: `KSh ${current.revenue.toLocaleString()}`, icon: TrendingUp, color: 'from-pink-500 to-rose-600' },
+                                        { label: 'Orders This Month', value: current.total, icon: ShoppingBag, color: 'from-purple-500 to-indigo-600' },
+                                        { label: 'Delivered', value: current.delivered, icon: Check, color: 'from-green-500 to-emerald-600' },
+                                        { label: 'Pending', value: current.pending, icon: Clock, color: 'from-yellow-400 to-orange-500' },
+                                    ].map(card => (
+                                        <div key={card.label} className={`bg-gradient-to-br ${card.color} rounded-2xl p-4 text-white shadow-lg`}>
+                                            <card.icon className="w-5 h-5 mb-2 opacity-80" />
+                                            <p className="text-2xl font-bold">{card.value}</p>
+                                            <p className="text-xs mt-1 opacity-80">{card.label}</p>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                {/* Revenue Bar Chart — last 6 months */}
+                                <div className="bg-white rounded-2xl shadow-sm border border-pink-100 p-4 sm:p-6">
+                                    <h2 className="text-lg font-bold mb-1 flex items-center gap-2">
+                                        <BarChart2 className="w-5 h-5 text-pink-500" />
+                                        Revenue — Last 6 Months
+                                    </h2>
+                                    <p className="text-xs text-gray-400 mb-4">All-time total: KSh {totalRevenue.toLocaleString()}</p>
+                                    <div className="flex items-end gap-2 h-48">
+                                        {monthlyStats.map((m, i) => {
+                                            const pct = maxRevenue > 0 ? (m.revenue / maxRevenue) * 100 : 0;
+                                            const isCurrentMonth = i === monthlyStats.length - 1;
+                                            return (
+                                                <div key={m.label} className="flex-1 flex flex-col items-center gap-1">
+                                                    <span className="text-[10px] font-semibold text-gray-600 text-center">
+                                                        KSh {m.revenue >= 1000 ? `${(m.revenue/1000).toFixed(1)}k` : m.revenue.toLocaleString()}
+                                                    </span>
+                                                    <div
+                                                        className={`w-full rounded-t-lg transition-all duration-700 ${
+                                                            isCurrentMonth
+                                                                ? 'bg-gradient-to-t from-pink-600 to-pink-400'
+                                                                : 'bg-gradient-to-t from-gray-300 to-gray-200'
+                                                        }`}
+                                                        style={{ height: `${Math.max(pct, 2)}%` }}
+                                                    />
+                                                    <span className={`text-[10px] font-medium ${isCurrentMonth ? 'text-pink-600' : 'text-gray-500'}`}>{m.label}</span>
+                                                    <span className="text-[10px] text-gray-400">{m.count} orders</span>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+
+                                {/* Top Selling Products */}
+                                <div className="bg-white rounded-2xl shadow-sm border border-pink-100 p-4 sm:p-6">
+                                    <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
+                                        <Package className="w-5 h-5 text-pink-500" />
+                                        Top Products (All Time)
+                                    </h2>
+                                    {topProducts.length === 0 ? (
+                                        <p className="text-gray-400 text-sm text-center py-6">No order item data available yet.</p>
+                                    ) : (
+                                        <div className="space-y-3">
+                                            {topProducts.map((p, idx) => {
+                                                const maxRev = topProducts[0].revenue || 1;
+                                                const pct = (p.revenue / maxRev) * 100;
+                                                return (
+                                                    <div key={p.name}>
+                                                        <div className="flex justify-between text-sm mb-1">
+                                                            <span className="font-medium text-gray-800">
+                                                                <span className="text-pink-500 font-bold mr-1">#{idx + 1}</span>{p.name}
+                                                            </span>
+                                                            <span className="text-gray-500">{p.qty} sold · KSh {p.revenue.toLocaleString()}</span>
+                                                        </div>
+                                                        <div className="w-full bg-gray-100 rounded-full h-2">
+                                                            <div
+                                                                className="bg-gradient-to-r from-pink-500 to-rose-400 h-2 rounded-full transition-all duration-700"
+                                                                style={{ width: `${pct}%` }}
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Orders by Status */}
+                                <div className="bg-white rounded-2xl shadow-sm border border-pink-100 p-4 sm:p-6">
+                                    <h2 className="text-lg font-bold mb-4">Orders by Status (All Time)</h2>
+                                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                                        {['pending', 'processing', 'delivered', 'cancelled'].map(s => {
+                                            const count = orders.filter(o => o.status === s).length;
+                                            const colors = {
+                                                pending: 'bg-yellow-50 border-yellow-200 text-yellow-700',
+                                                processing: 'bg-blue-50 border-blue-200 text-blue-700',
+                                                delivered: 'bg-green-50 border-green-200 text-green-700',
+                                                cancelled: 'bg-red-50 border-red-200 text-red-700',
+                                            };
+                                            return (
+                                                <div key={s} className={`border rounded-xl p-4 text-center ${colors[s]}`}>
+                                                    <p className="text-2xl font-bold">{count}</p>
+                                                    <p className="text-xs capitalize mt-1 font-medium">{s}</p>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            </div>
+                        );
+                    })()}
 
                     {/* Manage Products Tab */}
                     {activeTab === 'manage-products' && (
