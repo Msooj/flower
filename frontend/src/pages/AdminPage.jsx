@@ -278,7 +278,7 @@ const AdminPage = () => {
 
             const { data, error } = await supabase
                 .from('orders')
-                .select('*, order_items(*)');
+                .select('*, order_items(*, product:products(image, name))');
 
             if (error) {
                 console.error('Supabase query error:', error);
@@ -904,12 +904,33 @@ const AdminPage = () => {
                                             </div>
 
                                             <div className="mb-3 sm:mb-4">
-                                                <p className="text-sm font-medium text-gray-700 mb-2">Items:</p>
-                                                {order.order_items && order.order_items.map((item, idx) => (
-                                                    <div key={idx} className="text-sm text-gray-600">
-                                                        • {item.product_name} x{item.quantity} - KSh {(item.price * item.quantity).toLocaleString()}
-                                                    </div>
-                                                ))}
+                                                <p className="text-sm font-medium text-gray-700 mb-2">Items Ordered:</p>
+                                                <div className="space-y-2">
+                                                    {order.order_items && order.order_items.map((item, idx) => {
+                                                        const imgSrc = item.product?.image || item.image || null;
+                                                        return (
+                                                            <div key={idx} className="flex items-center gap-3 bg-gray-50 rounded-xl p-2">
+                                                                {imgSrc ? (
+                                                                    <img
+                                                                        src={imgSrc}
+                                                                        alt={item.product_name}
+                                                                        className="w-14 h-14 object-cover rounded-lg flex-shrink-0 border border-gray-200 shadow-sm"
+                                                                        onError={(e) => { e.target.style.display = 'none'; }}
+                                                                    />
+                                                                ) : (
+                                                                    <div className="w-14 h-14 rounded-lg bg-pink-50 border border-pink-100 flex items-center justify-center flex-shrink-0">
+                                                                        <Package className="w-6 h-6 text-pink-300" />
+                                                                    </div>
+                                                                )}
+                                                                <div className="flex-1 min-w-0">
+                                                                    <p className="text-sm font-semibold text-gray-800 truncate">{item.product_name}</p>
+                                                                    <p className="text-xs text-gray-500">Qty: {item.quantity} &times; KSh {Number(item.price).toLocaleString()}</p>
+                                                                </div>
+                                                                <p className="text-sm font-bold text-pink-600 flex-shrink-0">KSh {(item.price * item.quantity).toLocaleString()}</p>
+                                                            </div>
+                                                        );
+                                                    })}
+                                                </div>
                                             </div>
 
                                             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
