@@ -7,7 +7,7 @@ import { supabase } from '../../lib/supabase';
 
 const HeroSection = ({ isMobile = false }) => {
   const navigate = useNavigate();
-  const [petaSonataImage, setPetaSonataImage] = useState('https://images.unsplash.com/photo-1592729645009-b96d1e63d14b?w=800');
+  const [petaSonataImage, setPetaSonataImage] = useState('https://duazdpldzqodpucqoyta.supabase.co/storage/v1/object/public/products/products/1766216396653_hd1fdp.jpeg');
 
   useEffect(() => {
     const fetchPetaSonata = async () => {
