@@ -39,7 +39,7 @@ const HeroSection = ({ isMobile = false }) => {
             alt="Petal Sonata bouquet with pink and red roses, lily buds and white orchid"
             className="w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-white/80" />
+          <div className="absolute inset-0 bg-white/20" />
         </div>
       )}
 
@@ -51,7 +51,7 @@ const HeroSection = ({ isMobile = false }) => {
         </>
       )}
 
-      <div className={`container mx-auto px-4 relative z-10 ${isMobile ? 'py-12' : 'py-16 md:py-24'}`}>
+      <div className={`container mx-auto px-4 relative z-20 ${isMobile ? 'py-12' : 'py-16 md:py-24'}`}>
         <div className={`grid lg:grid-cols-2 gap-8 md:gap-12 items-center ${isMobile ? 'max-w-md mx-auto' : ''}`}>
           {/* Text Content */}
           <motion.div
@@ -120,7 +120,7 @@ const HeroSection = ({ isMobile = false }) => {
               initial={{ opacity: 0, x: 50 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="relative"
+              className="relative z-10"
             >
               <div className="relative">
                 {/* Main Image */}
@@ -133,14 +133,12 @@ const HeroSection = ({ isMobile = false }) => {
                   <div className="absolute inset-0 bg-gradient-to-t from-pink-900/20 to-transparent" />
                 </div>
 
-
-
                 {/* Rating Badge */}
                 <motion.div
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.8 }}
-                  className="absolute -top-4 -right-4 bg-white rounded-2xl shadow-xl px-4 py-3"
+                  className="absolute -top-4 -right-4 bg-white rounded-2xl shadow-xl px-4 py-3 z-20"
                 >
                   <div className="flex items-center gap-2">
                     <div className="flex">
