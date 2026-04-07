@@ -1,11 +1,33 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { ArrowRight, Truck, Award, Heart } from 'lucide-react';
 import { Button } from '../ui/button';
+import { supabase } from '../../lib/supabase';
 
 const HeroSection = ({ isMobile = false }) => {
   const navigate = useNavigate();
+  const [petaSonataImage, setPetaSonataImage] = useState('https://images.unsplash.com/photo-1592729645009-b96d1e63d14b?w=800');
+
+  useEffect(() => {
+    const fetchPetaSonata = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('products')
+          .select('image')
+          .eq('id', 'petal-sonata')
+          .single();
+
+        if (!error && data?.image) {
+          setPetaSonataImage(data.image);
+        }
+      } catch (err) {
+        console.error('Error fetching Petal Sonata image:', err);
+      }
+    };
+
+    fetchPetaSonata();
+  }, []);
 
   return (
     <section className={`relative overflow-hidden ${isMobile ? '' : 'bg-gradient-to-br from-pink-50 via-white to-pink-100'}`}>
@@ -13,8 +35,8 @@ const HeroSection = ({ isMobile = false }) => {
       {isMobile && (
         <div className="absolute inset-0 z-0">
           <img
-            src="https://images.unsplash.com/photo-1712258093579-190d48841a93?w=1200"
-            alt="Background"
+            src={petaSonataImage}
+            alt="Petal Sonata bouquet with pink and red roses, lily buds and white orchid"
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-white/80" />
@@ -104,8 +126,8 @@ const HeroSection = ({ isMobile = false }) => {
                 {/* Main Image */}
                 <div className="relative rounded-3xl overflow-hidden shadow-2xl">
                   <img
-                    src="https://images.unsplash.com/photo-1712258093579-190d48841a93?w=800"
-                    alt="Beautiful pink roses bouquet"
+                    src={petaSonataImage}
+                    alt="Petal Sonata bouquet with pink and red roses, lily buds and white orchid"
                     className="h-[500px] w-full object-cover"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-pink-900/20 to-transparent" />
