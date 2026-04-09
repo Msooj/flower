@@ -4,11 +4,13 @@ import Footer from '../components/layout/Footer';
 import { Button } from '../components/ui/button';
 import { toast } from 'sonner';
 import { supabase, createFreshClient } from '../lib/supabase';
-import { Plus, Image, Lock, User, LogOut, Package, Check, X, Clock, Edit, Trash2, Eye, EyeOff, Upload, BarChart2, TrendingUp, ShoppingBag } from 'lucide-react';
+import { Plus, Image, Lock, User, LogOut, Package, Check, X, Clock, Edit, Trash2, Eye, EyeOff, Upload, BarChart2, TrendingUp, ShoppingBag, Bell } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import useOrderNotifications from '../hooks/useOrderNotifications';
 
 const AdminPage = () => {
     const navigate = useNavigate();
+    const { requestPermission, testNotification } = useOrderNotifications(true);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     // Start as false — show login form immediately, then check session in background
     const [isLoading, setIsLoading] = useState(true);
@@ -717,6 +719,31 @@ const AdminPage = () => {
                     <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-4">
                         <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Admin Dashboard</h1>
                         <div className="flex gap-2 flex-wrap">
+                            <Button
+                                onClick={async () => {
+                                    const granted = await requestPermission();
+                                    if (granted) {
+                                        toast.success('Notifications enabled! You will receive alerts for new orders.');
+                                    } else {
+                                        toast.error('Notifications denied. Enable them in your browser settings.');
+                                    }
+                                }}
+                                variant="outline"
+                                className="border-green-200 text-green-600 hover:bg-green-50 text-xs sm:text-sm px-2 sm:px-4"
+                            >
+                                <Bell className="w-4 h-4 mr-1" />
+                                Enable Notifications
+                            </Button>
+                            <Button
+                                onClick={async () => {
+                                    await testNotification();
+                                    toast.success('Test notification sent!');
+                                }}
+                                variant="outline"
+                                className="border-blue-200 text-blue-600 hover:bg-blue-50 text-xs sm:text-sm px-2 sm:px-4"
+                            >
+                                Test Notification
+                            </Button>
                             <Button
                                 onClick={() => {
                                     loadOrders();
