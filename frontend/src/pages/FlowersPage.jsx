@@ -9,6 +9,7 @@ import { Badge } from '../components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { allProducts, categories } from '../data/mock';
 import { supabase } from '../lib/supabase';
+import PageMetaTags from '../components/seo/PageMetaTags';
 
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
@@ -151,6 +152,12 @@ const FlowersPage = ({ isMobile = false }) => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-pink-50 to-white">
+      <PageMetaTags 
+        title="Order Flowers Online Nairobi | Birthday, Anniversary & Romance Bouquets"
+        description="Browse fresh flowers in Nairobi. Birthday flowers, anniversary bouquets, romance arrangements, roses, and combos. Same-day delivery available."
+        keywords="order flowers online Nairobi, birthday flowers Nairobi, anniversary bouquets Kenya, romance flowers, roses delivery, flower combos, fresh flowers Nairobi"
+        canonicalUrl="https://www.flowerlifestyle.co.ke/flowers"
+      />
       <Header />
 
       <main className="container mx-auto px-4 py-8">

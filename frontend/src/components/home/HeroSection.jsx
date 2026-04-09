@@ -36,7 +36,7 @@ const HeroSection = ({ isMobile = false }) => {
         <div className="absolute inset-0 z-0">
           <img
             src={petaSonataImage}
-            alt="Petal Sonata bouquet with pink and red roses, lily buds and white orchid"
+            alt="Flower delivery Nairobi - Petal Sonata bouquet with pink and red roses for same day delivery"
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-white/20" />
@@ -72,7 +72,7 @@ const HeroSection = ({ isMobile = false }) => {
             )}
 
             <h1 className={`${isMobile ? 'text-3xl text-center' : 'text-4xl md:text-5xl lg:text-5xl'} font-bold text-gray-900 leading-tight mb-4 md:mb-6`}>
-              Elevate your gifting with premium floral arrangements from <span className="text-gradient">FlowerLifestyle</span>, Kenya’s premier online florist.
+              Fresh Flower Delivery in Nairobi | Same Day Florist Services by <span className="text-gradient">FlowerLifestyle</span>
             </h1>
 
             <p className={`text-base md:text-lg text-gray-600 mb-6 md:mb-8 max-w-lg leading-relaxed ${isMobile ? 'text-center' : ''}`}>
@@ -127,7 +127,7 @@ const HeroSection = ({ isMobile = false }) => {
                 <div className="relative rounded-3xl overflow-hidden shadow-2xl">
                   <img
                     src={petaSonataImage}
-                    alt="Petal Sonata bouquet with pink and red roses, lily buds and white orchid"
+                    alt="Flower delivery Nairobi - Petal Sonata bouquet with pink and red roses for same day delivery"
                     className="h-[500px] w-full object-cover"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-pink-900/20 to-transparent" />

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { HelmetProvider } from "react-helmet-async";
 import ScrollToTop from "./components/common/ScrollToTop";
 import { Toaster } from "./components/ui/sonner";
 import { CartProvider } from "./context/CartContext";
@@ -39,22 +40,24 @@ function App() {
     <div className="App">
       <CartProvider>
         <WishlistProvider>
-          <BrowserRouter>
-            <ScrollToTop />
-            <AuthWrapper>
-              <Routes>
-                <Route path="/" element={<HomePage isMobile={isMobile} />} />
-                <Route path="/flowers" element={<FlowersPage isMobile={isMobile} />} />
-                <Route path="/login" element={<LoginPage />} />
-                <Route path="/signup" element={<SignupPage />} />
-                <Route path="/cart" element={<CartPage />} />
-                <Route path="/wishlist" element={<WishlistPage />} />
-                <Route path="/orders" element={<OrdersPage />} />
-                <Route path="/about" element={<AboutPage />} />
-                <Route path="/admin" element={<AdminPage />} />
-              </Routes>
-            </AuthWrapper>
-          </BrowserRouter>
+          <HelmetProvider>
+            <BrowserRouter>
+              <ScrollToTop />
+              <AuthWrapper>
+                <Routes>
+                  <Route path="/" element={<HomePage isMobile={isMobile} />} />
+                  <Route path="/flowers" element={<FlowersPage isMobile={isMobile} />} />
+                  <Route path="/login" element={<LoginPage />} />
+                  <Route path="/signup" element={<SignupPage />} />
+                  <Route path="/cart" element={<CartPage />} />
+                  <Route path="/wishlist" element={<WishlistPage />} />
+                  <Route path="/orders" element={<OrdersPage />} />
+                  <Route path="/about" element={<AboutPage />} />
+                  <Route path="/admin" element={<AdminPage />} />
+                </Routes>
+              </AuthWrapper>
+            </BrowserRouter>
+          </HelmetProvider>
           <WhatsAppButton />
           <Toaster position="top-right" richColors />
         </WishlistProvider>

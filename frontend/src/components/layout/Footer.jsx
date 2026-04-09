@@ -141,6 +141,12 @@ const Footer = () => {
       {/* Bottom Bar */}
       <div className="border-t border-pink-200">
         <div className="container mx-auto px-4 py-6">
+          {/* NAP - Local SEO */}
+          <div className="text-center mb-4">
+            <div className="text-sm text-gray-600 font-medium">
+              <strong>Flower Lifestyle</strong> | City Market, Nairobi, Kenya | Phone: 0742370307 | Email: flowerlifestyle@gmail.com
+            </div>
+          </div>
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-gray-600 text-sm text-center md:text-left">
               © {currentYear} Flower Lifestyle. All rights reserved. Made with love in Kenya.
