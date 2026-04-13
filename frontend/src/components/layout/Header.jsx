@@ -156,11 +156,7 @@ const Header = () => {
                 className="text-gray-700 hover:text-pink-600 hover:bg-pink-50"
                 onClick={() => setIsSearchOpen(!isSearchOpen)}
               >
-                <img
-                  src="/WhatsApp_Image_2025-12-21_at_6.52.59_PM__1_-removebg-preview.png"
-                  alt="Flower Lifestyle Logo"
-                  className="w-5 h-5"
-                />
+                <Search className="w-5 h-5" />
               </Button>
 
               {/* Wishlist */}
@@ -284,11 +280,7 @@ const Header = () => {
                     className="w-full px-4 py-3 pl-12 rounded-full border border-pink-200 focus:border-pink-400 focus:ring-2 focus:ring-pink-100 outline-none transition-all"
                     autoFocus
                   />
-                  <img
-                    src="/WhatsApp_Image_2025-12-21_at_6.52.59_PM__1_-removebg-preview.png"
-                    alt="Flower Lifestyle Logo"
-                    className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5"
-                  />
+                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                 </div>
               </div>
             </motion.div>

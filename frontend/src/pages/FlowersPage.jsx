@@ -267,11 +267,7 @@ const FlowersPage = ({ isMobile = false }) => {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-10 pr-4 py-3 rounded-xl border border-pink-200 focus:border-pink-400 focus:ring-2 focus:ring-pink-100 outline-none"
               />
-              <img
-                src="/WhatsApp_Image_2025-12-21_at_6.52.59_PM__1_-removebg-preview.png"
-                alt="Flower Lifestyle Logo"
-                className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5"
-              />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
             </div>
 
             {/* Sort */}
