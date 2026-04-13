@@ -156,7 +156,11 @@ const Header = () => {
                 className="text-gray-700 hover:text-pink-600 hover:bg-pink-50"
                 onClick={() => setIsSearchOpen(!isSearchOpen)}
               >
-                <Search className="w-5 h-5" />
+                <img
+                  src="/WhatsApp_Image_2025-12-21_at_6.52.59_PM__1_-removebg-preview.png"
+                  alt="Flower Lifestyle Logo"
+                  className="w-5 h-5"
+                />
               </Button>
 
               {/* Wishlist */}
