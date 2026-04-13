@@ -67,14 +67,6 @@ const HeroSection = ({ isMobile = false }) => {
               >
                 Send Flowers Today
               </Button>
-              <Button
-                size={isMobile ? "lg" : "lg"}
-                variant="outline"
-                className="border-pink-300 text-pink-600 hover:bg-pink-50 rounded-full px-10 bg-white/50 backdrop-blur-sm"
-                onClick={() => navigate('/flowers?category=romance')}
-              >
-                Valentine's
-              </Button>
             </div>
 
             {/* Trust Badges */}
