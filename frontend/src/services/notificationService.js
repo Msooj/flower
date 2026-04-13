@@ -38,8 +38,8 @@ class NotificationService {
 
     try {
       const notification = new Notification(title, {
-        icon: '/WhatsApp_Image_2025-12-21_at_6.52.59_PM.png',
-        badge: '/WhatsApp_Image_2025-12-21_at_6.52.59_PM.png',
+        icon: '/WhatsApp_Image_2025-12-21_at_6.52.59_PM__1_-removebg-preview.png',
+        badge: '/WhatsApp_Image_2025-12-21_at_6.52.59_PM__1_-removebg-preview.png',
         vibrate: [200, 100, 200],
         requireInteraction: false,
         ...options

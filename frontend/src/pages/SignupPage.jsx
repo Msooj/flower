@@ -157,7 +157,7 @@ const SignupPage = () => {
           <Link to="/" className="lg:hidden block mb-8 text-center">
             <div className="inline-flex items-center gap-3">
               <img
-                src="/WhatsApp_Image_2025-12-21_at_6.52.59_PM.png"
+                src="/WhatsApp_Image_2025-12-21_at_6.52.59_PM__1_-removebg-preview.png"
                 alt="Flower Lifestyle Logo"
                 className="h-12 w-auto"
               />
@@ -333,7 +333,7 @@ const SignupPage = () => {
         <div className="absolute inset-0 flex flex-col justify-center px-12">
           <Link to="/" className="absolute top-8 right-8 flex items-center gap-3">
             <img
-              src="/WhatsApp_Image_2025-12-21_at_6.52.59_PM.png"
+              src="/WhatsApp_Image_2025-12-21_at_6.52.59_PM__1_-removebg-preview.png"
               alt="Flower Lifestyle Logo"
               className="h-12 w-auto"
             />

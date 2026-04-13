@@ -7,27 +7,7 @@ import { supabase } from '../../lib/supabase';
 
 const HeroSection = ({ isMobile = false }) => {
   const navigate = useNavigate();
-  const [petaSonataImage, setPetaSonataImage] = useState('https://duazdpldzqodpucqoyta.supabase.co/storage/v1/object/public/products/products/1766216396653_hd1fdp.jpeg');
-
-  useEffect(() => {
-    const fetchPetaSonata = async () => {
-      try {
-        const { data, error } = await supabase
-          .from('products')
-          .select('image')
-          .eq('id', 'petal-sonata')
-          .single();
-
-        if (!error && data?.image) {
-          setPetaSonataImage(data.image);
-        }
-      } catch (err) {
-        console.error('Error fetching Petal Sonata image:', err);
-      }
-    };
-
-    fetchPetaSonata();
-  }, []);
+  const [petaSonataImage, setPetaSonataImage] = useState('/WhatsApp Image 2026-04-12 at 7.50.49 PM.jpeg');
 
   return (
     <section className={`relative overflow-hidden ${isMobile ? '' : 'bg-gradient-to-br from-pink-50 via-white to-pink-100'}`}>
@@ -36,7 +16,7 @@ const HeroSection = ({ isMobile = false }) => {
         <div className="absolute inset-0 z-0">
           <img
             src={petaSonataImage}
-            alt="Flower delivery Nairobi - Petal Sonata bouquet with pink and red roses for same day delivery"
+            alt="Fresh flower bouquet delivery in Nairobi - beautiful arrangement ready for same day delivery"
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-white/20" />
@@ -72,11 +52,11 @@ const HeroSection = ({ isMobile = false }) => {
             )}
 
             <h1 className={`${isMobile ? 'text-3xl text-center' : 'text-4xl md:text-5xl lg:text-5xl'} font-bold text-gray-900 leading-tight mb-4 md:mb-6`}>
-              Fresh Flower Delivery in Nairobi | Same Day Florist Services by <span className="text-gradient">FlowerLifestyle</span>
+              Fresh Flower Delivery in Nairobi
             </h1>
 
             <p className={`text-base md:text-lg text-gray-600 mb-6 md:mb-8 max-w-lg leading-relaxed ${isMobile ? 'text-center' : ''}`}>
-              Experience the luxury of hand-crafted bouquets with same-day delivery throughout Nairobi.
+              Same-day delivery. Beautiful bouquets for every moment.
             </p>
 
             <div className={`flex flex-col sm:flex-row gap-3 md:gap-4 ${isMobile ? 'mb-8 justify-center' : 'mb-12'}`}>
@@ -85,7 +65,7 @@ const HeroSection = ({ isMobile = false }) => {
                 className="bg-pink-500 hover:bg-pink-600 text-white rounded-full px-10 group shadow-lg"
                 onClick={() => navigate('/flowers')}
               >
-                Shop Now
+                Send Flowers Today
               </Button>
               <Button
                 size={isMobile ? "lg" : "lg"}
@@ -127,7 +107,7 @@ const HeroSection = ({ isMobile = false }) => {
                 <div className="relative rounded-3xl overflow-hidden shadow-2xl">
                   <img
                     src={petaSonataImage}
-                    alt="Flower delivery Nairobi - Petal Sonata bouquet with pink and red roses for same day delivery"
+                    alt="Fresh flower bouquet delivery in Nairobi - beautiful arrangement ready for same day delivery"
                     className="h-[500px] w-full object-cover"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-pink-900/20 to-transparent" />
