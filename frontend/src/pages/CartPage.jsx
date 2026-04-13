@@ -7,6 +7,7 @@ import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import { toast } from 'sonner';
 import { supabase } from '../lib/supabase';
+import PageMetaTags from '../components/seo/PageMetaTags';
 
 const CartPage = () => {
     const navigate = useNavigate();
@@ -408,6 +409,12 @@ const CartPage = () => {
 
     return (
         <div className="min-h-screen flex flex-col bg-gray-50">
+            <PageMetaTags 
+                title="Shopping Cart"
+                description="Your flower shopping cart"
+                canonicalUrl="https://www.flowerlifestyle.co.ke/cart"
+                robots="noindex, nofollow"
+            />
             <Header />
             <main className="flex-1 container mx-auto px-4 py-8">
                 <h1 className="text-3xl font-bold text-gray-900 mb-8">Shopping Cart</h1>

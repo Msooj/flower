@@ -150,13 +150,63 @@ const FlowersPage = ({ isMobile = false }) => {
     setSearchParams(searchParams);
   };
 
+  const getCategoryContent = (categorySlug) => {
+    const categoryContent = {
+      'birthday': {
+        title: 'Birthday Flowers Nairobi | Same Day Delivery',
+        description: 'Celebrate birthdays with beautiful flower bouquets delivered same day in Nairobi. Fresh birthday flowers, cake combos, and special arrangements.',
+        keywords: 'birthday flowers Nairobi, birthday flower delivery, birthday bouquets Kenya, same day birthday flowers',
+        content: 'Make their birthday unforgettable with our stunning birthday flower collection. From vibrant roses to elegant lilies, each bouquet is hand-crafted with fresh blooms and delivered with care throughout Nairobi.',
+        h1: 'Birthday Flowers in Nairobi'
+      },
+      'romance': {
+        title: 'Romantic Flowers Nairobi | Anniversary & Love Bouquets',
+        description: 'Express your love with romantic flowers in Nairobi. Red roses, romantic bouquets, anniversary flowers with same-day delivery.',
+        keywords: 'romantic flowers Nairobi, red roses delivery, anniversary flowers, romantic bouquets Kenya',
+        content: 'Ignite romance with our collection of passionate red roses and romantic arrangements. Perfect for anniversaries, date nights, or when you want to say "I love you" with flowers.',
+        h1: 'Romantic Flowers & Roses'
+      },
+      'roses': {
+        title: 'Roses Delivery Nairobi | Red Roses & Premium Rose Bouquets',
+        description: 'Premium roses delivery in Nairobi. Red roses, pink roses, white roses with same-day delivery. Fresh rose bouquets for every occasion.',
+        keywords: 'roses delivery Nairobi, red roses Nairobi, rose bouquets Kenya, fresh roses delivery',
+        content: 'Experience the timeless elegance of roses. Our premium rose collection features the freshest blooms in stunning arrangements, from classic red roses to delicate pink and white varieties.',
+        h1: 'Premium Roses Collection'
+      },
+      'anniversary': {
+        title: 'Anniversary Flowers Nairobi | Wedding Anniversary Bouquets',
+        description: 'Celebrate your anniversary with beautiful flowers in Nairobi. Anniversary bouquets, romantic arrangements, same-day delivery.',
+        keywords: 'anniversary flowers Nairobi, anniversary bouquets, wedding anniversary flowers, romantic anniversary gifts',
+        content: 'Mark your special milestone with anniversary flowers that capture your love story. Our anniversary collection features elegant arrangements that symbolize your enduring commitment.',
+        h1: 'Anniversary Flowers'
+      },
+      'combos': {
+        title: 'Flower Combos Nairobi | Flowers with Cakes & Gifts',
+        description: 'Flower combos in Nairobi with cakes, chocolates, and gifts. Perfect flower and gift combinations for every occasion.',
+        keywords: 'flower combos Nairobi, flowers with cake, flower gift sets, flower and chocolate combos',
+        content: 'Elevate your gifting with our exclusive flower combinations. From flowers with cakes to gift sets with chocolates, our combos create unforgettable moments.',
+        h1: 'Flower Combos & Gift Sets'
+      }
+    };
+
+    return categoryContent[categorySlug] || {
+      title: 'Order Flowers Online Nairobi | Fresh Flower Delivery',
+      description: 'Browse fresh flowers in Nairobi. Birthday flowers, anniversary bouquets, romance arrangements, roses, and combos. Same-day delivery available.',
+      keywords: 'order flowers online Nairobi, fresh flowers Nairobi, flower delivery Nairobi, nairobi florist',
+      content: 'Browse our stunning collection of handcrafted floral arrangements, perfect for any occasion.',
+      h1: 'All Flowers'
+    };
+  };
+
+  const currentCategoryContent = getCategoryContent(activeCategory);
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-pink-50 to-white">
       <PageMetaTags 
-        title="Order Flowers Online Nairobi | Birthday, Anniversary & Romance Bouquets"
-        description="Browse fresh flowers in Nairobi. Birthday flowers, anniversary bouquets, romance arrangements, roses, and combos. Same-day delivery available."
-        keywords="order flowers online Nairobi, birthday flowers Nairobi, anniversary bouquets Kenya, romance flowers, roses delivery, flower combos, fresh flowers Nairobi"
-        canonicalUrl="https://www.flowerlifestyle.co.ke/flowers"
+        title={currentCategoryContent.title}
+        description={currentCategoryContent.description}
+        keywords={currentCategoryContent.keywords}
+        canonicalUrl={`https://www.flowerlifestyle.co.ke/flowers${activeCategory !== 'all' ? `?category=${activeCategory}` : ''}`}
       />
       <Header />
 
@@ -168,16 +218,15 @@ const FlowersPage = ({ isMobile = false }) => {
             animate={{ opacity: 1, y: 0 }}
             className="text-2xl md:text-4xl font-bold text-gray-900 mb-3 md:mb-4"
           >
-            {activeCategory === 'all' ? 'All Flowers' :
-              categories.find(c => c.slug === activeCategory)?.name || 'Shop Flowers'}
+            {currentCategoryContent.h1}
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="text-gray-600 max-w-2xl mx-auto text-sm md:text-base"
+            className="text-gray-600 max-w-3xl mx-auto text-sm md:text-base leading-relaxed"
           >
-            Browse our stunning collection of handcrafted floral arrangements
+            {currentCategoryContent.content}
           </motion.p>
 
           {/* Mobile Category Dropdown */}

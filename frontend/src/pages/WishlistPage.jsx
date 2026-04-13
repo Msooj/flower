@@ -8,6 +8,7 @@ import Footer from '../components/layout/Footer';
 import { useWishlist } from '../context/WishlistContext';
 import { useCart } from '../context/CartContext';
 import { toast } from 'sonner';
+import PageMetaTags from '../components/seo/PageMetaTags';
 
 const WishlistPage = () => {
     const { wishlist, removeFromWishlist } = useWishlist();
@@ -21,6 +22,12 @@ const WishlistPage = () => {
 
     return (
         <div className="min-h-screen bg-gradient-to-b from-pink-50 to-white">
+            <PageMetaTags 
+                title="Wishlist"
+                description="Your saved flower favorites"
+                canonicalUrl="https://www.flowerlifestyle.co.ke/wishlist"
+                robots="noindex, nofollow"
+            />
             <Header />
 
             <main className="container mx-auto px-4 py-8">

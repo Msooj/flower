@@ -5,6 +5,7 @@ import { Mail, Lock, Eye, EyeOff, ArrowRight } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { toast } from 'sonner';
 import { supabase } from '../lib/supabase';
+import PageMetaTags from '../components/seo/PageMetaTags';
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -249,6 +250,12 @@ const LoginPage = () => {
 
   return (
     <div className="min-h-screen flex">
+      <PageMetaTags 
+        title="Login"
+        description="Sign in to your Flower Lifestyle account"
+        canonicalUrl="https://www.flowerlifestyle.co.ke/login"
+        robots="noindex, nofollow"
+      />
       {/* Left Side - Image */}
       <div className="hidden lg:flex lg:w-1/2 relative">
         <img

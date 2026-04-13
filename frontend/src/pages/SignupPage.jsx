@@ -5,6 +5,7 @@ import { Mail, Lock, Eye, EyeOff, User, Phone, ArrowRight, Check } from 'lucide-
 import { Button } from '../components/ui/button';
 import { toast } from 'sonner';
 import { supabase } from '../lib/supabase';
+import PageMetaTags from '../components/seo/PageMetaTags';
 
 const SignupPage = () => {
   const navigate = useNavigate();
@@ -146,6 +147,12 @@ const SignupPage = () => {
 
   return (
     <div className="min-h-screen flex">
+      <PageMetaTags 
+        title="Sign Up"
+        description="Create your Flower Lifestyle account"
+        canonicalUrl="https://www.flowerlifestyle.co.ke/signup"
+        robots="noindex, nofollow"
+      />
       {/* Left Side - Form */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-gradient-to-b from-pink-50 to-white">
         <motion.div

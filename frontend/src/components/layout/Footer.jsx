@@ -73,13 +73,41 @@ const Footer = () => {
           <div>
             <h4 className="text-lg font-semibold text-gray-800 mb-4">Quick Links</h4>
             <ul className="space-y-3">
-              {['Shop All Flowers', 'Birthday Flowers', 'Romance & Love', 'Anniversary', 'Sympathy Flowers', 'Gift Combos'].map(
-                (link) => (
-                  <li key={link} className="text-gray-600">
-                    {link}
-                  </li>
-                )
-              )}
+              <li>
+                <Link to="/flowers" className="text-gray-600 hover:text-pink-600 transition-colors">
+                  Shop All Flowers
+                </Link>
+              </li>
+              <li>
+                <Link to="/flowers?category=birthday" className="text-gray-600 hover:text-pink-600 transition-colors">
+                  Birthday Flowers
+                </Link>
+              </li>
+              <li>
+                <Link to="/flowers?category=romance" className="text-gray-600 hover:text-pink-600 transition-colors">
+                  Romance & Love
+                </Link>
+              </li>
+              <li>
+                <Link to="/flowers?category=anniversary" className="text-gray-600 hover:text-pink-600 transition-colors">
+                  Anniversary
+                </Link>
+              </li>
+              <li>
+                <Link to="/flowers?category=roses" className="text-gray-600 hover:text-pink-600 transition-colors">
+                  Roses Collection
+                </Link>
+              </li>
+              <li>
+                <Link to="/flowers?category=combos" className="text-gray-600 hover:text-pink-600 transition-colors">
+                  Gift Combos
+                </Link>
+              </li>
+              <li>
+                <Link to="/about" className="text-gray-600 hover:text-pink-600 transition-colors">
+                  About Us
+                </Link>
+              </li>
             </ul>
           </div>
 
