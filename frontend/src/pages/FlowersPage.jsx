@@ -36,20 +36,18 @@ const FlowersPage = ({ isMobile = false }) => {
       try {
         setIsLoading(true);
         
-        // Use mock data immediately for faster initial load
-        setDbProducts(allProducts);
-        setIsLoading(false);
-        
-        // Then try to fetch from database in background
+        // Try to fetch from database first
         const { data, error } = await supabase
           .from('products')
           .select('id, name, price, original_price, image, category, badge, rating, reviews, stock, description')
           .order('created_at', { ascending: false })
-          .limit(50); // Limit to improve performance
+          .limit(50);
 
         if (error) {
           console.error('Products fetch error:', error);
-          // Mock data already set, no need to do anything
+          console.log('Database error, using fallback mock data');
+          setDbProducts(allProducts);
+          setIsLoading(false);
           return;
         }
 
@@ -70,11 +68,16 @@ const FlowersPage = ({ isMobile = false }) => {
           }));
           setDbProducts(normalizedProducts);
           console.log(`✅ Loaded ${normalizedProducts.length} products from database`);
+        } else {
+          console.log('No products in database, using fallback mock data');
+          setDbProducts(allProducts);
         }
-        // If no data, mock data is already set
       } catch (error) {
         console.error('Error fetching products:', error);
-        // Mock data already set, no need to do anything
+        console.log('Connection error, using fallback mock data');
+        setDbProducts(allProducts);
+      } finally {
+        setIsLoading(false);
       }
     };
 
