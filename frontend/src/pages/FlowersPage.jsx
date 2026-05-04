@@ -1,11 +1,12 @@
 import React, { useState, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Search, Filter, SlidersHorizontal, Grid3X3, LayoutGrid, Heart, ShoppingBag, Star, Eye, ChevronDown } from 'lucide-react';
+import { Search, Filter, SlidersHorizontal, Grid3X3, LayoutGrid, Heart, ShoppingBag, Star, Eye, ChevronDown, X } from 'lucide-react';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
+import ProductModal from '../components/ui/ProductModal';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { allProducts, categories } from '../data/mock';
 import { supabase } from '../lib/supabase';
@@ -25,6 +26,8 @@ const FlowersPage = ({ isMobile = false }) => {
   const [sortBy, setSortBy] = useState('featured');
   const [gridSize, setGridSize] = useState('large');
   const [showFilters, setShowFilters] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [dbProducts, setDbProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -129,6 +132,31 @@ const FlowersPage = ({ isMobile = false }) => {
   }, [dbProducts, activeCategory, searchQuery, sortBy]);
 
   const formatPrice = (price) => `KSh ${price.toLocaleString()}`;
+
+  // Product view handlers
+  const handleViewProduct = (product) => {
+    setSelectedProduct(product);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedProduct(null);
+  };
+
+  const handleAddToCart = (product) => {
+    addToCart(product);
+    toast.success(`${product.name} added to cart!`);
+  };
+
+  const handleToggleWishlist = (product) => {
+    toggleWishlist(product);
+    toast.success(
+      isInWishlist(product.id)
+        ? `${product.name} removed from wishlist!`
+        : `${product.name} added to wishlist!`
+    );
+  };
 
   const getBadgeColor = (badge) => {
     switch (badge) {
@@ -419,11 +447,18 @@ const FlowersPage = ({ isMobile = false }) => {
 
                       {/* Content */}
                       <div className="p-4">
-
                         <h3 className="font-semibold text-gray-800 mb-2 group-hover:text-pink-600 transition-colors line-clamp-1">
                           {product.name}
                         </h3>
-                        <div className="flex items-center gap-2">
+                        
+                        {/* Product Description */}
+                        <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+                          {product.description || 
+                            `Beautiful ${product.name} perfect for any occasion. Handcrafted with fresh flowers.`
+                          }
+                        </p>
+                        
+                        <div className="flex items-center gap-2 mb-3">
                           <span className="text-lg font-bold text-pink-600">
                             {formatPrice(product.price)}
                           </span>
@@ -433,6 +468,17 @@ const FlowersPage = ({ isMobile = false }) => {
                             </span>
                           )}
                         </div>
+                        
+                        {/* View Details Button */}
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="w-full border-pink-200 text-pink-600 hover:bg-pink-50 mb-2"
+                          onClick={() => handleViewProduct(product)}
+                        >
+                          <Eye className="w-4 h-4 mr-2" />
+                          View Details
+                        </Button>
                       </div>
                     </div>
                   </motion.div>
@@ -444,6 +490,16 @@ const FlowersPage = ({ isMobile = false }) => {
       </main>
 
       <Footer />
+
+      {/* Product Modal */}
+      <ProductModal
+        product={selectedProduct}
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        onAddToCart={handleAddToCart}
+        onToggleWishlist={handleToggleWishlist}
+        isInWishlist={isInWishlist}
+      />
     </div>
   );
 };
