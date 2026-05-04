@@ -23,7 +23,7 @@ const AdminPage = () => {
         name: '',
         description: '',
         price: '',
-        category: 'roses',
+        category: 'mothers-day',
         image: '',
         stock: 100
     });
@@ -471,7 +471,7 @@ const AdminPage = () => {
 
             if (error) throw error;
             toast.success(`Product "${newItem.name}" added successfully!`);
-            setNewItem({ name: '', description: '', price: '', category: 'roses', image: '', stock: 100 });
+            setNewItem({ name: '', description: '', price: '', category: 'mothers-day', image: '', stock: 100 });
             await loadProducts();
             setActiveTab('manage-products');
         } catch (error) {
@@ -1180,6 +1180,7 @@ const AdminPage = () => {
                                                         onChange={(e) => setEditingProduct({ ...editingProduct, category: e.target.value })}
                                                         className="w-full px-3 py-2 border rounded-lg text-sm"
                                                     >
+                                                        <option value="mothers-day">Mother's Day</option>
                                                         <option value="roses">Roses</option>
                                                         <option value="birthday">Birthday</option>
                                                         <option value="romance">Romance</option>
@@ -1355,6 +1356,7 @@ const AdminPage = () => {
                                             onChange={(e) => setNewItem({ ...newItem, category: e.target.value })}
                                             className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-pink-500 focus:ring-2 focus:ring-pink-100 outline-none"
                                         >
+                                            <option value="mothers-day">Mother's Day</option>
                                             <option value="roses">Roses</option>
                                             <option value="birthday">Birthday</option>
                                             <option value="romance">Romance</option>
