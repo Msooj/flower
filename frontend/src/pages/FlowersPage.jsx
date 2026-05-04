@@ -42,7 +42,8 @@ const FlowersPage = ({ isMobile = false }) => {
 
         if (error) {
           console.error('Products fetch error:', error);
-          setDbProducts([]);
+          console.log('Using fallback mock data due to database error');
+          setDbProducts(allProducts);
           return;
         }
 
@@ -62,12 +63,15 @@ const FlowersPage = ({ isMobile = false }) => {
             description: p.description || ''
           }));
           setDbProducts(normalizedProducts);
+          console.log(`✅ Loaded ${normalizedProducts.length} products from database`);
         } else {
-          setDbProducts([]);
+          console.log('No products in database, using fallback mock data');
+          setDbProducts(allProducts);
         }
       } catch (error) {
         console.error('Error fetching products:', error);
-        setDbProducts([]);
+        console.log('Using fallback mock data due to connection error');
+        setDbProducts(allProducts);
       } finally {
         setIsLoading(false);
       }
