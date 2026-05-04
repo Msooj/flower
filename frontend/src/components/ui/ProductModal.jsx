@@ -18,7 +18,7 @@ const ProductModal = ({ product, isOpen, onClose, onAddToCart, onToggleWishlist,
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 z-50"
+            className="fixed inset-0 bg-gradient-to-br from-pink-400/20 via-pink-500/30 to-pink-600/20 backdrop-blur-md z-50"
             onClick={onClose}
           />
           
@@ -27,7 +27,7 @@ const ProductModal = ({ product, isOpen, onClose, onAddToCart, onToggleWishlist,
             initial={{ opacity: 0, scale: 0.9, y: 50 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 50 }}
-            className="fixed inset-4 md:inset-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 bg-white rounded-2xl shadow-2xl z-50 overflow-hidden max-w-4xl w-full max-h-[90vh] md:max-h-[85vh] flex flex-col"
+            className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl z-50 overflow-hidden max-w-4xl w-full max-h-[90vh] md:max-h-[85vh] flex flex-col border border-white/20"
           >
             {/* Header */}
             <div className="flex items-center justify-between p-4 border-b border-gray-100">
@@ -103,27 +103,6 @@ const ProductModal = ({ product, isOpen, onClose, onAddToCart, onToggleWishlist,
                         </span>
                       )}
                     </div>
-                    
-                    {/* Rating */}
-                    {product.rating && (
-                      <div className="flex items-center gap-2 mb-4">
-                        <div className="flex">
-                          {[...Array(5)].map((_, i) => (
-                            <Star
-                              key={i}
-                              className={`w-4 h-4 ${
-                                i < Math.floor(product.rating)
-                                  ? 'text-yellow-400 fill-current'
-                                  : 'text-gray-300'
-                              }`}
-                            />
-                          ))}
-                        </div>
-                        <span className="text-sm text-gray-600">
-                          {product.rating} ({product.reviews || 0} reviews)
-                        </span>
-                      </div>
-                    )}
                   </div>
 
                   {/* Description */}
