@@ -242,7 +242,7 @@ const FlowersPage = ({ isMobile = false }) => {
       />
       <Header />
 
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto px-4 py-8 max-w-7xl">
         {/* Page Header */}
         <div className="text-center mb-6 md:mb-10">
           <motion.h1
@@ -288,10 +288,10 @@ const FlowersPage = ({ isMobile = false }) => {
         </div>
 
         {/* Filters & Search Bar */}
-        <div className="bg-white rounded-2xl shadow-sm border border-pink-100 p-4 mb-8">
-          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+        <div className="bg-white rounded-2xl shadow-sm border border-pink-100 p-4 mb-8 max-w-4xl mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
             {/* Search */}
-            <div className="flex-1 relative">
+            <div className="lg:col-span-2 relative">
               <input
                 type="text"
                 placeholder="Search flowers..."
@@ -304,7 +304,7 @@ const FlowersPage = ({ isMobile = false }) => {
 
             {/* Sort */}
             <Select value={sortBy} onValueChange={setSortBy}>
-              <SelectTrigger className="w-full lg:w-48 rounded-xl border-pink-200">
+              <SelectTrigger className="w-full rounded-xl border-pink-200">
                 <SelectValue placeholder="Sort by" />
               </SelectTrigger>
               <SelectContent>
@@ -317,7 +317,7 @@ const FlowersPage = ({ isMobile = false }) => {
             </Select>
 
             {/* Grid Toggle */}
-            <div className="hidden lg:flex items-center gap-2 border-l border-pink-200 pl-4">
+            <div className="hidden lg:flex items-center gap-2 border-l border-pink-200 pl-4 justify-center">
               <Button
                 variant={gridSize === 'large' ? 'default' : 'ghost'}
                 size="icon"
@@ -338,9 +338,9 @@ const FlowersPage = ({ isMobile = false }) => {
           </div>
         </div>
 
-        <div className="flex flex-col lg:flex-row gap-8">
+        <div className="flex flex-col lg:flex-row gap-8 max-w-7xl mx-auto">
           {/* Sidebar - Categories (Hidden on mobile as we have the dropdown at the top) */}
-          <aside className="hidden lg:block w-64 shrink-0">
+          <aside className="hidden lg:block w-64 shrink-0 mx-auto">
             <div className="bg-white rounded-2xl shadow-sm border border-pink-100 p-4 sticky top-24">
               <h3 className="font-semibold text-gray-800 mb-4 flex items-center gap-2">
                 <Filter className="w-5 h-5 text-pink-500" />
@@ -385,7 +385,7 @@ const FlowersPage = ({ isMobile = false }) => {
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-500"></div>
               </div>
             ) : filteredProducts.length === 0 ? (
-              <div className="text-center py-16 bg-white rounded-2xl border border-pink-100">
+              <div className="text-center py-16 bg-white rounded-2xl border border-pink-100 max-w-md mx-auto">
                 <p className="text-gray-500 text-lg">No products found matching your criteria.</p>
                 <Button
                   className="mt-4 bg-pink-500 hover:bg-pink-600"
@@ -398,9 +398,9 @@ const FlowersPage = ({ isMobile = false }) => {
                 </Button>
               </div>
             ) : (
-              <div className={`grid gap-4 md:gap-6 ${gridSize === 'large'
-                ? 'grid-cols-2 lg:grid-cols-3'
-                : 'grid-cols-2 lg:grid-cols-4'
+              <div className={`grid gap-4 md:gap-6 justify-items-center ${gridSize === 'large'
+                ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'
+                : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4'
                 }`}>
                 {filteredProducts.map((product, index) => (
                   <motion.div
