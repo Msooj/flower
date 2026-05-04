@@ -193,13 +193,12 @@ const FeaturedProducts = () => {
             viewport={{ once: true }}
             transition={{ delay: 0.2 }}
           >
-            <Button
-              variant="outline"
-              className="border-pink-300 text-pink-600 hover:bg-pink-50 rounded-full mt-4 md:mt-0"
-              onClick={() => navigate('/flowers')}
+            <a
+              href="/flowers"
+              className="border-pink-300 text-pink-600 hover:bg-pink-50 rounded-full mt-4 md:mt-0 inline-flex items-center justify-center text-center font-medium py-2 px-6 transition-colors"
             >
               View All Products
-            </Button>
+            </a>
           </motion.div>
         </div>
 

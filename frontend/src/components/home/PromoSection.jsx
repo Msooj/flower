@@ -29,13 +29,13 @@ const PromoSection = () => {
               <p className="text-white/90 mb-6 max-w-sm">
                 Get 15% off your first order! Use code <span className="font-bold">BLOOM15</span> at checkout.
               </p>
-              <Button
-                className="bg-white text-pink-600 hover:bg-pink-50 rounded-full group"
-                onClick={() => navigate('/flowers')}
+              <a
+                href="/flowers"
+                className="bg-white text-pink-600 hover:bg-pink-50 rounded-full group inline-flex items-center justify-center text-center font-medium py-3 px-8 transition-colors"
               >
                 Shop Now
                 <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </Button>
+              </a>
             </div>
             {/* Decorative */}
             <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-white/10 rounded-full" />
@@ -62,14 +62,13 @@ const PromoSection = () => {
               <p className="text-white/90 mb-6 max-w-sm">
                 Order before 2 PM for same day delivery within Nairobi. Express your love faster!
               </p>
-              <Button
-                variant="outline"
-                className="w-fit border-white text-white hover:bg-white hover:text-pink-600 rounded-full group"
-                onClick={() => navigate('/flowers')}
+              <a
+                href="/flowers"
+                className="w-fit border-white text-white hover:bg-white hover:text-pink-600 rounded-full group inline-flex items-center justify-center text-center font-medium py-3 px-8 transition-colors"
               >
                 Learn More
                 <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </Button>
+              </a>
             </div>
           </motion.div>
         </div>

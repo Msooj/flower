@@ -74,39 +74,39 @@ const Footer = () => {
             <h4 className="text-lg font-semibold text-gray-800 mb-4">Quick Links</h4>
             <ul className="space-y-3">
               <li>
-                <Link to="/flowers" className="text-gray-600 hover:text-pink-600 transition-colors">
+                <a href="/flowers" className="text-gray-600 hover:text-pink-600 transition-colors">
                   Shop All Flowers
-                </Link>
+                </a>
               </li>
               <li>
-                <Link to="/flowers?category=birthday" className="text-gray-600 hover:text-pink-600 transition-colors">
+                <a href="/flowers?category=birthday" className="text-gray-600 hover:text-pink-600 transition-colors">
                   Birthday Flowers
-                </Link>
+                </a>
               </li>
               <li>
-                <Link to="/flowers?category=romance" className="text-gray-600 hover:text-pink-600 transition-colors">
+                <a href="/flowers?category=romance" className="text-gray-600 hover:text-pink-600 transition-colors">
                   Romance & Love
-                </Link>
+                </a>
               </li>
               <li>
-                <Link to="/flowers?category=anniversary" className="text-gray-600 hover:text-pink-600 transition-colors">
+                <a href="/flowers?category=anniversary" className="text-gray-600 hover:text-pink-600 transition-colors">
                   Anniversary
-                </Link>
+                </a>
               </li>
               <li>
-                <Link to="/flowers?category=roses" className="text-gray-600 hover:text-pink-600 transition-colors">
+                <a href="/flowers?category=roses" className="text-gray-600 hover:text-pink-600 transition-colors">
                   Roses Collection
-                </Link>
+                </a>
               </li>
               <li>
-                <Link to="/flowers?category=combos" className="text-gray-600 hover:text-pink-600 transition-colors">
+                <a href="/flowers?category=combos" className="text-gray-600 hover:text-pink-600 transition-colors">
                   Gift Combos
-                </Link>
+                </a>
               </li>
               <li>
-                <Link to="/about" className="text-gray-600 hover:text-pink-600 transition-colors">
+                <a href="/about" className="text-gray-600 hover:text-pink-600 transition-colors">
                   About Us
-                </Link>
+                </a>
               </li>
             </ul>
           </div>

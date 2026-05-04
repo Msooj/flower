@@ -60,13 +60,12 @@ const HeroSection = ({ isMobile = false }) => {
             </p>
 
             <div className={`flex flex-col sm:flex-row gap-3 md:gap-4 ${isMobile ? 'mb-8 justify-center' : 'mb-12'}`}>
-              <Button
-                size={isMobile ? "lg" : "lg"}
-                className="bg-pink-500 hover:bg-pink-600 text-white rounded-full px-10 group shadow-lg"
-                onClick={() => navigate('/flowers')}
+              <a
+                href="/flowers"
+                className="bg-pink-500 hover:bg-pink-600 text-white rounded-full px-10 group shadow-lg inline-flex items-center justify-center text-center font-medium text-lg py-3 transition-colors"
               >
                 Send Flowers Today
-              </Button>
+              </a>
             </div>
 
             {/* Trust Badges */}
