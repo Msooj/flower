@@ -83,41 +83,62 @@ const AdminPage = () => {
         const file = event.target.files[0];
         if (!file) return;
 
-        // basic validation
+        // Basic validation
         if (!file.type.startsWith('image/')) {
             toast.error('Please upload an image file');
             return;
         }
 
-        if (file.size > 5 * 1024 * 1024) {
+        if (file.size > 5 * 1024 * 1024) { // 5MB limit
             toast.error('File size must be less than 5MB');
             return;
         }
 
         setIsUploading(true);
         try {
+            console.log('Starting upload for file:', file.name);
+            
             const fileExt = file.name.split('.').pop();
             const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
             const filePath = `products/${fileName}`;
 
             let uploadError = null;
 
-            // Retry loop for the "body stream" error
+            // Retry loop for "body stream" error
             for (let i = 0; i < 3; i++) {
                 try {
+                    console.log(`Upload attempt ${i + 1} for ${filePath}`);
                     const result = await supabase.storage
                         .from('products')
                         .upload(filePath, file);
 
-                    if (result.error && (result.error.message?.includes('body stream') || result.error.message?.includes('Failed to execute'))) {
-                        console.warn(`Upload attempt ${i + 1} failed with stream error, retrying...`);
-                        await new Promise(r => setTimeout(r, 1000));
-                        continue;
+                    if (result.error) {
+                        console.error(`Upload attempt ${i + 1} error:`, result.error);
+                        if (result.error.message?.includes('body stream') || result.error.message?.includes('Failed to execute')) {
+                            console.warn(`Upload attempt ${i + 1} failed with stream error, retrying...`);
+                            await new Promise(r => setTimeout(r, 1000));
+                            continue;
+                        }
+                        uploadError = result.error;
+                        break;
                     }
 
-                    uploadError = result.error;
-                    break;
+                    // Success - get public URL
+                    const { data: { publicUrl } } = supabase.storage
+                        .from('products')
+                        .getPublicUrl(filePath);
+
+                    console.log('Upload successful, public URL:', publicUrl);
+
+                    if (isEditing) {
+                        setEditingProduct({ ...editingProduct, image: publicUrl });
+                    } else {
+                        setNewItem({ ...newItem, image: publicUrl });
+                    }
+                    toast.success('Image uploaded successfully');
+                    return;
                 } catch (e) {
+                    console.error(`Upload attempt ${i + 1} catch:`, e);
                     if (e.message?.includes('body stream') || e.message?.includes('Failed to execute')) {
                         console.warn(`Upload catch ${i + 1} failed with stream error, retrying...`);
                         await new Promise(r => setTimeout(r, 1000));
@@ -130,19 +151,9 @@ const AdminPage = () => {
 
             if (uploadError) throw uploadError;
 
-            const { data: { publicUrl } } = supabase.storage
-                .from('products')
-                .getPublicUrl(filePath);
-
-            if (isEditing) {
-                setEditingProduct({ ...editingProduct, image: publicUrl });
-            } else {
-                setNewItem({ ...newItem, image: publicUrl });
-            }
-            toast.success('Image uploaded successfully');
         } catch (error) {
             console.error('Error uploading image:', error);
-            // Detailed troubleshooting for the user
+            // Detailed troubleshooting for user
             const errorMsg = error.message || 'Unknown error';
             toast.error(
                 <div className="text-xs">
@@ -150,8 +161,9 @@ const AdminPage = () => {
                     <p>To fix this, go to your Supabase Dashboard:</p>
                     <ol className="list-decimal ml-4 mt-1 space-y-1">
                         <li>Go to <strong>Storage</strong> and create a bucket named <strong>"products"</strong>.</li>
-                        <li>Set the bucket to <strong>"Public"</strong>.</li>
+                        <li>Set bucket to <strong>"Public"</strong>.</li>
                         <li>Add a <strong>Policy</strong> allowing "INSERT" and "SELECT" for authenticated users.</li>
+                        <li>Check your <strong>RLS policies</strong> for the products table.</li>
                     </ol>
                 </div>,
                 { duration: 10000 }
@@ -443,10 +455,13 @@ const AdminPage = () => {
         e.preventDefault();
 
         try {
-            if (!newItem.name.trim() || !newItem.price || !newItem.image.trim()) {
-                toast.error('Name, price, and image URL are required');
+            if (!newItem.name.trim() || !newItem.price) {
+                toast.error('Name and price are required');
                 return;
             }
+
+            // Image is optional - if not uploaded, use a placeholder
+            const imageUrl = newItem.image.trim() || 'https://images.unsplash.com/photo-1563241527-3004b7be0ffd?w=400';
 
             // Ensure session is valid before inserting
             const { data: { session } } = await supabase.auth.getSession();
@@ -459,7 +474,7 @@ const AdminPage = () => {
                 description: newItem.description.trim(),
                 price: parseFloat(newItem.price),
                 category: newItem.category,
-                image: newItem.image.trim(),
+                image: imageUrl,
                 stock: parseInt(newItem.stock) || 100,
                 rating: 5.0,
                 reviews: 0
