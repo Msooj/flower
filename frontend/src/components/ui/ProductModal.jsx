@@ -127,10 +127,6 @@ const ProductModal = ({ product, isOpen, onClose, onAddToCart, onToggleWishlist,
                         <Shield className="w-5 h-5 text-pink-500" />
                         <span>100% fresh flowers guaranteed</span>
                       </div>
-                      <div className="flex items-center gap-3 text-gray-600">
-                        <RefreshCw className="w-5 h-5 text-pink-500" />
-                        <span>7-day freshness guarantee</span>
-                      </div>
                     </div>
                   </div>
 
