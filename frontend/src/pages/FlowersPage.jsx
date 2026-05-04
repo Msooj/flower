@@ -35,45 +35,46 @@ const FlowersPage = ({ isMobile = false }) => {
     const fetchProducts = async () => {
       try {
         setIsLoading(true);
+        
+        // Use mock data immediately for faster initial load
+        setDbProducts(allProducts);
+        setIsLoading(false);
+        
+        // Then try to fetch from database in background
         const { data, error } = await supabase
           .from('products')
-          .select('*')
-          .order('created_at', { ascending: false });
+          .select('id, name, price, original_price, image, category, badge, rating, reviews, stock, description')
+          .order('created_at', { ascending: false })
+          .limit(50); // Limit to improve performance
 
         if (error) {
           console.error('Products fetch error:', error);
-          console.log('Using fallback mock data due to database error');
-          setDbProducts(allProducts);
+          // Mock data already set, no need to do anything
           return;
         }
 
         if (data && data.length > 0) {
-          // Ensure all products have required fields
+          // Optimized product normalization
           const normalizedProducts = data.map(p => ({
             id: p.id,
             name: p.name,
-            price: parseFloat(p.price) || 0,
-            originalPrice: p.original_price ? parseFloat(p.original_price) : null,
+            price: Number(p.price) || 0,
+            originalPrice: p.original_price ? Number(p.original_price) : null,
             image: p.image || '',
             category: p.category || 'roses',
             badge: p.badge || null,
-            rating: parseFloat(p.rating) || 5.0,
-            reviews: parseInt(p.reviews) || 0,
-            stock: parseInt(p.stock) || 0,
+            rating: Number(p.rating) || 5.0,
+            reviews: Number(p.reviews) || 0,
+            stock: Number(p.stock) || 0,
             description: p.description || ''
           }));
           setDbProducts(normalizedProducts);
           console.log(`✅ Loaded ${normalizedProducts.length} products from database`);
-        } else {
-          console.log('No products in database, using fallback mock data');
-          setDbProducts(allProducts);
         }
+        // If no data, mock data is already set
       } catch (error) {
         console.error('Error fetching products:', error);
-        console.log('Using fallback mock data due to connection error');
-        setDbProducts(allProducts);
-      } finally {
-        setIsLoading(false);
+        // Mock data already set, no need to do anything
       }
     };
 
@@ -98,41 +99,39 @@ const FlowersPage = ({ isMobile = false }) => {
   }, [activeCategory]);
 
   const filteredProducts = useMemo(() => {
-    let products = [...dbProducts];
+    let products = dbProducts;
+
+    // Early return if no products
+    if (!products || products.length === 0) return [];
 
     // Filter by category
     if (activeCategory && activeCategory !== 'all') {
       products = products.filter(p => p.category === activeCategory);
     }
 
-    // Filter by search
+    // Filter by search (optimized)
     if (searchQuery) {
-      products = products.filter(p =>
-        p.name.toLowerCase().includes(searchQuery.toLowerCase())
+      const searchLower = searchQuery.toLowerCase();
+      products = products.filter(p => 
+        p.name.toLowerCase().includes(searchLower)
       );
     }
 
-
-    // Sort
-    switch (sortBy) {
-      case 'price-low':
-        products.sort((a, b) => a.price - b.price);
-        break;
-      case 'price-high':
-        products.sort((a, b) => b.price - a.price);
-        break;
-      case 'rating':
-        products.sort((a, b) => b.rating - a.rating);
-        break;
-      case 'newest':
-        products.sort((a, b) => b.id - a.id);
-        break;
-      default:
-        // Featured - keep original order
-        break;
-    }
-
-    return products;
+    // Sort (optimized with stable sort)
+    return [...products].sort((a, b) => {
+      switch (sortBy) {
+        case 'price-low':
+          return a.price - b.price;
+        case 'price-high':
+          return b.price - a.price;
+        case 'rating':
+          return b.rating - a.rating;
+        case 'newest':
+          return b.id - a.id;
+        default:
+          return 0; // Featured - keep original order
+      }
+    });
   }, [dbProducts, activeCategory, searchQuery, sortBy]);
 
   const formatPrice = (price) => `KSh ${price.toLocaleString()}`;
@@ -407,7 +406,7 @@ const FlowersPage = ({ isMobile = false }) => {
                     key={product.id}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.05 }}
+                    transition={{ delay: Math.min(index * 0.02, 0.5) }} // Reduced delay, capped at 0.5s
                     className="group"
                   >
                     <div className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-pink-100">
@@ -416,6 +415,7 @@ const FlowersPage = ({ isMobile = false }) => {
                         <img
                           src={product.image}
                           alt={product.name}
+                          loading="lazy" // Add lazy loading for images
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                         />
                         {product.badge && (
