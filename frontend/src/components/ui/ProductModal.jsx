@@ -18,17 +18,17 @@ const ProductModal = ({ product, isOpen, onClose, onAddToCart, onToggleWishlist,
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-gradient-to-br from-pink-400/20 via-pink-500/30 to-pink-600/20 backdrop-blur-md z-[60]"
+            className="fixed inset-0 bg-gradient-to-br from-pink-400/20 via-pink-500/30 to-pink-600/20 backdrop-blur-md z-[60] flex items-center justify-center p-4"
             onClick={onClose}
-          />
-          
-          {/* Modal */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9, y: 50 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.9, y: 50 }}
-            className="fixed inset-0 md:inset-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl z-[70] overflow-hidden max-w-4xl w-full max-h-[90vh] md:max-h-[85vh] flex flex-col border border-white/20 m-4 md:m-0"
           >
+            {/* Modal */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 50 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 50 }}
+              className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl z-[70] overflow-hidden max-w-4xl w-full max-h-[90vh] md:max-h-[85vh] flex flex-col border border-white/20"
+              onClick={(e) => e.stopPropagation()}
+            >
             {/* Header */}
             <div className="flex items-center justify-between p-4 border-b border-gray-100">
               <h2 className="text-xl font-semibold text-gray-800">Product Details</h2>
@@ -168,6 +168,7 @@ const ProductModal = ({ product, isOpen, onClose, onAddToCart, onToggleWishlist,
                 </div>
               </div>
             </div>
+            </motion.div>
           </motion.div>
         </>
       )}
