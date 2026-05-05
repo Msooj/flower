@@ -530,8 +530,15 @@ const AdminPage = () => {
 
             // Ensure session is valid before inserting
             console.log('Getting session...');
-            const { data: { session } } = await supabase.auth.getSession();
-            console.log('Session:', session);
+            
+            // Add timeout to prevent hanging
+            const sessionPromise = supabase.auth.getSession();
+            const timeoutPromise = new Promise((_, reject) => 
+                setTimeout(() => reject(new Error('Session timeout')), 5000)
+            );
+            
+            const { data: { session } } = await Promise.race([sessionPromise, timeoutPromise]);
+            console.log('Session retrieved:', session ? '✓' : '✗');
             
             if (!session) {
                 console.log('No active session');
