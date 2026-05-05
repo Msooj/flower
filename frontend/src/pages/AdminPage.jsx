@@ -531,13 +531,25 @@ const AdminPage = () => {
             // Ensure session is valid before inserting
             console.log('Getting session...');
             
-            // Add timeout to prevent hanging
-            const sessionPromise = supabase.auth.getSession();
-            const timeoutPromise = new Promise((_, reject) => 
-                setTimeout(() => reject(new Error('Session timeout')), 5000)
-            );
+            // Try to use current session state first, then fallback to getSession
+            let session = null;
             
-            const { data: { session } } = await Promise.race([sessionPromise, timeoutPromise]);
+            // Use existing session if available
+            if (currentUser && currentUser.email) {
+                console.log('Using existing session state');
+                session = { user: { email: currentUser.email } };
+            } else {
+                // Fallback to getSession with longer timeout
+                console.log('Retrieving fresh session...');
+                const sessionPromise = supabase.auth.getSession();
+                const timeoutPromise = new Promise((_, reject) => 
+                    setTimeout(() => reject(new Error('Session timeout')), 15000)
+                );
+                
+                const { data } = await Promise.race([sessionPromise, timeoutPromise]);
+                session = data.session;
+            }
+            
             console.log('Session retrieved:', session ? '✓' : '✗');
             
             if (!session) {
