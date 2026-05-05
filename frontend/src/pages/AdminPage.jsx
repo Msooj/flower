@@ -650,15 +650,33 @@ const AdminPage = () => {
             };
             
             console.log('Product data to insert:', productData);
+            console.log('Supabase client URL:', supabase.supabaseUrl);
+            console.log('Products table reference:', supabase.from('products'));
 
             console.log('Inserting product into database...');
-            const { error } = await supabase
+            
+            // Add timeout to prevent hanging
+            const insertPromise = supabase
                 .from('products')
                 .insert([productData]);
+            
+            const insertTimeoutPromise = new Promise((_, reject) => 
+                setTimeout(() => reject(new Error('Database insert timeout')), 10000)
+            );
+            
+            const { error } = await Promise.race([insertPromise, insertTimeoutPromise]);
 
             console.log('Insert result:', { error });
-
-            if (error) throw error;
+            
+            if (error) {
+                console.error('Database insert error details:', {
+                    message: error.message,
+                    details: error.details,
+                    hint: error.hint,
+                    code: error.code
+                });
+                throw error;
+            }
             
             console.log('Product added successfully');
             toast.success(`Product "${newItem.name}" added successfully!`);
