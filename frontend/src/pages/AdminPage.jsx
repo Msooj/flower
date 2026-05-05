@@ -511,20 +511,30 @@ const AdminPage = () => {
     };
 
     const handleAddItem = async (e) => {
+        console.log('handleAddItem called');
         e.preventDefault();
+        console.log('Form submitted');
 
         try {
+            console.log('Form data:', newItem);
+            
             if (!newItem.name.trim() || !newItem.price) {
+                console.log('Validation failed - missing name or price');
                 toast.error('Name and price are required');
                 return;
             }
 
             // Image is optional - if not uploaded, use a placeholder
             const imageUrl = newItem.image.trim() || 'https://images.unsplash.com/photo-1563241527-3004b7be0ffd?w=400';
+            console.log('Using image URL:', imageUrl);
 
             // Ensure session is valid before inserting
+            console.log('Getting session...');
             const { data: { session } } = await supabase.auth.getSession();
+            console.log('Session:', session);
+            
             if (!session) {
+                console.log('No active session');
                 throw new Error('No active session. Please log in again.');
             }
 
@@ -538,18 +548,36 @@ const AdminPage = () => {
                 rating: 5.0,
                 reviews: 0
             };
+            
+            console.log('Product data to insert:', productData);
 
+            console.log('Inserting product into database...');
             const { error } = await supabase
                 .from('products')
                 .insert([productData]);
 
+            console.log('Insert result:', { error });
+
             if (error) throw error;
+            
+            console.log('Product added successfully');
             toast.success(`Product "${newItem.name}" added successfully!`);
+            
+            console.log('Resetting form...');
             setNewItem({ name: '', description: '', price: '', category: 'mothers-day', image: '', stock: 100 });
+            
+            console.log('Loading products...');
             await loadProducts();
+            
+            console.log('Switching to manage products tab...');
             setActiveTab('manage-products');
         } catch (error) {
             console.error('Error adding product:', error);
+            console.error('Full error details:', {
+                message: error.message,
+                stack: error.stack,
+                name: error.name
+            });
             toast.error(`Failed to add product: ${error.message}`);
         }
     };
