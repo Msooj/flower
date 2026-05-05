@@ -289,15 +289,28 @@ const AdminPage = () => {
             const errorMsg = error.message || 'Unknown error';
             toast.error(
                 <div className="text-xs">
-                    <p className="font-bold mb-1">Upload Failed: {errorMsg}</p>
+                    <p className="font-bold mb-1">Product Addition Failed: {errorMsg}</p>
                     <p className="mb-2">Please check:</p>
                     <ol className="list-decimal ml-4 mt-1 space-y-1">
-                        <li>Supabase Storage bucket "products" exists</li>
-                        <li>Bucket is set to "Public"</li>
+                        <li>Supabase Storage bucket "products" exists and is public</li>
                         <li>Storage policy allows "INSERT" for authenticated users</li>
+                        <li><strong>RLS Policy on products table allows INSERT for admin users</strong></li>
+                        <li>User_profiles table exists and has role column</li>
+                        <li>Your user has role='admin' in user_profiles table</li>
                         <li>File size is less than 5MB</li>
                         <li>File is a valid image format</li>
                     </ol>
+                    <div className="mt-3 p-2 bg-yellow-100 rounded">
+                        <p className="font-bold text-xs mb-1">Required RLS Policy for products table:</p>
+                        <code className="block text-xs bg-gray-800 text-white p-2 rounded">
+{`CREATE POLICY "Admins can insert products" ON products
+FOR INSERT
+TO authenticated users
+USING (
+    (SELECT role FROM user_profiles WHERE user_profiles.id = auth.uid())
+) = 'admin';`}
+                        </code>
+                    </div>
                     <button 
                         onClick={checkSupabaseStorage}
                         className="mt-2 px-2 py-1 bg-blue-500 text-white rounded text-xs"
@@ -306,7 +319,7 @@ const AdminPage = () => {
                     </button>
                     <p className="mt-2">Check browser console (F12) for detailed error information.</p>
                 </div>,
-                { duration: 15000 }
+                { duration: 20000 }
             );
         } finally {
             console.log('Upload process completed, setting isUploading to false');
@@ -637,6 +650,23 @@ const AdminPage = () => {
                 console.log('No active session');
                 throw new Error('No active session. Please log in again.');
             }
+
+            // Check if user is admin before allowing product insertion
+            console.log('Checking user role...');
+            const { data: profileData } = await supabase
+                .from('user_profiles')
+                .select('role')
+                .eq('id', session.user.id)
+                .single();
+            
+            console.log('User profile:', profileData);
+            
+            if (!profileData.data || profileData.data.role !== 'admin') {
+                console.log('❌ User is not admin:', profileData.data?.role);
+                throw new Error('Only administrators can add products. Your account does not have admin privileges.');
+            }
+            
+            console.log('✅ User is admin, proceeding with product insertion');
 
             const productData = {
                 name: newItem.name.trim(),
