@@ -45,17 +45,16 @@ const AdminPage = () => {
     }, [activeTab]);
 
     const checkAdminAuth = async () => {
-        const timeout = new Promise((resolve) =>
-            setTimeout(() => resolve({ data: { session: null }, timedOut: true }), 5000)
-        );
-
         try {
-            const result = await Promise.race([
-                supabase.auth.getSession(),
-                timeout
-            ]);
+            const { data, error } = await supabase.auth.getSession();
 
-            const session = result?.data?.session;
+            if (error) {
+                console.error('Session check error:', error);
+                setIsAuthenticated(false);
+                return;
+            }
+
+            const session = data?.session;
 
             if (!session) {
                 setIsAuthenticated(false);
@@ -198,15 +197,10 @@ const AdminPage = () => {
         try {
             if (!navigator.onLine) throw new Error('No internet connection');
 
-            const signInPromise = supabase.auth.signInWithPassword({
+            const { data, error } = await supabase.auth.signInWithPassword({
                 email: adminLoginData.email,
                 password: adminLoginData.password
             });
-            const abortTimeout = new Promise((_, reject) =>
-                setTimeout(() => reject(new Error('Network timeout. Your connection is too slow.')), 15000)
-            );
-
-            const { data, error } = await Promise.race([signInPromise, abortTimeout]);
 
             if (error) throw error;
             if (!data?.session) throw new Error('Login succeeded but no session returned');
