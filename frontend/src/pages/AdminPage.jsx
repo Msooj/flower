@@ -78,6 +78,59 @@ const AdminPage = () => {
         }
     };
 
+    const checkSupabaseStorage = async () => {
+        try {
+            console.log('Checking Supabase Storage configuration...');
+            
+            // Check if user is authenticated
+            const { data: authData } = await supabase.auth.getSession();
+            if (!authData.session) {
+                console.log('❌ User not authenticated');
+                return false;
+            }
+            console.log('✅ User authenticated');
+            
+            // Check if products bucket exists by trying to list files
+            const { data: listData, error: listError } = await supabase.storage
+                .from('products')
+                .list('', { limit: 1 });
+            
+            if (listError) {
+                console.log('❌ Products bucket issue:', listError);
+                console.log('Error details:', {
+                    message: listError.message,
+                    statusCode: listError.statusCode,
+                    error: listError.error
+                });
+                return false;
+            }
+            console.log('✅ Products bucket accessible');
+            
+            // Test upload permissions with a small test file
+            const testFileName = `test_${Date.now()}.txt`;
+            const testFile = new Blob(['test'], { type: 'text/plain' });
+            
+            const { data: uploadData, error: uploadError } = await supabase.storage
+                .from('products')
+                .upload(testFileName, testFile);
+            
+            if (uploadError) {
+                console.log('❌ Upload permission issue:', uploadError);
+                return false;
+            }
+            console.log('✅ Upload permissions working');
+            
+            // Clean up test file
+            await supabase.storage.from('products').remove([testFileName]);
+            console.log('✅ Test file cleaned up');
+            
+            return true;
+        } catch (error) {
+            console.log('❌ Storage check failed:', error);
+            return false;
+        }
+    };
+
     const handleFileUpload = async (event, isEditing = false) => {
         console.log('handleFileUpload called, isEditing:', isEditing);
         console.log('Event target:', event.target);
@@ -138,6 +191,22 @@ const AdminPage = () => {
                 try {
                     console.log(`Upload attempt ${i + 1} for ${filePath}`);
                     console.log('Supabase storage client:', supabase.storage);
+                    console.log('Supabase client URL:', supabase.supabaseUrl);
+                    console.log('File details for upload:', {
+                        name: file.name,
+                        size: file.size,
+                        type: file.type,
+                        lastModified: file.lastModified
+                    });
+                    
+                    // Check if user is authenticated before upload
+                    console.log('Checking authentication before upload...');
+                    const { data: authData } = await supabase.auth.getSession();
+                    console.log('Auth status:', authData.session ? 'Authenticated' : 'Not authenticated');
+                    
+                    if (!authData.session) {
+                        throw new Error('User not authenticated - cannot upload to Supabase Storage');
+                    }
                     
                     // Add timeout to prevent hanging
                     const uploadPromise = supabase.storage
@@ -229,6 +298,12 @@ const AdminPage = () => {
                         <li>File size is less than 5MB</li>
                         <li>File is a valid image format</li>
                     </ol>
+                    <button 
+                        onClick={checkSupabaseStorage}
+                        className="mt-2 px-2 py-1 bg-blue-500 text-white rounded text-xs"
+                    >
+                        Test Storage Connection
+                    </button>
                     <p className="mt-2">Check browser console (F12) for detailed error information.</p>
                 </div>,
                 { duration: 15000 }
