@@ -148,7 +148,7 @@ const AdminPage = () => {
                         });
                     
                     const uploadTimeoutPromise = new Promise((_, reject) => 
-                        setTimeout(() => reject(new Error('Upload timeout - please try again')), 10000)
+                        setTimeout(() => reject(new Error('Upload timeout - please try again')), 30000)
                     );
                     
                     const result = await Promise.race([uploadPromise, uploadTimeoutPromise]);
