@@ -80,20 +80,29 @@ const AdminPage = () => {
     };
 
     const handleFileUpload = async (event, isEditing = false) => {
+        console.log('handleFileUpload called, isEditing:', isEditing);
         const file = event.target.files[0];
-        if (!file) return;
+        console.log('Selected file:', file);
+        
+        if (!file) {
+            console.log('No file selected');
+            return;
+        }
 
         // Basic validation
         if (!file.type.startsWith('image/')) {
+            console.log('Invalid file type:', file.type);
             toast.error('Please upload an image file');
             return;
         }
 
         if (file.size > 5 * 1024 * 1024) { // 5MB limit
+            console.log('File too large:', file.size);
             toast.error('File size must be less than 5MB');
             return;
         }
 
+        console.log('File validation passed, starting upload');
         setIsUploading(true);
         try {
             console.log('Starting upload for file:', file.name);
@@ -101,6 +110,8 @@ const AdminPage = () => {
             const fileExt = file.name.split('.').pop();
             const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
             const filePath = `products/${fileName}`;
+
+            console.log('Generated filePath:', filePath);
 
             let uploadError = null;
 
@@ -111,6 +122,8 @@ const AdminPage = () => {
                     const result = await supabase.storage
                         .from('products')
                         .upload(filePath, file);
+
+                    console.log('Upload result:', result);
 
                     if (result.error) {
                         console.error(`Upload attempt ${i + 1} error:`, result.error);
@@ -124,15 +137,18 @@ const AdminPage = () => {
                     }
 
                     // Success - get public URL
+                    console.log('Upload successful, getting public URL');
                     const { data: { publicUrl } } = supabase.storage
                         .from('products')
                         .getPublicUrl(filePath);
 
-                    console.log('Upload successful, public URL:', publicUrl);
+                    console.log('Public URL retrieved:', publicUrl);
 
                     if (isEditing) {
+                        console.log('Updating editing product image');
                         setEditingProduct({ ...editingProduct, image: publicUrl });
                     } else {
+                        console.log('Updating new item image');
                         setNewItem({ ...newItem, image: publicUrl });
                     }
                     toast.success('Image uploaded successfully');
@@ -163,12 +179,13 @@ const AdminPage = () => {
                         <li>Go to <strong>Storage</strong> and create a bucket named <strong>"products"</strong>.</li>
                         <li>Set bucket to <strong>"Public"</strong>.</li>
                         <li>Add a <strong>Policy</strong> allowing "INSERT" and "SELECT" for authenticated users.</li>
-                        <li>Check your <strong>RLS policies</strong> for the products table.</li>
+                        <li>Check your <strong>RLS policies</strong> for products table.</li>
                     </ol>
                 </div>,
                 { duration: 10000 }
             );
         } finally {
+            console.log('Upload process completed, setting isUploading to false');
             setIsUploading(false);
         }
     };
@@ -1402,7 +1419,10 @@ const AdminPage = () => {
                                                     <input
                                                         type="file"
                                                         accept="image/*"
-                                                        onChange={(e) => handleFileUpload(e)}
+                                                        onChange={(e) => {
+                                                            console.log('File input changed:', e.target.files);
+                                                            handleFileUpload(e);
+                                                        }}
                                                         className="hidden"
                                                         id="product-image-upload"
                                                         disabled={isUploading}
