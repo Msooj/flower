@@ -653,13 +653,18 @@ USING (
 
             // Check if user is admin before allowing product insertion
             console.log('Checking user role...');
-            const { data: profileData } = await supabase
+            const { data: profileData, error: profileError } = await supabase
                 .from('user_profiles')
                 .select('role')
                 .eq('id', session.user.id)
-                .single();
+                .maybeSingle(); // Use maybeSingle instead of single
             
-            console.log('User profile:', profileData);
+            console.log('Profile query result:', { data: profileData, error: profileError });
+            
+            if (profileError) {
+                console.log('❌ Profile query error:', profileError);
+                throw new Error(`Profile check failed: ${profileError.message}`);
+            }
             
             if (!profileData.data || profileData.data.role !== 'admin') {
                 console.log('❌ User is not admin:', profileData.data?.role);
