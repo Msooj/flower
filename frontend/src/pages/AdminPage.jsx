@@ -139,13 +139,19 @@ const AdminPage = () => {
                     console.log(`Upload attempt ${i + 1} for ${filePath}`);
                     console.log('Supabase storage client:', supabase.storage);
                     
-                    const result = await supabase.storage
+                    // Add timeout to prevent hanging
+                    const uploadPromise = supabase.storage
                         .from('products')
                         .upload(filePath, file, {
                             cacheControl: '3600',
                             upsert: false
                         });
-
+                    
+                    const uploadTimeoutPromise = new Promise((_, reject) => 
+                        setTimeout(() => reject(new Error('Upload timeout - please try again')), 10000)
+                    );
+                    
+                    const result = await Promise.race([uploadPromise, uploadTimeoutPromise]);
                     console.log('Upload result:', result);
 
                     if (result.error) {
