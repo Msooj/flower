@@ -80,37 +80,56 @@ const AdminPage = () => {
 
     const handleFileUpload = async (event, isEditing = false) => {
         console.log('handleFileUpload called, isEditing:', isEditing);
+        console.log('Event target:', event.target);
+        console.log('Files object:', event.target.files);
+        
         const file = event.target.files[0];
         console.log('Selected file:', file);
+        console.log('File details:', {
+            name: file?.name,
+            size: file?.size,
+            type: file?.type,
+            lastModified: file?.lastModified
+        });
         
         if (!file) {
             console.log('No file selected');
+            toast.error('Please select a file first');
             return;
         }
 
         // Basic validation
         if (!file.type.startsWith('image/')) {
             console.log('Invalid file type:', file.type);
-            toast.error('Please upload an image file');
+            toast.error(`Please upload an image file. Selected type: ${file.type}`);
             return;
         }
 
         if (file.size > 5 * 1024 * 1024) { // 5MB limit
             console.log('File too large:', file.size);
-            toast.error('File size must be less than 5MB');
+            toast.error(`File size must be less than 5MB. Selected size: ${(file.size / 1024 / 1024).toFixed(2)}MB`);
             return;
         }
 
         console.log('File validation passed, starting upload');
         setIsUploading(true);
+        
         try {
             console.log('Starting upload for file:', file.name);
+            console.log('File size:', file.size, 'bytes');
+            console.log('File type:', file.type);
             
             const fileExt = file.name.split('.').pop();
             const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
             const filePath = `products/${fileName}`;
 
             console.log('Generated filePath:', filePath);
+            console.log('File extension:', fileExt);
+
+            // Check if Supabase client is available
+            if (!supabase) {
+                throw new Error('Supabase client not available');
+            }
 
             let uploadError = null;
 
@@ -118,15 +137,28 @@ const AdminPage = () => {
             for (let i = 0; i < 3; i++) {
                 try {
                     console.log(`Upload attempt ${i + 1} for ${filePath}`);
+                    console.log('Supabase storage client:', supabase.storage);
+                    
                     const result = await supabase.storage
                         .from('products')
-                        .upload(filePath, file);
+                        .upload(filePath, file, {
+                            cacheControl: '3600',
+                            upsert: false
+                        });
 
                     console.log('Upload result:', result);
 
                     if (result.error) {
                         console.error(`Upload attempt ${i + 1} error:`, result.error);
-                        if (result.error.message?.includes('body stream') || result.error.message?.includes('Failed to execute')) {
+                        console.error('Error details:', {
+                            message: result.error.message,
+                            statusCode: result.error.statusCode,
+                            error: result.error.error
+                        });
+                        
+                        if (result.error.message?.includes('body stream') || 
+                            result.error.message?.includes('Failed to execute') ||
+                            result.error.message?.includes('timeout')) {
                             console.warn(`Upload attempt ${i + 1} failed with stream error, retrying...`);
                             await new Promise(r => setTimeout(r, 1000));
                             continue;
@@ -154,7 +186,11 @@ const AdminPage = () => {
                     return;
                 } catch (e) {
                     console.error(`Upload attempt ${i + 1} catch:`, e);
-                    if (e.message?.includes('body stream') || e.message?.includes('Failed to execute')) {
+                    console.error('Error stack:', e.stack);
+                    
+                    if (e.message?.includes('body stream') || 
+                        e.message?.includes('Failed to execute') ||
+                        e.message?.includes('timeout')) {
                         console.warn(`Upload catch ${i + 1} failed with stream error, retrying...`);
                         await new Promise(r => setTimeout(r, 1000));
                         continue;
@@ -168,24 +204,36 @@ const AdminPage = () => {
 
         } catch (error) {
             console.error('Error uploading image:', error);
+            console.error('Full error details:', {
+                message: error.message,
+                stack: error.stack,
+                name: error.name
+            });
+            
             // Detailed troubleshooting for user
             const errorMsg = error.message || 'Unknown error';
             toast.error(
                 <div className="text-xs">
                     <p className="font-bold mb-1">Upload Failed: {errorMsg}</p>
-                    <p>To fix this, go to your Supabase Dashboard:</p>
+                    <p className="mb-2">Please check:</p>
                     <ol className="list-decimal ml-4 mt-1 space-y-1">
-                        <li>Go to <strong>Storage</strong> and create a bucket named <strong>"products"</strong>.</li>
-                        <li>Set bucket to <strong>"Public"</strong>.</li>
-                        <li>Add a <strong>Policy</strong> allowing "INSERT" and "SELECT" for authenticated users.</li>
-                        <li>Check your <strong>RLS policies</strong> for products table.</li>
+                        <li>Supabase Storage bucket "products" exists</li>
+                        <li>Bucket is set to "Public"</li>
+                        <li>Storage policy allows "INSERT" for authenticated users</li>
+                        <li>File size is less than 5MB</li>
+                        <li>File is a valid image format</li>
                     </ol>
+                    <p className="mt-2">Check browser console (F12) for detailed error information.</p>
                 </div>,
-                { duration: 10000 }
+                { duration: 15000 }
             );
         } finally {
             console.log('Upload process completed, setting isUploading to false');
             setIsUploading(false);
+            // Reset file input
+            if (event.target) {
+                event.target.value = '';
+            }
         }
     };
 
