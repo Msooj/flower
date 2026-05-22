@@ -605,7 +605,7 @@ USING (
     };
 
     const handleAddItem = async (e) => {
-        console.log('handleAddItem called');
+        console.log('=== handleAddItem called ===');
         e.preventDefault();
         console.log('Form submitted');
 
@@ -1694,9 +1694,15 @@ USING (
                                 </div>
 
                                 <div className="pt-4">
-                                    <Button type="submit" className="w-full py-6 bg-pink-600 hover:bg-pink-700 text-white rounded-xl">
+                                    <button 
+                                        type="submit" 
+                                        className="w-full py-6 bg-pink-600 hover:bg-pink-700 text-white rounded-xl font-semibold"
+                                        onClick={(e) => {
+                                            console.log('Button clicked directly');
+                                        }}
+                                    >
                                         Add Product
-                                    </Button>
+                                    </button>
                                 </div>
                             </form>
                         </div>
