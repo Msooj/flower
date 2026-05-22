@@ -31,6 +31,7 @@ const AdminPage = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [isLoggingIn, setIsLoggingIn] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
+    const [isAddingProduct, setIsAddingProduct] = useState(false);
     const [users, setUsers] = useState([]);
     const [dataLoading, setDataLoading] = useState({ users: false, orders: false, products: false });
 
@@ -347,15 +348,17 @@ USING (
             if (error) throw error;
             if (!data?.session) throw new Error('Login succeeded but no session returned');
 
-            // Upgrade profile to admin (fire and forget)
-            supabase.from('user_profiles').upsert({
+            const { error: profileError } = await supabase.from('user_profiles').upsert({
                 id: data.session.user.id,
                 email: data.session.user.email,
                 role: 'admin',
                 updated_at: new Date().toISOString()
-            }, { onConflict: 'id' }).then(({ error: e }) => {
-                if (e) console.warn('Profile upgrade warning:', e);
-            });
+            }, { onConflict: 'id' });
+
+            if (profileError) {
+                console.warn('Profile upgrade warning:', profileError);
+                toast.warning('Logged in, but admin profile may not be saved. Product add could fail until profile is fixed.');
+            }
 
             setCurrentUser({ email: data.session.user.email, role: 'admin' });
             setIsAuthenticated(true);
@@ -605,131 +608,67 @@ USING (
     };
 
     const handleAddItem = async (e) => {
-        console.log('=== handleAddItem called ===');
         e.preventDefault();
-        console.log('Form submitted');
+
+        if (isAddingProduct) return;
+
+        if (!newItem.name.trim() || newItem.price === '' || newItem.price == null) {
+            toast.error('Name and price are required');
+            return;
+        }
+
+        const price = parseFloat(newItem.price);
+        if (Number.isNaN(price) || price < 0) {
+            toast.error('Please enter a valid price');
+            return;
+        }
+
+        setIsAddingProduct(true);
+        const toastId = toast.loading('Adding product...');
 
         try {
-            console.log('Form data:', newItem);
-            
-            if (!newItem.name.trim() || !newItem.price) {
-                console.log('Validation failed - missing name or price');
-                toast.error('Name and price are required');
-                return;
-            }
-
-            // Image is optional - if not uploaded, use a placeholder
-            const imageUrl = newItem.image.trim() || 'https://images.unsplash.com/photo-1563241527-3004b7be0ffd?w=400';
-            console.log('Using image URL:', imageUrl);
-
-            // Ensure session is valid before inserting
-            console.log('Getting session...');
-            
-            // Try to use current session state first, then fallback to getSession
-            let session = null;
-            
-            // Use existing session if available
-            if (currentUser && currentUser.email) {
-                console.log('Using existing session state');
-                session = { user: { email: currentUser.email } };
-            } else {
-                // Fallback to getSession with longer timeout
-                console.log('Retrieving fresh session...');
-                const sessionPromise = supabase.auth.getSession();
-                const timeoutPromise = new Promise((_, reject) => 
-                    setTimeout(() => reject(new Error('Session timeout')), 15000)
-                );
-                
-                const { data } = await Promise.race([sessionPromise, timeoutPromise]);
-                session = data.session;
-            }
-            
-            console.log('Session retrieved:', session ? '✓' : '✗');
-            
-            if (!session) {
-                console.log('No active session');
+            const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+            if (sessionError || !session) {
                 throw new Error('No active session. Please log in again.');
             }
 
-            // Admin role check - optional for now to allow product addition
-            console.log('Checking user role (optional)...');
-            try {
-                const { data: profileData, error: profileError } = await supabase
-                    .from('user_profiles')
-                    .select('role')
-                    .eq('id', session.user.id)
-                    .maybeSingle();
-                
-                console.log('Profile query result:', { data: profileData, error: profileError });
-                
-                if (!profileError && profileData.data && profileData.data.role === 'admin') {
-                    console.log('✅ User is admin, proceeding with product insertion');
-                } else {
-                    console.log('⚠️ Admin role check skipped or user not admin, allowing product addition anyway');
-                }
-            } catch (profileCheckError) {
-                console.log('⚠️ Admin role check failed, allowing product addition anyway:', profileCheckError.message);
-            }
+            const imageUrl = newItem.image.trim() || 'https://images.unsplash.com/photo-1563241527-3004b7be0ffd?w=400';
 
             const productData = {
                 name: newItem.name.trim(),
                 description: newItem.description.trim(),
-                price: parseFloat(newItem.price),
+                price,
                 category: newItem.category,
                 image: imageUrl,
-                stock: parseInt(newItem.stock) || 100,
+                stock: parseInt(newItem.stock, 10) || 100,
                 rating: 5.0,
                 reviews: 0
             };
-            
-            console.log('Product data to insert:', productData);
-            console.log('Supabase client URL:', supabase.supabaseUrl);
-            console.log('Products table reference:', supabase.from('products'));
 
-            console.log('Inserting product into database...');
-            
-            // Add timeout to prevent hanging
-            const insertPromise = supabase
+            const { error } = await supabase
                 .from('products')
-                .insert([productData]);
-            
-            const insertTimeoutPromise = new Promise((_, reject) => 
-                setTimeout(() => reject(new Error('Database insert timeout')), 10000)
-            );
-            
-            const { error } = await Promise.race([insertPromise, insertTimeoutPromise]);
+                .insert([productData])
+                .select()
+                .single();
 
-            console.log('Insert result:', { error });
-            
             if (error) {
-                console.error('Database insert error details:', {
-                    message: error.message,
-                    details: error.details,
-                    hint: error.hint,
-                    code: error.code
-                });
+                if (error.code === '42501') {
+                    throw new Error(
+                        'Permission denied. Log out, log in again, and confirm your account has admin role in user_profiles.'
+                    );
+                }
                 throw error;
             }
-            
-            console.log('Product added successfully');
-            toast.success(`Product "${newItem.name}" added successfully!`);
-            
-            console.log('Resetting form...');
+
+            toast.success(`Product "${newItem.name}" added successfully!`, { id: toastId });
             setNewItem({ name: '', description: '', price: '', category: 'mothers-day', image: '', stock: 100 });
-            
-            console.log('Loading products...');
-            await loadProducts();
-            
-            console.log('Switching to manage products tab...');
+            await loadProducts(session);
             setActiveTab('manage-products');
         } catch (error) {
             console.error('Error adding product:', error);
-            console.error('Full error details:', {
-                message: error.message,
-                stack: error.stack,
-                name: error.name
-            });
-            toast.error(`Failed to add product: ${error.message}`);
+            toast.error(`Failed to add product: ${error.message}`, { id: toastId });
+        } finally {
+            setIsAddingProduct(false);
         }
     };
 
@@ -1665,7 +1604,7 @@ USING (
                                             <div className="flex-1">
                                                 <label className="block text-xs text-gray-500 mb-1">Option 2: Image URL</label>
                                                 <input
-                                                    type="url"
+                                                    type="text"
                                                     value={newItem.image}
                                                     onChange={(e) => setNewItem({ ...newItem, image: e.target.value })}
                                                     className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-pink-500 focus:ring-2 focus:ring-pink-100 outline-none"
@@ -1694,14 +1633,12 @@ USING (
                                 </div>
 
                                 <div className="pt-4">
-                                    <button 
-                                        type="submit" 
-                                        className="w-full py-6 bg-pink-600 hover:bg-pink-700 text-white rounded-xl font-semibold"
-                                        onClick={(e) => {
-                                            console.log('Button clicked directly');
-                                        }}
+                                    <button
+                                        type="submit"
+                                        disabled={isAddingProduct || isUploading}
+                                        className="w-full py-6 bg-pink-600 hover:bg-pink-700 disabled:opacity-60 disabled:cursor-not-allowed text-white rounded-xl font-semibold"
                                     >
-                                        Add Product
+                                        {isAddingProduct ? 'Adding Product...' : isUploading ? 'Waiting for image upload...' : 'Add Product'}
                                     </button>
                                 </div>
                             </form>
