@@ -1,21 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
-import { ArrowRight, Truck, Award, Heart } from 'lucide-react';
-import { Button } from '../ui/button';
-import { supabase } from '../../lib/supabase';
+import { Truck, Award } from 'lucide-react';
+
+const HERO_IMAGE = encodeURI('/WhatsApp Image 2026-05-14 at 7.35.48 PM.jpeg');
 
 const HeroSection = ({ isMobile = false }) => {
-  const navigate = useNavigate();
-  const [petaSonataImage, setPetaSonataImage] = useState('/WhatsApp Image 2026-04-12 at 7.50.49 PM.jpeg');
-
   return (
     <section className={`relative overflow-hidden ${isMobile ? '' : 'bg-gradient-to-br from-pink-50 via-white to-pink-100'}`}>
       {/* Background Image for Mobile */}
       {isMobile && (
         <div className="absolute inset-0 z-0">
           <img
-            src={petaSonataImage}
+            src={HERO_IMAGE}
             alt="Fresh flower bouquet delivery in Nairobi - beautiful arrangement ready for same day delivery"
             className="w-full h-full object-cover"
           />
@@ -94,17 +90,15 @@ const HeroSection = ({ isMobile = false }) => {
               className="relative z-10"
             >
               <div className="relative">
-                {/* Main Image */}
                 <div className="relative rounded-3xl overflow-hidden shadow-2xl">
                   <img
-                    src={petaSonataImage}
+                    src={HERO_IMAGE}
                     alt="Fresh flower bouquet delivery in Nairobi - beautiful arrangement ready for same day delivery"
                     className="h-[500px] w-full object-cover"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-pink-900/20 to-transparent" />
                 </div>
 
-                {/* Rating Badge */}
                 <motion.div
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
