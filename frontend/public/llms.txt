@@ -1,20 +1,32 @@
-# Flower Lifestyle
+# Flower Lifestyle — Florist in Kenya
 
-> Fresh, handcrafted floral arrangements and bouquets in Nairobi, Kenya.
+> Fresh flower delivery in Nairobi and across Kenya. Same-day bouquets, M-Pesa payments, City Market florist shop.
 
-We specialise in bespoke flowers for all occasions including birthdays, romance, anniversaries, and more.
-We offer same-day delivery and deliver countrywide.
+Website: https://www.flowerlifestyle.co.ke
+Email: flowerlifestyle@gmail.com
+Phone / WhatsApp: +254 742 370 307
+Address: City Market, Nairobi CBD, Kenya
+Instagram: https://www.instagram.com/flowerlifestyle_giftshop/
 
-Location: City Market, Nairobi CBD
+## Primary services
+- Same-day flower delivery in Nairobi (CBD, Westlands, Karen, Kilimani, Eastlands, Thika Road)
+- Countrywide flower delivery in Kenya (on request)
+- Birthday, anniversary, romance, roses, sympathy, Mother's Day, money bouquets
+- M-Pesa, cash, and card payments
+
+## Key pages
+- Home: https://www.flowerlifestyle.co.ke/
+- Florist in Kenya: https://www.flowerlifestyle.co.ke/florist-kenya
+- Shop flowers: https://www.flowerlifestyle.co.ke/flowers
+- Delivery areas: https://www.flowerlifestyle.co.ke/delivery
+- FAQ: https://www.flowerlifestyle.co.ke/faq
+- About: https://www.flowerlifestyle.co.ke/about
 
 ## Categories
-- Bestselling Bouquets
-- Birthday
-- Roses
-- Romance
-- Anniversary
-- Combos
-- Money Bouquet
-
-## Contact
-Website: https://www.flowerlifestyle.co.ke
+- Birthday: /flowers?category=birthday
+- Romance: /flowers?category=romance
+- Roses: /flowers?category=roses
+- Anniversary: /flowers?category=anniversary
+- Combos: /flowers?category=combos
+- Mother's Day: /flowers?category=mothers-day
+- Money bouquet: /flowers?category=money-bouquet

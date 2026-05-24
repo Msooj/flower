@@ -52,11 +52,11 @@ const HeroSection = ({ isMobile = false }) => {
             )}
 
             <h1 className={`${isMobile ? 'text-3xl text-center' : 'text-4xl md:text-5xl lg:text-5xl'} font-bold text-gray-900 leading-tight mb-4 md:mb-6`}>
-              Fresh Flower Delivery in Nairobi
+              Florist in Kenya — Same-Day Flower Delivery in Nairobi
             </h1>
 
             <p className={`text-base md:text-lg text-gray-600 mb-6 md:mb-8 max-w-lg leading-relaxed ${isMobile ? 'text-center' : ''}`}>
-              Same-day delivery. Beautiful bouquets for every moment.
+              Order online from a trusted Nairobi florist. Fresh bouquets, M-Pesa payment & delivery across Kenya.
             </p>
 
             <div className={`flex flex-col sm:flex-row gap-3 md:gap-4 ${isMobile ? 'mb-8 justify-center' : 'mb-12'}`}>

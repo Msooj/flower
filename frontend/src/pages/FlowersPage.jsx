@@ -220,6 +220,20 @@ const FlowersPage = ({ isMobile = false }) => {
         keywords: 'flower combos Nairobi, flowers with cake, flower gift sets, flower and chocolate combos',
         content: 'Elevate your gifting with our exclusive flower combinations. From flowers with cakes to gift sets with chocolates, our combos create unforgettable moments.',
         h1: 'Flower Combos & Gift Sets'
+      },
+      'mothers-day': {
+        title: "Mother's Day Flowers Kenya | Bouquets for Mum | Nairobi Delivery",
+        description: "Beautiful Mother's Day flowers in Kenya. Surprise mum with fresh bouquets, roses & gift combos. Same-day delivery in Nairobi.",
+        keywords: "Mother's Day flowers Kenya, Mother's Day bouquets Nairobi, flowers for mum Kenya",
+        content: "Celebrate Mum with elegant Mother's Day bouquets crafted by our Nairobi florists. Fresh flowers delivered across Kenya with love.",
+        h1: "Mother's Day Flowers"
+      },
+      'money-bouquet': {
+        title: 'Money Bouquet Nairobi Kenya | Creative Cash Flower Gifts',
+        description: 'Order stunning money bouquets in Nairobi & Kenya. Creative cash flower arrangements for birthdays, graduations & celebrations.',
+        keywords: 'money bouquet Nairobi, money bouquet Kenya, cash bouquet flowers, graduation money bouquet',
+        content: 'Make celebrations unforgettable with our signature money bouquets — artistic arrangements that combine fresh flowers with thoughtful cash gifting.',
+        h1: 'Money Bouquet Collection'
       }
     };
 

@@ -413,7 +413,7 @@ const CartPage = () => {
                 title="Shopping Cart"
                 description="Your flower shopping cart"
                 canonicalUrl="https://www.flowerlifestyle.co.ke/cart"
-                robots="noindex, nofollow"
+                noindex
             />
             <Header />
             <main className="flex-1 container mx-auto px-4 py-8">

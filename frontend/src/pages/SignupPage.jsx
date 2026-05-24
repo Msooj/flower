@@ -151,7 +151,7 @@ const SignupPage = () => {
         title="Sign Up"
         description="Create your Flower Lifestyle account"
         canonicalUrl="https://www.flowerlifestyle.co.ke/signup"
-        robots="noindex, nofollow"
+        noindex
       />
       {/* Left Side - Form */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-gradient-to-b from-pink-50 to-white">

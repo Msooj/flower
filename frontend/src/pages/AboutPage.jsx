@@ -1,6 +1,9 @@
 import React from 'react';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
+import PageMetaTags from '../components/seo/PageMetaTags';
+import StructuredData from '../components/seo/StructuredData';
+import { SITE_URL, breadcrumbSchema } from '../data/seoConfig';
 import { motion } from 'framer-motion';
 import { Heart, Flower2, Clock, MapPin, CheckCircle2 } from 'lucide-react';
 
@@ -45,6 +48,18 @@ const AboutPage = () => {
 
     return (
         <div className="min-h-screen bg-white">
+            <PageMetaTags
+                title="About Flower Lifestyle | Florist in Nairobi Kenya | City Market"
+                description="Meet Flower Lifestyle — Nairobi florists at City Market CBD. Fresh Kenyan flowers, hand-crafted bouquets & same-day delivery across Nairobi and Kenya."
+                keywords="about Flower Lifestyle, Nairobi florist City Market, flower shop Kenya, Kenyan florist"
+                canonicalUrl={`${SITE_URL}/about`}
+            />
+            <StructuredData
+                data={breadcrumbSchema([
+                    { name: 'Home', url: SITE_URL },
+                    { name: 'About', url: `${SITE_URL}/about` },
+                ])}
+            />
             <Header />
 
             <main>

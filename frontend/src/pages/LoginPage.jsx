@@ -254,7 +254,7 @@ const LoginPage = () => {
         title="Login"
         description="Sign in to your Flower Lifestyle account"
         canonicalUrl="https://www.flowerlifestyle.co.ke/login"
-        robots="noindex, nofollow"
+        noindex
       />
       {/* Left Side - Image */}
       <div className="hidden lg:flex lg:w-1/2 relative">

@@ -15,7 +15,11 @@ import WishlistPage from "./pages/WishlistPage";
 import AdminPage from "./pages/AdminPage";
 import OrdersPage from "./pages/OrdersPage";
 import AboutPage from "./pages/AboutPage";
+import FloristKenyaPage from "./pages/FloristKenyaPage";
+import DeliveryPage from "./pages/DeliveryPage";
+import FaqPage from "./pages/FaqPage";
 import WhatsAppButton from "./components/common/WhatsAppButton";
+import GoogleAnalytics from "./components/seo/GoogleAnalytics";
 import { useAuthCallback } from "./hooks/useAuthCallback";
 
 // Wrapper component to use hooks that need Router context
@@ -43,10 +47,14 @@ function App() {
           <HelmetProvider>
             <BrowserRouter>
               <ScrollToTop />
+              <GoogleAnalytics />
               <AuthWrapper>
                 <Routes>
                   <Route path="/" element={<HomePage isMobile={isMobile} />} />
                   <Route path="/flowers" element={<FlowersPage isMobile={isMobile} />} />
+                  <Route path="/florist-kenya" element={<FloristKenyaPage />} />
+                  <Route path="/delivery" element={<DeliveryPage />} />
+                  <Route path="/faq" element={<FaqPage />} />
                   <Route path="/login" element={<LoginPage />} />
                   <Route path="/signup" element={<SignupPage />} />
                   <Route path="/cart" element={<CartPage />} />

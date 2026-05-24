@@ -26,7 +26,7 @@ const WishlistPage = () => {
                 title="Wishlist"
                 description="Your saved flower favorites"
                 canonicalUrl="https://www.flowerlifestyle.co.ke/wishlist"
-                robots="noindex, nofollow"
+                noindex
             />
             <Header />
 

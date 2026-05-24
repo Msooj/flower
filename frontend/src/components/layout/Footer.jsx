@@ -74,39 +74,44 @@ const Footer = () => {
             <h4 className="text-lg font-semibold text-gray-800 mb-4">Quick Links</h4>
             <ul className="space-y-3">
               <li>
-                <a href="/flowers" className="text-gray-600 hover:text-pink-600 transition-colors">
+                <Link to="/florist-kenya" className="text-gray-600 hover:text-pink-600 transition-colors">
+                  Florist in Kenya
+                </Link>
+              </li>
+              <li>
+                <Link to="/flowers" className="text-gray-600 hover:text-pink-600 transition-colors">
                   Shop All Flowers
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/flowers?category=birthday" className="text-gray-600 hover:text-pink-600 transition-colors">
+                <Link to="/flowers?category=birthday" className="text-gray-600 hover:text-pink-600 transition-colors">
                   Birthday Flowers
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/flowers?category=romance" className="text-gray-600 hover:text-pink-600 transition-colors">
+                <Link to="/flowers?category=romance" className="text-gray-600 hover:text-pink-600 transition-colors">
                   Romance & Love
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/flowers?category=anniversary" className="text-gray-600 hover:text-pink-600 transition-colors">
+                <Link to="/flowers?category=anniversary" className="text-gray-600 hover:text-pink-600 transition-colors">
                   Anniversary
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/flowers?category=roses" className="text-gray-600 hover:text-pink-600 transition-colors">
+                <Link to="/flowers?category=roses" className="text-gray-600 hover:text-pink-600 transition-colors">
                   Roses Collection
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/flowers?category=combos" className="text-gray-600 hover:text-pink-600 transition-colors">
+                <Link to="/flowers?category=combos" className="text-gray-600 hover:text-pink-600 transition-colors">
                   Gift Combos
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/about" className="text-gray-600 hover:text-pink-600 transition-colors">
+                <Link to="/about" className="text-gray-600 hover:text-pink-600 transition-colors">
                   About Us
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -115,13 +120,19 @@ const Footer = () => {
           <div>
             <h4 className="text-lg font-semibold text-gray-800 mb-4">Customer Service</h4>
             <ul className="space-y-3">
-              {['Delivery Information', 'Returns & Refunds', 'FAQs', 'Privacy Policy', 'Terms of Service'].map(
-                (link) => (
-                  <li key={link} className="text-gray-600">
-                    {link}
-                  </li>
-                )
-              )}
+              <li>
+                <Link to="/delivery" className="text-gray-600 hover:text-pink-600 transition-colors">
+                  Delivery Information
+                </Link>
+              </li>
+              <li>
+                <Link to="/faq" className="text-gray-600 hover:text-pink-600 transition-colors">
+                  FAQs
+                </Link>
+              </li>
+              <li className="text-gray-600">Returns & Refunds</li>
+              <li className="text-gray-600">Privacy Policy</li>
+              <li className="text-gray-600">Terms of Service</li>
             </ul>
           </div>
 
