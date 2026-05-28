@@ -11,6 +11,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { allProducts, categories } from '../data/mock';
 import { supabase } from '../lib/supabase';
 import PageMetaTags from '../components/seo/PageMetaTags';
+import StructuredData from '../components/seo/StructuredData';
+import { SITE_URL, productListSchema, breadcrumbSchema } from '../data/seoConfig';
 
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
@@ -248,14 +250,28 @@ const FlowersPage = ({ isMobile = false }) => {
 
   const currentCategoryContent = getCategoryContent(activeCategory);
 
+  const flowersCanonical = `${SITE_URL}/flowers${activeCategory !== 'all' ? `?category=${activeCategory}` : ''}`;
+  const structuredDataBlocks = useMemo(() => {
+    const list = productListSchema(filteredProducts);
+    const crumbs = breadcrumbSchema([
+      { name: 'Home', url: SITE_URL },
+      { name: 'Shop Flowers', url: `${SITE_URL}/flowers` },
+      ...(activeCategory !== 'all'
+        ? [{ name: currentCategoryContent.h1, url: flowersCanonical }]
+        : []),
+    ]);
+    return list ? [crumbs, list] : [crumbs];
+  }, [filteredProducts, activeCategory, flowersCanonical, currentCategoryContent.h1]);
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-pink-50 to-white">
       <PageMetaTags 
         title={currentCategoryContent.title}
         description={currentCategoryContent.description}
         keywords={currentCategoryContent.keywords}
-        canonicalUrl={`https://www.flowerlifestyle.co.ke/flowers${activeCategory !== 'all' ? `?category=${activeCategory}` : ''}`}
+        canonicalUrl={flowersCanonical}
       />
+      <StructuredData data={structuredDataBlocks} />
       <Header />
 
       <main className="container mx-auto px-4 py-8 max-w-7xl">

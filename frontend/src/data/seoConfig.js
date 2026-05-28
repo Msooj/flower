@@ -95,6 +95,64 @@ export const websiteSchema = () => ({
   },
 });
 
+/** Valid Product schema for Google Product snippets (requires offers) */
+export const productSchema = (product) => {
+  const price = Number(product.price);
+  if (!product.name || Number.isNaN(price) || price <= 0) return null;
+
+  const productUrl = product.id
+    ? `${SITE_URL}/flowers?product=${encodeURIComponent(product.id)}`
+    : `${SITE_URL}/flowers`;
+
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: product.name,
+    description: product.description || `${product.name} — fresh flower bouquet from Flower Lifestyle, Nairobi.`,
+    image: product.image || DEFAULT_OG_IMAGE,
+    url: productUrl,
+    brand: {
+      '@type': 'Brand',
+      name: BUSINESS.name,
+    },
+    offers: {
+      '@type': 'Offer',
+      url: productUrl,
+      priceCurrency: 'KES',
+      price: price.toFixed(2),
+      availability: 'https://schema.org/InStock',
+      itemCondition: 'https://schema.org/NewCondition',
+      seller: {
+        '@type': 'Organization',
+        name: BUSINESS.name,
+      },
+    },
+  };
+};
+
+/** ItemList of products for /flowers page (each item is a valid Product) */
+export const productListSchema = (products) => {
+  const items = (products || [])
+    .map(productSchema)
+    .filter(Boolean)
+    .slice(0, 20);
+
+  if (items.length === 0) return null;
+
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: 'Flower bouquets — Flower Lifestyle Kenya',
+    url: `${SITE_URL}/flowers`,
+    numberOfItems: items.length,
+    itemListElement: items.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      item,
+    })),
+  };
+};
+
 export const breadcrumbSchema = (items) => ({
   '@context': 'https://schema.org',
   '@type': 'BreadcrumbList',
