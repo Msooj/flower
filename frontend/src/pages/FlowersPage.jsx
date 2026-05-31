@@ -8,9 +8,9 @@ import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
 import ProductModal from '../components/ui/ProductModal';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
-import { allProducts, categories } from '../data/mock';
-import { supabase } from '../lib/supabase';
+import { categories } from '../data/mock';
 import PageMetaTags from '../components/seo/PageMetaTags';
+import { useProducts } from '../hooks/useProducts';
 import StructuredData from '../components/seo/StructuredData';
 import { SITE_URL, productListSchema, breadcrumbSchema } from '../data/seoConfig';
 
@@ -30,61 +30,10 @@ const FlowersPage = ({ isMobile = false }) => {
   const [showFilters, setShowFilters] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [dbProducts, setDbProducts] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        setIsLoading(true);
-        
-        // Try to fetch from database first
-        const { data, error } = await supabase
-          .from('products')
-          .select('id, name, price, original_price, image, category, badge, rating, reviews, stock, description')
-          .order('created_at', { ascending: false })
-          .limit(50);
-
-        if (error) {
-          console.error('Products fetch error:', error);
-          console.log('Database error, using fallback mock data');
-          setDbProducts(allProducts);
-          setIsLoading(false);
-          return;
-        }
-
-        if (data && data.length > 0) {
-          // Optimized product normalization
-          const normalizedProducts = data.map(p => ({
-            id: p.id,
-            name: p.name,
-            price: Number(p.price) || 0,
-            originalPrice: p.original_price ? Number(p.original_price) : null,
-            image: p.image || '',
-            category: p.category || 'roses',
-            badge: p.badge || null,
-            rating: Number(p.rating) || 5.0,
-            reviews: Number(p.reviews) || 0,
-            stock: Number(p.stock) || 0,
-            description: p.description || ''
-          }));
-          setDbProducts(normalizedProducts);
-          console.log(`✅ Loaded ${normalizedProducts.length} products from database`);
-        } else {
-          console.log('No products in database, using fallback mock data');
-          setDbProducts(allProducts);
-        }
-      } catch (error) {
-        console.error('Error fetching products:', error);
-        console.log('Connection error, using fallback mock data');
-        setDbProducts(allProducts);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchProducts();
-  }, []);
+  const { products: dbProducts, isLoading, loadError, dataSource, retry } = useProducts({
+    limit: 50,
+    fallbackToMock: true,
+  });
 
   // Keep searchQuery in sync with ?search= in URL
   useEffect(() => {
@@ -273,6 +222,19 @@ const FlowersPage = ({ isMobile = false }) => {
       />
       <StructuredData data={structuredDataBlocks} />
       <Header />
+
+      {dataSource === 'fallback' && loadError && (
+        <div className="bg-amber-50 border-b border-amber-200">
+          <div className="container mx-auto px-4 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 max-w-7xl">
+            <p className="text-sm text-amber-900">
+              Live catalog temporarily unavailable. Showing cached items — tap retry for fresh stock.
+            </p>
+            <Button type="button" variant="outline" size="sm" onClick={retry} className="shrink-0 border-amber-300">
+              Retry loading
+            </Button>
+          </div>
+        </div>
+      )}
 
       <main className="container mx-auto px-4 py-8 max-w-7xl">
         {/* Page Header */}

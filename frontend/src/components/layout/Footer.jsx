@@ -109,6 +109,16 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
+                <Link to="/flowers?category=mothers-day" className="text-gray-600 hover:text-pink-600 transition-colors">
+                  Mother&apos;s Day Flowers
+                </Link>
+              </li>
+              <li>
+                <Link to="/flowers?category=money-bouquet" className="text-gray-600 hover:text-pink-600 transition-colors">
+                  Money Bouquets
+                </Link>
+              </li>
+              <li>
                 <Link to="/about" className="text-gray-600 hover:text-pink-600 transition-colors">
                   About Us
                 </Link>

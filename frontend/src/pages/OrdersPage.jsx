@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
+import { getAuthenticatedUser, runSupabaseQuery } from '../lib/supabaseFetch';
+import PageMetaTags from '../components/seo/PageMetaTags';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import { Button } from '../components/ui/button';
@@ -18,23 +20,25 @@ const OrdersPage = () => {
 
     const loadOrders = async () => {
         try {
-            const { data: { user } } = await supabase.auth.getUser();
+            const { user } = await getAuthenticatedUser(supabase);
 
             if (!user) {
                 navigate('/login');
                 return;
             }
 
-            const { data, error } = await supabase
-                .from('orders')
-                .select(`
+            const { data, error } = await runSupabaseQuery(() =>
+                supabase
+                    .from('orders')
+                    .select(`
                     *,
                     order_items (
                         *
                     )
                 `)
-                .eq('user_id', user.id)
-                .order('created_at', { ascending: false });
+                    .eq('user_id', user.id)
+                    .order('created_at', { ascending: false })
+            );
 
             if (error) throw error;
             setOrders(data || []);
@@ -68,6 +72,11 @@ const OrdersPage = () => {
     if (isLoading) {
         return (
             <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+                <PageMetaTags
+                    title="My Orders | Flower Lifestyle"
+                    canonicalUrl="https://www.flowerlifestyle.co.ke/orders"
+                    noindex
+                />
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-600"></div>
             </div>
         );
@@ -75,6 +84,11 @@ const OrdersPage = () => {
 
     return (
         <div className="min-h-screen bg-gray-50 flex flex-col">
+            <PageMetaTags
+                title="My Orders | Flower Lifestyle"
+                canonicalUrl="https://www.flowerlifestyle.co.ke/orders"
+                noindex
+            />
             <Header />
             <main className="flex-1 container mx-auto px-4 py-8">
                 <h1 className="text-3xl font-bold text-gray-900 mb-8">My Orders</h1>

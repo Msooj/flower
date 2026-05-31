@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
+import PageMetaTags from '../components/seo/PageMetaTags';
 import { Button } from '../components/ui/button';
 import { toast } from 'sonner';
 import { supabase, createFreshClient } from '../lib/supabase';
@@ -815,9 +816,18 @@ USING (
         });
     };
 
+    const adminNoIndex = (
+        <PageMetaTags
+            title="Admin | Flower Lifestyle"
+            canonicalUrl="https://www.flowerlifestyle.co.ke/admin"
+            noindex
+        />
+    );
+
     if (isLoading) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-gray-50">
+                {adminNoIndex}
                 <div className="text-center px-4">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-600 mx-auto"></div>
                     <p className="mt-4 text-gray-700 font-medium">Checking session...</p>
@@ -831,6 +841,7 @@ USING (
     if (!isAuthenticated) {
         return (
             <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 flex flex-col">
+                {adminNoIndex}
                 <Header />
                 <main className="flex-1 container mx-auto px-4 py-16 flex items-center justify-center">
                     <div className="w-full max-w-md">
@@ -904,6 +915,7 @@ USING (
     // Admin Dashboard
     return (
         <div className="min-h-screen bg-gray-50">
+            {adminNoIndex}
             <Header />
             <main className="container mx-auto px-3 sm:px-4 py-4 sm:py-8">
                 <div className="max-w-7xl mx-auto">

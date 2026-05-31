@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { Heart, ShoppingBag, Star, Eye } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { featuredProducts as mockFeaturedProducts } from '../../data/mock';
-import { supabase } from '../../lib/supabase';
+import { useProducts } from '../../hooks/useProducts';
 
 import { useCart } from '../../context/CartContext';
 import { toast } from 'sonner';
@@ -119,50 +119,7 @@ const ProductCard = ({ product, index }) => {
 
 const FeaturedProducts = () => {
   const navigate = useNavigate();
-  const [products, setProducts] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchFeatured = async () => {
-      try {
-        setIsLoading(true);
-        const { data, error } = await supabase
-          .from('products')
-          .select('*')
-          .order('created_at', { ascending: false })
-          .limit(4);
-
-        if (error) {
-          console.error('Featured products Supabase error:', error);
-          return;
-        }
-
-        if (data && data.length > 0) {
-          // Normalize product data
-          const normalizedProducts = data.map(p => ({
-            id: p.id,
-            name: p.name,
-            price: parseFloat(p.price) || 0,
-            originalPrice: p.original_price ? parseFloat(p.original_price) : null,
-            image: p.image || '',
-            category: p.category || 'roses',
-            badge: p.badge || null,
-            rating: parseFloat(p.rating) || 5.0,
-            reviews: parseInt(p.reviews) || 0
-          }));
-          setProducts(normalizedProducts);
-        } else {
-          setProducts([]);
-        }
-      } catch (err) {
-        console.error('Featured products fetch fatal error:', err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchFeatured();
-  }, []);
+  const { products, isLoading } = useProducts({ limit: 4, fallbackToMock: true });
 
   return (
     <section className="py-16 bg-gradient-to-b from-white to-pink-50">
