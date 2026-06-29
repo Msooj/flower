@@ -69,6 +69,9 @@ BEGIN
 END;
 $$ language 'plpgsql';
 
+-- Drop trigger if exists and recreate
+DROP TRIGGER IF EXISTS update_blogs_updated_at ON blogs;
+
 -- Trigger to automatically update updated_at
 CREATE TRIGGER update_blogs_updated_at
 BEFORE UPDATE ON blogs
@@ -83,9 +86,9 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- Insert sample blog post
+-- Insert sample blog post (only if it doesn't exist)
 INSERT INTO blogs (title, slug, excerpt, content, author, category, image, published, featured, published_at)
-VALUES (
+SELECT 
     'The Art of Flower Arranging: A Beginner''s Guide',
     'the-art-of-flower-arranging-a-beginners-guide',
     'Discover the secrets to creating stunning floral arrangements that will brighten any room and bring joy to your home.',
@@ -118,6 +121,8 @@ With practice, you''ll develop your own style and create stunning arrangements t
     true,
     true,
     NOW()
+WHERE NOT EXISTS (
+    SELECT 1 FROM blogs WHERE slug = 'the-art-of-flower-arranging-a-beginners-guide'
 );
 
 SELECT * FROM blogs ORDER BY created_at DESC LIMIT 1;
