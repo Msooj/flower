@@ -32,32 +32,32 @@ ALTER TABLE blogs ENABLE ROW LEVEL SECURITY;
 -- Policy: Allow authenticated users to read published blogs
 CREATE POLICY "Authenticated users can read published blogs"
 ON blogs FOR SELECT
-TO authenticated users
+TO authenticated
 USING (published = true);
 
 -- Policy: Allow all authenticated users to read all blogs (for admin panel access)
 CREATE POLICY "Authenticated users can read all blogs"
 ON blogs FOR SELECT
-TO authenticated users
+TO authenticated
 USING (true);
 
 -- Policy: Allow all authenticated users to insert blogs
 CREATE POLICY "Authenticated users can insert blogs"
 ON blogs FOR INSERT
-TO authenticated users
+TO authenticated
 WITH CHECK (true);
 
 -- Policy: Allow all authenticated users to update blogs
 CREATE POLICY "Authenticated users can update blogs"
 ON blogs FOR UPDATE
-TO authenticated users
+TO authenticated
 USING (true)
 WITH CHECK (true);
 
 -- Policy: Allow all authenticated users to delete blogs
 CREATE POLICY "Authenticated users can delete blogs"
 ON blogs FOR DELETE
-TO authenticated users
+TO authenticated
 USING (true);
 
 -- Function to automatically update updated_at timestamp
