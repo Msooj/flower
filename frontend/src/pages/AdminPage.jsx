@@ -606,16 +606,26 @@ USING (
     const loadBlogs = async () => {
         try {
             setDataLoading(prev => ({ ...prev, blogs: true }));
+            console.log('Loading blogs...');
+            
             const { data, error } = await supabase
                 .from('blogs')
                 .select('*')
                 .order('created_at', { ascending: false });
 
-            if (error) throw error;
+            console.log('Blogs query result:', { data, error });
+
+            if (error) {
+                console.error('Blogs query error:', error);
+                throw error;
+            }
+            
+            console.log('Blogs loaded:', data?.length || 0);
             setBlogs(data || []);
         } catch (error) {
             console.error('Error loading blogs:', error);
-            toast.error('Failed to load blogs');
+            toast.error(`Failed to load blogs: ${error.message}`);
+            setBlogs([]);
         } finally {
             setDataLoading(prev => ({ ...prev, blogs: false }));
         }

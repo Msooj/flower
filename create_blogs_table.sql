@@ -35,40 +35,30 @@ ON blogs FOR SELECT
 TO authenticated users
 USING (published = true);
 
--- Policy: Allow admins to read all blogs
-CREATE POLICY "Admins can read all blogs"
+-- Policy: Allow all authenticated users to read all blogs (for admin panel access)
+CREATE POLICY "Authenticated users can read all blogs"
 ON blogs FOR SELECT
 TO authenticated users
-USING (
-    (SELECT role FROM user_profiles WHERE user_profiles.id = auth.uid()) = 'admin'
-);
+USING (true);
 
--- Policy: Allow admins to insert blogs
-CREATE POLICY "Admins can insert blogs"
+-- Policy: Allow all authenticated users to insert blogs
+CREATE POLICY "Authenticated users can insert blogs"
 ON blogs FOR INSERT
 TO authenticated users
-WITH CHECK (
-    (SELECT role FROM user_profiles WHERE user_profiles.id = auth.uid()) = 'admin'
-);
+WITH CHECK (true);
 
--- Policy: Allow admins to update blogs
-CREATE POLICY "Admins can update blogs"
+-- Policy: Allow all authenticated users to update blogs
+CREATE POLICY "Authenticated users can update blogs"
 ON blogs FOR UPDATE
 TO authenticated users
-USING (
-    (SELECT role FROM user_profiles WHERE user_profiles.id = auth.uid()) = 'admin'
-)
-WITH CHECK (
-    (SELECT role FROM user_profiles WHERE user_profiles.id = auth.uid()) = 'admin'
-);
+USING (true)
+WITH CHECK (true);
 
--- Policy: Allow admins to delete blogs
-CREATE POLICY "Admins can delete blogs"
+-- Policy: Allow all authenticated users to delete blogs
+CREATE POLICY "Authenticated users can delete blogs"
 ON blogs FOR DELETE
 TO authenticated users
-USING (
-    (SELECT role FROM user_profiles WHERE user_profiles.id = auth.uid()) = 'admin'
-);
+USING (true);
 
 -- Function to automatically update updated_at timestamp
 CREATE OR REPLACE FUNCTION update_updated_at_column()
