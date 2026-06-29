@@ -29,6 +29,13 @@ CREATE INDEX IF NOT EXISTS idx_blogs_category ON blogs(category);
 -- Enable Row Level Security
 ALTER TABLE blogs ENABLE ROW LEVEL SECURITY;
 
+-- Drop existing policies if they exist
+DROP POLICY IF EXISTS "Authenticated users can read published blogs" ON blogs;
+DROP POLICY IF EXISTS "Authenticated users can read all blogs" ON blogs;
+DROP POLICY IF EXISTS "Authenticated users can insert blogs" ON blogs;
+DROP POLICY IF EXISTS "Authenticated users can update blogs" ON blogs;
+DROP POLICY IF EXISTS "Authenticated users can delete blogs" ON blogs;
+
 -- Policy: Allow authenticated users to read published blogs
 CREATE POLICY "Authenticated users can read published blogs"
 ON blogs FOR SELECT
