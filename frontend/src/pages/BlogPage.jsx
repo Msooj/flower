@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Calendar, Clock, ArrowRight } from 'lucide-react';
@@ -7,11 +7,55 @@ import Footer from '../components/layout/Footer';
 import PageMetaTags from '../components/seo/PageMetaTags';
 import StructuredData from '../components/seo/StructuredData';
 import { SITE_URL, breadcrumbSchema, articleListSchema } from '../data/seoConfig';
+import { supabase } from '../lib/supabase';
 import { ARTICLES } from '../data/articles';
 
 const BlogPage = () => {
+  const [blogs, setBlogs] = useState([]);
+  const [loading, setLoading] = useState(true);
   const canonical = `${SITE_URL}/blog`;
-  const sorted = [...ARTICLES].sort((a, b) => b.publishedAt.localeCompare(a.publishedAt));
+
+  useEffect(() => {
+    loadBlogs();
+  }, []);
+
+  const loadBlogs = async () => {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('blogs')
+        .select('*')
+        .eq('published', true)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      
+      // Transform database blogs to match article structure
+      const transformedBlogs = (data || []).map(blog => ({
+        slug: blog.slug,
+        title: blog.title,
+        excerpt: blog.excerpt || blog.content?.substring(0, 150) + '...',
+        category: blog.category,
+        publishedAt: blog.published_at || blog.created_at,
+        readMinutes: Math.ceil(blog.content?.length / 200) || 5,
+        image: blog.image || 'https://images.unsplash.com/photo-1561181286-d3fee7d55364?w=800',
+        keywords: blog.category,
+        body: blog.content?.split('\n\n') || [blog.content],
+        ctaLink: '/flowers',
+        ctaLabel: 'Shop Flowers'
+      }));
+
+      setBlogs(transformedBlogs);
+    } catch (error) {
+      console.error('Error loading blogs:', error);
+      // Fallback to static articles if database fails
+      setBlogs(ARTICLES);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const sorted = [...blogs].sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
 
   const formatDate = (dateStr) =>
     new Date(dateStr).toLocaleDateString('en-KE', {
@@ -75,8 +119,13 @@ const BlogPage = () => {
           </motion.p>
         </div>
 
-        <div className="grid gap-8 md:grid-cols-2">
-          {sorted.map((article, index) => (
+        {loading ? (
+          <div className="flex justify-center py-12">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-pink-600"></div>
+          </div>
+        ) : (
+          <div className="grid gap-8 md:grid-cols-2">
+            {sorted.map((article, index) => (
             <motion.article
               key={article.slug}
               initial={{ opacity: 0, y: 24 }}
@@ -119,7 +168,8 @@ const BlogPage = () => {
               </Link>
             </motion.article>
           ))}
-        </div>
+          </div>
+        )}
       </main>
 
       <Footer />

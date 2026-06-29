@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useParams, Navigate } from 'react-router-dom';
 import { Calendar, Clock, ArrowLeft } from 'lucide-react';
 import Header from '../components/layout/Header';
@@ -8,10 +8,73 @@ import StructuredData from '../components/seo/StructuredData';
 import { Button } from '../components/ui/button';
 import { SITE_URL, breadcrumbSchema, articleSchema } from '../data/seoConfig';
 import { getArticleBySlug, getLatestArticles } from '../data/articles';
+import { supabase } from '../lib/supabase';
 
 const ArticlePage = () => {
   const { slug } = useParams();
-  const article = getArticleBySlug(slug);
+  const [blog, setBlog] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadBlog();
+  }, [slug]);
+
+  const loadBlog = async () => {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('blogs')
+        .select('*')
+        .eq('slug', slug)
+        .eq('published', true)
+        .single();
+
+      if (error) {
+        // Fallback to static articles if database fails
+        const staticArticle = getArticleBySlug(slug);
+        if (staticArticle) {
+          setBlog(staticArticle);
+        }
+        return;
+      }
+
+      // Transform database blog to match article structure
+      const transformedBlog = {
+        slug: data.slug,
+        title: data.title,
+        excerpt: data.excerpt || data.content?.substring(0, 150) + '...',
+        category: data.category,
+        publishedAt: data.published_at || data.created_at,
+        readMinutes: Math.ceil(data.content?.length / 200) || 5,
+        image: data.image || 'https://images.unsplash.com/photo-1561181286-d3fee7d55364?w=800',
+        keywords: data.category,
+        body: data.content?.split('\n\n') || [data.content],
+        ctaLink: '/flowers',
+        ctaLabel: 'Shop Flowers'
+      };
+
+      setBlog(transformedBlog);
+    } catch (error) {
+      console.error('Error loading blog:', error);
+      // Fallback to static articles
+      const staticArticle = getArticleBySlug(slug);
+      if (staticArticle) {
+        setBlog(staticArticle);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const article = blog || getArticleBySlug(slug);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-pink-600"></div>
+      </div>
+    );
+  }
 
   if (!article) {
     return <Navigate to="/blog" replace />;
