@@ -7,6 +7,7 @@ import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import { createClient } from '@supabase/supabase-js';
 import { config } from 'dotenv';
+import { ARTICLES } from '../src/data/articles.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, '..');
@@ -22,6 +23,7 @@ const STATIC_PAGES = [
   { loc: '/delivery', changefreq: 'monthly', priority: '0.85' },
   { loc: '/faq', changefreq: 'monthly', priority: '0.75' },
   { loc: '/about', changefreq: 'monthly', priority: '0.7' },
+  { loc: '/blog', changefreq: 'weekly', priority: '0.8' },
 ];
 
 const CATEGORY_SLUGS = [
@@ -75,6 +77,13 @@ async function fetchProductUrls() {
 }
 
 async function main() {
+  const articleEntries = ARTICLES.map((a) => ({
+    loc: `/blog/${a.slug}`,
+    changefreq: 'monthly',
+    priority: '0.75',
+    lastmod: (a.updatedAt || a.publishedAt).slice(0, 10),
+  }));
+
   const entries = [
     ...STATIC_PAGES.map((p) => ({ ...p, lastmod: today })),
     ...CATEGORY_SLUGS.map((slug) => ({
@@ -83,6 +92,7 @@ async function main() {
       priority: '0.8',
       lastmod: today,
     })),
+    ...articleEntries,
     ...(await fetchProductUrls()),
   ];
 

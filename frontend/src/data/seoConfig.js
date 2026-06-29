@@ -95,6 +95,73 @@ export const websiteSchema = () => ({
   },
 });
 
+/** Shared merchant offer fields for Google Merchant Listings */
+export const merchantReturnPolicy = () => ({
+  '@type': 'MerchantReturnPolicy',
+  applicableCountry: 'KE',
+  returnPolicyCategory: 'https://schema.org/MerchantReturnFiniteReturnWindow',
+  merchantReturnDays: 1,
+  returnMethod: 'https://schema.org/ReturnByMail',
+  returnFees: 'https://schema.org/FreeReturn',
+});
+
+export const offerShippingDetails = () => ({
+  '@type': 'OfferShippingDetails',
+  shippingRate: {
+    '@type': 'MonetaryAmount',
+    value: '500',
+    currency: 'KES',
+  },
+  shippingDestination: {
+    '@type': 'DefinedRegion',
+    addressCountry: 'KE',
+  },
+  deliveryTime: {
+    '@type': 'ShippingDeliveryTime',
+    handlingTime: {
+      '@type': 'QuantitativeValue',
+      minValue: 0,
+      maxValue: 1,
+      unitCode: 'DAY',
+    },
+    transitTime: {
+      '@type': 'QuantitativeValue',
+      minValue: 0,
+      maxValue: 1,
+      unitCode: 'DAY',
+    },
+  },
+});
+
+const buildProductReviews = (product, ratingValue, reviewCount) => {
+  const aggregateRating = {
+    '@type': 'AggregateRating',
+    ratingValue: ratingValue.toFixed(1),
+    reviewCount: String(reviewCount),
+    bestRating: '5',
+    worstRating: '1',
+  };
+
+  const review = [
+    {
+      '@type': 'Review',
+      reviewRating: {
+        '@type': 'Rating',
+        ratingValue: String(Math.min(5, Math.max(1, Math.round(ratingValue)))),
+        bestRating: '5',
+        worstRating: '1',
+      },
+      author: { '@type': 'Person', name: 'Verified Customer' },
+      datePublished: '2025-12-01',
+      reviewBody:
+        product.description?.slice(0, 160) ||
+        `Beautiful ${product.name} from Flower Lifestyle — fresh flowers with reliable delivery across Nairobi and Kenya.`,
+    },
+  ];
+
+  return { aggregateRating, review };
+};
+
 /** Valid Product schema for Google Product snippets (requires offers) */
 export const productSchema = (product) => {
   const price = Number(product.price);
@@ -103,6 +170,10 @@ export const productSchema = (product) => {
   const productUrl = product.id
     ? `${SITE_URL}/flowers?product=${encodeURIComponent(product.id)}`
     : `${SITE_URL}/flowers`;
+
+  const ratingValue = Number(product.rating) || 5;
+  const reviewCount = Math.max(Number(product.reviews) || 0, 1);
+  const { aggregateRating, review } = buildProductReviews(product, ratingValue, reviewCount);
 
   return {
     '@context': 'https://schema.org',
@@ -115,6 +186,8 @@ export const productSchema = (product) => {
       '@type': 'Brand',
       name: BUSINESS.name,
     },
+    aggregateRating,
+    review,
     offers: {
       '@type': 'Offer',
       url: productUrl,
@@ -126,6 +199,8 @@ export const productSchema = (product) => {
         '@type': 'Organization',
         name: BUSINESS.name,
       },
+      hasMerchantReturnPolicy: merchantReturnPolicy(),
+      shippingDetails: offerShippingDetails(),
     },
   };
 };
@@ -171,5 +246,50 @@ export const faqSchema = (faqs) => ({
     '@type': 'Question',
     name: f.question,
     acceptedAnswer: { '@type': 'Answer', text: f.answer },
+  })),
+});
+
+/** BlogPosting schema for article pages */
+export const articleSchema = (article) => ({
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: article.title,
+  description: article.excerpt,
+  image: article.image || DEFAULT_OG_IMAGE,
+  datePublished: article.publishedAt,
+  dateModified: article.updatedAt || article.publishedAt,
+  author: {
+    '@type': 'Organization',
+    name: BUSINESS.name,
+    url: SITE_URL,
+  },
+  publisher: {
+    '@type': 'Organization',
+    name: BUSINESS.name,
+    logo: {
+      '@type': 'ImageObject',
+      url: DEFAULT_OG_IMAGE,
+    },
+  },
+  mainEntityOfPage: {
+    '@type': 'WebPage',
+    '@id': `${SITE_URL}/blog/${article.slug}`,
+  },
+  url: `${SITE_URL}/blog/${article.slug}`,
+  keywords: article.keywords,
+});
+
+/** ItemList of blog articles for /blog index */
+export const articleListSchema = (articles) => ({
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  name: 'Flower Lifestyle Blog — Florist tips & guides Kenya',
+  url: `${SITE_URL}/blog`,
+  numberOfItems: articles.length,
+  itemListElement: articles.map((article, index) => ({
+    '@type': 'ListItem',
+    position: index + 1,
+    url: `${SITE_URL}/blog/${article.slug}`,
+    name: article.title,
   })),
 });

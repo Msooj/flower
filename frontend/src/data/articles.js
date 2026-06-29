@@ -1,0 +1,133 @@
+/** Blog articles for Flower Lifestyle — florist tips & Kenya delivery guides */
+export const ARTICLES = [
+  {
+    slug: 'best-birthday-flowers-nairobi',
+    title: 'Best Birthday Flowers in Nairobi: A Complete Gift Guide',
+    excerpt:
+      'Discover the top birthday flower bouquets in Nairobi — from vibrant gerberas to elegant roses. Same-day delivery tips and how to pick the perfect arrangement.',
+    category: 'Gift Guides',
+    publishedAt: '2026-01-15',
+    updatedAt: '2026-05-20',
+    readMinutes: 6,
+    image: 'https://images.unsplash.com/photo-1487530811176-3780de880c2d?w=800',
+    keywords: 'birthday flowers Nairobi, birthday bouquet Kenya, flower gift Nairobi, same day birthday flowers',
+    body: [
+      'Birthdays in Nairobi deserve flowers that feel personal, fresh, and delivered on time. Whether you are surprising a colleague in the CBD, a partner in Westlands, or family in Karen, the right bouquet sets the tone for the whole celebration.',
+      'For vibrant, joyful birthdays, mixed gerbera and lily arrangements work beautifully — they photograph well and stay fresh in Nairobi\'s climate when handled properly. For a classic romantic birthday, red or pink roses remain the most requested option at Flower Lifestyle.',
+      'Timing matters: order before midday for the best chance of same-day delivery across Nairobi. Include a personalized message at checkout and mention any favourite colours on WhatsApp — our florists at City Market can tailor the arrangement.',
+      'Budget guide: thoughtful birthday bouquets in Nairobi typically range from KES 3,000 for compact arrangements to KES 12,000+ for premium rose collections with add-ons like chocolates or balloons.',
+      'Ready to order? Browse our birthday collection online or message us on WhatsApp at 0742 370 307 for a custom quote.',
+    ],
+    ctaLink: '/flowers?category=birthday',
+    ctaLabel: 'Shop Birthday Flowers',
+  },
+  {
+    slug: 'same-day-flower-delivery-nairobi',
+    title: 'Same-Day Flower Delivery in Nairobi: How It Works',
+    excerpt:
+      'Everything you need to know about ordering same-day flowers in Nairobi — areas covered, cut-off times, delivery fees, and M-Pesa checkout.',
+    category: 'Delivery',
+    publishedAt: '2026-02-01',
+    updatedAt: '2026-05-18',
+    readMinutes: 5,
+    image: 'https://images.unsplash.com/photo-1563241527-3004b7be0ffd?w=800',
+    keywords: 'same day flower delivery Nairobi, flower delivery Kenya, Nairobi florist delivery, order flowers online Kenya',
+    body: [
+      'Same-day flower delivery in Nairobi is one of the most popular services we offer at Flower Lifestyle. Customers order from our website or WhatsApp, and our team prepares fresh bouquets from City Market for dispatch across the city.',
+      'We regularly deliver to Nairobi CBD, Westlands, Kilimani, Lavington, Karen, Langata, South B, South C, Parklands, Eastlands, Kasarani, and along Thika Road. Countrywide delivery is available on request for major towns.',
+      'For same-day service, place your order as early as possible — ideally before 2 PM on weekdays. Delivery fees depend on distance and order size; exact costs appear at checkout or via WhatsApp quote.',
+      'Payment is easy with M-Pesa, which most Kenyan customers prefer. You can also pay by card online. Always double-check the recipient\'s phone number and delivery address to avoid delays.',
+      'Need flowers delivered today? Start your order now or chat with us on WhatsApp for urgent sympathy, birthday, or anniversary requests.',
+    ],
+    ctaLink: '/delivery',
+    ctaLabel: 'View Delivery Areas',
+  },
+  {
+    slug: 'anniversary-bouquet-guide-kenya',
+    title: 'How to Choose the Perfect Anniversary Bouquet in Kenya',
+    excerpt:
+      'Anniversary flower ideas for couples in Kenya — rose colours, lily elegance, and combo gifts that make milestones unforgettable.',
+    category: 'Occasions',
+    publishedAt: '2026-02-14',
+    updatedAt: '2026-05-15',
+    readMinutes: 5,
+    image: 'https://images.unsplash.com/photo-1561181286-d3fee7d55364?w=800',
+    keywords: 'anniversary flowers Kenya, anniversary bouquet Nairobi, romantic flowers Kenya, wedding anniversary gifts',
+    body: [
+      'Anniversaries are among the most meaningful occasions for sending flowers in Kenya. The right bouquet communicates love, appreciation, and the shared history you celebrate together.',
+      'Red roses symbolize deep love and passion — ideal for early anniversaries and romantic milestones. Pink roses express admiration and gratitude, perfect for long-term partners. White lilies add elegance for formal celebrations.',
+      'Consider upgrading to a combo: flowers with wine, chocolates, or a personalized card. Our anniversary collection includes curated sets designed for Nairobi delivery with same-day options where available.',
+      'If you are unsure which style to pick, send us a photo of a previous favourite arrangement on WhatsApp. Our florists can recreate or improve the design with fresh seasonal blooms.',
+      'Explore anniversary bouquets designed for delivery across Nairobi and Kenya.',
+    ],
+    ctaLink: '/flowers?category=anniversary',
+    ctaLabel: 'Shop Anniversary Flowers',
+  },
+  {
+    slug: 'red-roses-meaning-gift-guide',
+    title: 'Red Roses in Kenya: Meanings, Prices & When to Send Them',
+    excerpt:
+      'Why red roses remain Kenya\'s most popular romantic gift — symbolism, bouquet sizes, and tips for Valentine\'s Day, proposals, and apologies.',
+    category: 'Flower Tips',
+    publishedAt: '2026-03-01',
+    updatedAt: '2026-05-10',
+    readMinutes: 4,
+    image: 'https://images.unsplash.com/photo-1578439231583-9eca0a363860?w=800',
+    keywords: 'red roses Nairobi, roses delivery Kenya, romantic roses bouquet, Valentine flowers Kenya',
+    body: [
+      'Red roses are timeless for a reason. In Kenya and worldwide, they represent love, desire, and respect — making them the go-to choice for Valentine\'s Day, proposals, anniversaries, and romantic surprises.',
+      'A dozen premium red roses is the classic starting point, but Nairobi customers increasingly choose 24, 50, or 100-rose displays for major occasions. Quality matters: look for firm stems, deep colour, and fresh greenery.',
+      'Pair roses with a handwritten note or add a teddy bear and chocolates for a complete gift. Flower Lifestyle sources fresh roses daily and arranges them at our City Market workshop.',
+      'Order early during peak seasons like Valentine\'s Day and Mother\'s Day to secure your preferred delivery slot. WhatsApp ordering helps when you need custom counts or urgent dispatch.',
+    ],
+    ctaLink: '/flowers?category=roses',
+    ctaLabel: 'Shop Roses',
+  },
+  {
+    slug: 'mothers-day-flowers-kenya-ideas',
+    title: "Mother's Day Flowers in Kenya: 7 Thoughtful Bouquet Ideas",
+    excerpt:
+      "Surprise Mum with fresh Mother's Day flowers in Nairobi — pink peonies, mixed pastels, and gift combos she will love.",
+    category: 'Occasions',
+    publishedAt: '2026-04-20',
+    updatedAt: '2026-05-22',
+    readMinutes: 5,
+    image: 'https://images.unsplash.com/photo-1490750967868-88aa4486c946?w=800',
+    keywords: "Mother's Day flowers Kenya, flowers for mum Nairobi, Mother's Day bouquet Kenya",
+    body: [
+      "Mother's Day is one of the busiest flower holidays in Kenya. Sons and daughters across Nairobi order bouquets to honour mums, grandmothers, and mother figures who deserve something beautiful.",
+      'Pastel mixed bouquets — pink, peach, and cream tones — are universally flattering. Add carnations for traditional symbolism or lilies for a premium feel. Combos with cake or a spa gift set make the day extra special.',
+      'If Mum lives outside Nairobi, ask about countrywide delivery when you order. We ship to major Kenyan towns with careful packaging to protect blooms in transit.',
+      'Personal touches win: include her favourite colours, a meaningful message, or a photo of a past arrangement she loved. Our team can help via WhatsApp at 0742 370 307.',
+      "Browse our Mother's Day collection for ready-to-order bouquets with Nairobi same-day delivery.",
+    ],
+    ctaLink: '/flowers?category=mothers-day',
+    ctaLabel: "Shop Mother's Day Flowers",
+  },
+  {
+    slug: 'money-bouquet-trend-kenya',
+    title: 'Money Bouquets in Kenya: The Trend Explained',
+    excerpt:
+      'Why money bouquets are popular for graduations and birthdays in Nairobi — how they are made, pricing, and ordering tips.',
+    category: 'Trends',
+    publishedAt: '2026-05-01',
+    updatedAt: '2026-05-25',
+    readMinutes: 4,
+    image: 'https://images.unsplash.com/photo-1507290439931-a861b5a38200?w=800',
+    keywords: 'money bouquet Nairobi, money bouquet Kenya, graduation money bouquet, cash flower gift',
+    body: [
+      'Money bouquets have become one of the most requested creative gifts in Kenya — especially for graduations, birthdays, and celebrations where you want to combine flowers with a cash gift.',
+      'These arrangements fold banknotes into rose shapes and combine them with fresh or artificial blooms for a stunning presentation. The final design depends on the amount, denomination, and occasion.',
+      'Order at least 2–3 days ahead for custom money bouquets so our team can prepare the notes and structure safely. Share the amount and preferred colours on WhatsApp when you enquire.',
+      'Money bouquets work beautifully alongside a card explaining the sentiment — whether congratulations on a degree, a milestone birthday, or a new job.',
+      'See our money bouquet collection or contact us for a custom quote tailored to your budget.',
+    ],
+    ctaLink: '/flowers?category=money-bouquet',
+    ctaLabel: 'View Money Bouquets',
+  },
+];
+
+export const getArticleBySlug = (slug) => ARTICLES.find((a) => a.slug === slug);
+
+export const getLatestArticles = (limit = 3) =>
+  [...ARTICLES].sort((a, b) => b.publishedAt.localeCompare(a.publishedAt)).slice(0, limit);

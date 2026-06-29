@@ -140,6 +140,12 @@ const Header = () => {
                 </Link>
               )}
               <Link
+                to="/blog"
+                className={`relative text-sm font-medium transition-colors hover:text-pink-600 ${location.pathname.startsWith('/blog') ? 'text-pink-600' : 'text-gray-700'}`}
+              >
+                Blog
+              </Link>
+              <Link
                 to="/about"
                 className={`relative text-sm font-medium transition-colors hover:text-pink-600 ${location.pathname === '/about' ? 'text-pink-600' : 'text-gray-700'}`}
               >
@@ -310,6 +316,15 @@ const Header = () => {
                       {link.name}
                     </Link>
                   ))}
+                  <Link
+                    to="/blog"
+                    className={`px-4 py-3 rounded-lg font-medium transition-colors ${location.pathname.startsWith('/blog')
+                      ? 'bg-pink-50 text-pink-600'
+                      : 'text-gray-700 hover:bg-pink-50 hover:text-pink-600'
+                      }`}
+                  >
+                    Blog
+                  </Link>
                   <Link
                     to="/about"
                     className={`px-4 py-3 rounded-lg font-medium transition-colors ${location.pathname === '/about'
