@@ -19,7 +19,9 @@ const AdminPage = () => {
     const [currentUser, setCurrentUser] = useState({ email: '', role: '' });
     const [orders, setOrders] = useState([]);
     const [products, setProducts] = useState([]);
+    const [blogs, setBlogs] = useState([]);
     const [editingProduct, setEditingProduct] = useState(null);
+    const [editingBlog, setEditingBlog] = useState(null);
     const [newItem, setNewItem] = useState({
         name: '',
         description: '',
@@ -28,13 +30,25 @@ const AdminPage = () => {
         image: '',
         stock: 100
     });
+    const [newBlog, setNewBlog] = useState({
+        title: '',
+        slug: '',
+        excerpt: '',
+        content: '',
+        author: 'Flower Lifestyle',
+        category: 'general',
+        image: '',
+        published: false,
+        featured: false
+    });
     const [adminLoginData, setAdminLoginData] = useState({ email: '', password: '' });
     const [showPassword, setShowPassword] = useState(false);
     const [isLoggingIn, setIsLoggingIn] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
     const [isAddingProduct, setIsAddingProduct] = useState(false);
+    const [isUploadingBlogImage, setIsUploadingBlogImage] = useState(false);
     const [users, setUsers] = useState([]);
-    const [dataLoading, setDataLoading] = useState({ users: false, orders: false, products: false });
+    const [dataLoading, setDataLoading] = useState({ users: false, orders: false, products: false, blogs: false });
 
     // Check if user is admin on component mount
     useEffect(() => {
@@ -333,6 +347,58 @@ USING (
         }
     };
 
+    const handleBlogImageUpload = async (event) => {
+        console.log('handleBlogImageUpload called');
+        
+        const file = event.target.files[0];
+        console.log('Selected file:', file);
+        
+        if (!file) {
+            toast.error('Please select a file first');
+            return;
+        }
+
+        // Basic validation
+        if (!file.type.startsWith('image/')) {
+            toast.error(`Please upload an image file. Selected type: ${file.type}`);
+            return;
+        }
+
+        if (file.size > 5 * 1024 * 1024) { // 5MB limit
+            toast.error(`File size must be less than 5MB. Selected size: ${(file.size / 1024 / 1024).toFixed(2)}MB`);
+            return;
+        }
+
+        setIsUploadingBlogImage(true);
+        
+        try {
+            const fileExt = file.name.split('.').pop();
+            const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
+            const filePath = `blogs/${fileName}`;
+
+            console.log('Uploading blog image to:', filePath);
+
+            const { data, error } = await supabase.storage
+                .from('products')
+                .upload(filePath, file);
+
+            if (error) throw error;
+
+            const { data: { publicUrl } } = supabase.storage
+                .from('products')
+                .getPublicUrl(filePath);
+
+            console.log('Blog image uploaded:', publicUrl);
+            setNewBlog({ ...newBlog, image: publicUrl });
+            toast.success('Blog image uploaded successfully');
+        } catch (error) {
+            console.error('Error uploading blog image:', error);
+            toast.error(`Failed to upload blog image: ${error.message}`);
+        } finally {
+            setIsUploadingBlogImage(false);
+        }
+    };
+
     const handleAdminLogin = async (e) => {
         e.preventDefault();
         setIsLoggingIn(true);
@@ -537,12 +603,31 @@ USING (
         }
     };
 
+    const loadBlogs = async () => {
+        try {
+            setDataLoading(prev => ({ ...prev, blogs: true }));
+            const { data, error } = await supabase
+                .from('blogs')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            if (error) throw error;
+            setBlogs(data || []);
+        } catch (error) {
+            console.error('Error loading blogs:', error);
+            toast.error('Failed to load blogs');
+        } finally {
+            setDataLoading(prev => ({ ...prev, blogs: false }));
+        }
+    };
+
     // Reload data when tabs change to ensure freshness
     useEffect(() => {
         if (isAuthenticated) {
             if (activeTab === 'users') loadUsers();
             if (activeTab === 'orders') loadOrders();
             if (activeTab === 'manage-products' || activeTab === 'products') loadProducts();
+            if (activeTab === 'blogs' || activeTab === 'add-blog') loadBlogs();
         }
     }, [activeTab, isAuthenticated]);
 
@@ -741,6 +826,105 @@ USING (
         } catch (error) {
             console.error('Error deleting order:', error);
             toast.error(`Failed to delete order: ${error.message}`);
+        }
+    };
+
+    const handleAddBlog = async (e) => {
+        e.preventDefault();
+        console.log('handleAddBlog called');
+
+        try {
+            if (!newBlog.title.trim() || !newBlog.content.trim()) {
+                toast.error('Title and content are required');
+                return;
+            }
+
+            // Generate slug from title if not provided
+            const slug = newBlog.slug.trim() || newBlog.title.trim()
+                .toLowerCase()
+                .replace(/[^a-z0-9\s-]/g, '')
+                .replace(/\s+/g, '-');
+
+            const blogData = {
+                title: newBlog.title.trim(),
+                slug: slug,
+                excerpt: newBlog.excerpt.trim(),
+                content: newBlog.content.trim(),
+                author: newBlog.author.trim(),
+                category: newBlog.category,
+                image: newBlog.image,
+                published: newBlog.published,
+                featured: newBlog.featured,
+                published_at: newBlog.published ? new Date().toISOString() : null
+            };
+
+            console.log('Blog data to insert:', blogData);
+
+            const { error } = await supabase.from('blogs').insert([blogData]);
+
+            if (error) throw error;
+
+            toast.success(`Blog "${newBlog.title}" added successfully!`);
+            setNewBlog({
+                title: '',
+                slug: '',
+                excerpt: '',
+                content: '',
+                author: 'Flower Lifestyle',
+                category: 'general',
+                image: '',
+                published: false,
+                featured: false
+            });
+            loadBlogs();
+            setActiveTab('blogs');
+        } catch (error) {
+            console.error('Error adding blog:', error);
+            toast.error(`Failed to add blog: ${error.message}`);
+        }
+    };
+
+    const handleUpdateBlog = async (blogId, updatedData) => {
+        try {
+            if (!updatedData.title || !updatedData.content) {
+                toast.error('Title and content are required');
+                return;
+            }
+
+            const { error } = await supabase
+                .from('blogs')
+                .update({
+                    ...updatedData,
+                    updated_at: new Date().toISOString(),
+                    published_at: updatedData.published && !editingBlog.published_at 
+                        ? new Date().toISOString() 
+                        : editingBlog.published_at
+                })
+                .eq('id', blogId);
+
+            if (error) throw error;
+
+            toast.success('Blog updated successfully!');
+            setEditingBlog(null);
+            loadBlogs();
+        } catch (error) {
+            console.error('Error updating blog:', error);
+            toast.error('Failed to update blog');
+        }
+    };
+
+    const handleDeleteBlog = async (blogId, blogTitle) => {
+        if (!confirm(`Are you sure you want to delete "${blogTitle}"?`)) return;
+
+        try {
+            const { error } = await supabase.from('blogs').delete().eq('id', blogId);
+
+            if (error) throw error;
+            toast.success(`Blog "${blogTitle}" deleted successfully!`);
+            loadBlogs();
+        } catch (error) {
+            console.error('Error deleting blog:', error);
+            toast.error('Failed to delete blog');
         }
     };
 
@@ -1034,6 +1218,22 @@ USING (
                         >
                             <Plus className="w-4 h-4 mr-1 sm:mr-2" />
                             Add Product
+                        </Button>
+                        <Button
+                            onClick={() => setActiveTab('blogs')}
+                            variant={activeTab === 'blogs' ? 'default' : 'outline'}
+                            className={`whitespace-nowrap text-xs sm:text-sm flex-shrink-0 ${activeTab === 'blogs' ? 'bg-pink-600' : ''}`}
+                        >
+                            <Package className="w-4 h-4 mr-1 sm:mr-2" />
+                            Blogs
+                        </Button>
+                        <Button
+                            onClick={() => setActiveTab('add-blog')}
+                            variant={activeTab === 'add-blog' ? 'default' : 'outline'}
+                            className={`whitespace-nowrap text-xs sm:text-sm flex-shrink-0 ${activeTab === 'add-blog' ? 'bg-pink-600' : ''}`}
+                        >
+                            <Plus className="w-4 h-4 mr-1 sm:mr-2" />
+                            Add Blog
                         </Button>
                     </div>
 
@@ -1651,6 +1851,312 @@ USING (
                                         className="w-full py-6 bg-pink-600 hover:bg-pink-700 disabled:opacity-60 disabled:cursor-not-allowed text-white rounded-xl font-semibold"
                                     >
                                         {isAddingProduct ? 'Adding Product...' : isUploading ? 'Waiting for image upload...' : 'Add Product'}
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    )}
+
+                    {/* Manage Blogs Tab */}
+                    {activeTab === 'blogs' && (
+                        <div className="bg-white rounded-2xl shadow-sm border border-pink-100 p-4 sm:p-8">
+                            <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">Manage Blogs</h2>
+
+                            {dataLoading.blogs ? (
+                                <div className="flex justify-center py-12">
+                                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-pink-600"></div>
+                                </div>
+                            ) : blogs.length === 0 ? (
+                                <div className="text-center py-12">
+                                    <p className="text-gray-500 mb-4">No blogs found</p>
+                                    <Button onClick={() => setActiveTab('add-blog')} className="bg-pink-600 hover:bg-pink-700">
+                                        Create First Blog
+                                    </Button>
+                                </div>
+                            ) : (
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                    {blogs.map((blog) => (
+                                        <div key={blog.id} className="border border-gray-200 rounded-xl p-4 hover:shadow-md transition-shadow">
+                                            {editingBlog?.id === blog.id ? (
+                                                // Edit Mode
+                                                <div className="space-y-3">
+                                                    <input
+                                                        type="text"
+                                                        value={editingBlog.title}
+                                                        onChange={(e) => setEditingBlog({ ...editingBlog, title: e.target.value })}
+                                                        className="w-full px-3 py-2 border rounded-lg text-sm font-semibold"
+                                                        placeholder="Blog title"
+                                                    />
+                                                    <textarea
+                                                        value={editingBlog.content}
+                                                        onChange={(e) => setEditingBlog({ ...editingBlog, content: e.target.value })}
+                                                        className="w-full px-3 py-2 border rounded-lg text-xs"
+                                                        rows="3"
+                                                        placeholder="Blog content"
+                                                    />
+                                                    <div className="space-y-2">
+                                                        <label className="text-xs font-medium text-gray-500">Image</label>
+                                                        <div className="flex gap-2">
+                                                            <input
+                                                                type="url"
+                                                                value={editingBlog.image}
+                                                                onChange={(e) => setEditingBlog({ ...editingBlog, image: e.target.value })}
+                                                                className="flex-1 px-3 py-2 border rounded-lg text-xs"
+                                                                placeholder="Image URL"
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                    <div className="flex items-center gap-2">
+                                                        <input
+                                                            type="checkbox"
+                                                            checked={editingBlog.published}
+                                                            onChange={(e) => setEditingBlog({ ...editingBlog, published: e.target.checked })}
+                                                            className="rounded"
+                                                        />
+                                                        <label className="text-xs">Published</label>
+                                                    </div>
+                                                    <div className="flex gap-2">
+                                                        <Button
+                                                            size="sm"
+                                                            className="flex-1 bg-green-600 hover:bg-green-700"
+                                                            onClick={() => handleUpdateBlog(blog.id, editingBlog)}
+                                                        >
+                                                            Save
+                                                        </Button>
+                                                        <Button
+                                                            size="sm"
+                                                            variant="outline"
+                                                            className="flex-1 bg-white"
+                                                            onClick={() => setEditingBlog(null)}
+                                                        >
+                                                            Cancel
+                                                        </Button>
+                                                    </div>
+                                                </div>
+                                            ) : (
+                                                // View Mode
+                                                <>
+                                                    {blog.image && (
+                                                        <img
+                                                            src={blog.image}
+                                                            alt={blog.title}
+                                                            className="w-full h-40 object-cover rounded-lg mb-3"
+                                                        />
+                                                    )}
+                                                    <h3 className="font-bold text-lg mb-1">{blog.title}</h3>
+                                                    <p className="text-sm text-gray-600 mb-2 line-clamp-2">{blog.excerpt}</p>
+                                                    <div className="flex justify-between items-center mb-2">
+                                                        <span className={`text-xs px-2 py-1 rounded-full ${blog.published ? 'bg-green-100 text-green-600' : 'bg-yellow-100 text-yellow-600'}`}>
+                                                            {blog.published ? 'Published' : 'Draft'}
+                                                        </span>
+                                                        {blog.featured && (
+                                                            <span className="text-xs px-2 py-1 rounded-full bg-pink-100 text-pink-600">
+                                                                Featured
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                    <span className="inline-block px-2 py-1 text-xs bg-gray-100 text-gray-600 rounded-full mb-3">
+                                                        {blog.category}
+                                                    </span>
+                                                    <div className="flex gap-2 mt-3">
+                                                        <Button
+                                                            size="sm"
+                                                            variant="outline"
+                                                            className="flex-1 border-blue-300 text-blue-600"
+                                                            onClick={() => setEditingBlog(blog)}
+                                                        >
+                                                            <Edit className="w-4 h-4 mr-1" />
+                                                            Edit
+                                                        </Button>
+                                                        <Button
+                                                            size="sm"
+                                                            variant="outline"
+                                                            className="flex-1 border-red-300 text-red-600"
+                                                            onClick={() => handleDeleteBlog(blog.id, blog.title)}
+                                                        >
+                                                            <Trash2 className="w-4 h-4 mr-1" />
+                                                            Delete
+                                                        </Button>
+                                                    </div>
+                                                </>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    {/* Add Blog Tab */}
+                    {activeTab === 'add-blog' && (
+                        <div className="bg-white rounded-2xl shadow-sm border border-pink-100 p-4 sm:p-8">
+                            <h2 className="text-xl font-bold mb-4 sm:mb-6 flex items-center gap-2">
+                                <Plus className="w-5 h-5 text-pink-500" />
+                                Add New Blog
+                            </h2>
+
+                            <form onSubmit={handleAddBlog} className="space-y-6">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Blog Title</label>
+                                    <input
+                                        type="text"
+                                        value={newBlog.title}
+                                        onChange={(e) => setNewBlog({ ...newBlog, title: e.target.value })}
+                                        className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-pink-500 focus:ring-2 focus:ring-pink-100 outline-none"
+                                        placeholder="e.g. The Art of Flower Arranging"
+                                        required
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Slug (URL-friendly title)</label>
+                                    <input
+                                        type="text"
+                                        value={newBlog.slug}
+                                        onChange={(e) => setNewBlog({ ...newBlog, slug: e.target.value })}
+                                        className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-pink-500 focus:ring-2 focus:ring-pink-100 outline-none"
+                                        placeholder="e.g. the-art-of-flower-arranging"
+                                    />
+                                    <p className="text-xs text-gray-500 mt-1">Leave empty to auto-generate from title</p>
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Excerpt (Short description)</label>
+                                    <textarea
+                                        value={newBlog.excerpt}
+                                        onChange={(e) => setNewBlog({ ...newBlog, excerpt: e.target.value })}
+                                        className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-pink-500 focus:ring-2 focus:ring-pink-100 outline-none"
+                                        placeholder="Brief description for blog listing..."
+                                        rows="2"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Content</label>
+                                    <textarea
+                                        value={newBlog.content}
+                                        onChange={(e) => setNewBlog({ ...newBlog, content: e.target.value })}
+                                        className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-pink-500 focus:ring-2 focus:ring-pink-100 outline-none"
+                                        placeholder="Write your blog content here..."
+                                        rows="10"
+                                        required
+                                    />
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Author</label>
+                                        <input
+                                            type="text"
+                                            value={newBlog.author}
+                                            onChange={(e) => setNewBlog({ ...newBlog, author: e.target.value })}
+                                            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-pink-500 focus:ring-2 focus:ring-pink-100 outline-none"
+                                            placeholder="e.g. Flower Lifestyle"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
+                                        <select
+                                            value={newBlog.category}
+                                            onChange={(e) => setNewBlog({ ...newBlog, category: e.target.value })}
+                                            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-pink-500 focus:ring-2 focus:ring-pink-100 outline-none"
+                                        >
+                                            <option value="general">General</option>
+                                            <option value="tips">Tips & Guides</option>
+                                            <option value="seasonal">Seasonal</option>
+                                            <option value="events">Events</option>
+                                            <option value="care">Flower Care</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Blog Image</label>
+                                    <div className="space-y-4">
+                                        <div className="flex flex-col md:flex-row gap-3 sm:gap-4">
+                                            <div className="flex-1">
+                                                <label className="block text-xs text-gray-500 mb-1">Option 1: Upload Image</label>
+                                                <div className="relative">
+                                                    <input
+                                                        type="file"
+                                                        accept="image/*"
+                                                        onChange={handleBlogImageUpload}
+                                                        className="hidden"
+                                                        id="blog-image-upload"
+                                                        disabled={isUploadingBlogImage}
+                                                    />
+                                                    <label
+                                                        htmlFor="blog-image-upload"
+                                                        className={`w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl border border-dashed border-gray-300 hover:border-pink-500 hover:bg-pink-50 cursor-pointer transition-all ${isUploadingBlogImage ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                                    >
+                                                        {isUploadingBlogImage ? (
+                                                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-pink-600"></div>
+                                                        ) : (
+                                                            <Upload className="w-5 h-5 text-gray-400" />
+                                                        )}
+                                                        <span className="text-sm text-gray-600">{isUploadingBlogImage ? 'Uploading...' : 'Choose File'}</span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div className="flex items-center justify-center md:pt-4 text-gray-400 font-medium">OR</div>
+                                            <div className="flex-1">
+                                                <label className="block text-xs text-gray-500 mb-1">Option 2: Image URL</label>
+                                                <input
+                                                    type="url"
+                                                    value={newBlog.image}
+                                                    onChange={(e) => setNewBlog({ ...newBlog, image: e.target.value })}
+                                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-pink-500 focus:ring-2 focus:ring-pink-100 outline-none"
+                                                    placeholder="https://images.unsplash.com/..."
+                                                />
+                                            </div>
+                                        </div>
+
+                                        {newBlog.image && (
+                                            <div className="relative w-32 h-32 rounded-lg overflow-hidden border border-gray-200 bg-gray-50">
+                                                <img
+                                                    src={newBlog.image}
+                                                    alt="Preview"
+                                                    className="w-full h-full object-cover"
+                                                />
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setNewBlog({ ...newBlog, image: '' })}
+                                                    className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 shadow-md hover:bg-red-600 transition-colors"
+                                                >
+                                                    <X className="w-3 h-3" />
+                                                </button>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+
+                                <div className="flex items-center gap-4">
+                                    <label className="flex items-center gap-2 cursor-pointer">
+                                        <input
+                                            type="checkbox"
+                                            checked={newBlog.published}
+                                            onChange={(e) => setNewBlog({ ...newBlog, published: e.target.checked })}
+                                            className="rounded"
+                                        />
+                                        <span className="text-sm font-medium text-gray-700">Publish immediately</span>
+                                    </label>
+                                    <label className="flex items-center gap-2 cursor-pointer">
+                                        <input
+                                            type="checkbox"
+                                            checked={newBlog.featured}
+                                            onChange={(e) => setNewBlog({ ...newBlog, featured: e.target.checked })}
+                                            className="rounded"
+                                        />
+                                        <span className="text-sm font-medium text-gray-700">Featured blog</span>
+                                    </label>
+                                </div>
+
+                                <div className="pt-4">
+                                    <button 
+                                        type="submit" 
+                                        className="w-full py-6 bg-pink-600 hover:bg-pink-700 text-white rounded-xl font-semibold"
+                                    >
+                                        Add Blog
                                     </button>
                                 </div>
                             </form>
