@@ -45,7 +45,8 @@ const BlogPage = () => {
         ctaLabel: 'Shop Flowers'
       }));
 
-      setBlogs(transformedBlogs);
+      // If DB returned no published blogs, fall back to static articles
+      setBlogs(transformedBlogs.length > 0 ? transformedBlogs : ARTICLES);
     } catch (error) {
       console.error('Error loading blogs:', error);
       // Fallback to static articles if database fails

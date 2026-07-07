@@ -47,6 +47,7 @@ const AdminPage = () => {
     const [isUploading, setIsUploading] = useState(false);
     const [isAddingProduct, setIsAddingProduct] = useState(false);
     const [isUploadingBlogImage, setIsUploadingBlogImage] = useState(false);
+    const [isUploadingEditBlogImage, setIsUploadingEditBlogImage] = useState(false);
     const [users, setUsers] = useState([]);
     const [dataLoading, setDataLoading] = useState({ users: false, orders: false, products: false, blogs: false });
 
@@ -396,6 +397,46 @@ USING (
             toast.error(`Failed to upload blog image: ${error.message}`);
         } finally {
             setIsUploadingBlogImage(false);
+        }
+    };
+
+    const handleEditBlogImageUpload = async (event) => {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        if (!file.type.startsWith('image/')) {
+            toast.error('Please upload an image file.');
+            return;
+        }
+        if (file.size > 5 * 1024 * 1024) {
+            toast.error('File size must be less than 5MB.');
+            return;
+        }
+
+        setIsUploadingEditBlogImage(true);
+        try {
+            const fileExt = file.name.split('.').pop();
+            const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
+            const filePath = `blogs/${fileName}`;
+
+            const { error } = await supabase.storage
+                .from('products')
+                .upload(filePath, file);
+
+            if (error) throw error;
+
+            const { data: { publicUrl } } = supabase.storage
+                .from('products')
+                .getPublicUrl(filePath);
+
+            setEditingBlog(prev => ({ ...prev, image: publicUrl }));
+            toast.success('Blog image uploaded successfully');
+        } catch (error) {
+            console.error('Error uploading edit blog image:', error);
+            toast.error(`Failed to upload image: ${error.message}`);
+        } finally {
+            setIsUploadingEditBlogImage(false);
+            if (event.target) event.target.value = '';
         }
     };
 
@@ -1906,14 +1947,38 @@ USING (
                                                     />
                                                     <div className="space-y-2">
                                                         <label className="text-xs font-medium text-gray-500">Image</label>
-                                                        <div className="flex gap-2">
-                                                            <input
-                                                                type="url"
-                                                                value={editingBlog.image}
-                                                                onChange={(e) => setEditingBlog({ ...editingBlog, image: e.target.value })}
-                                                                className="flex-1 px-3 py-2 border rounded-lg text-xs"
-                                                                placeholder="Image URL"
-                                                            />
+                                                        <div className="flex flex-col gap-2">
+                                                            <div className="flex gap-2">
+                                                                <input
+                                                                    type="file"
+                                                                    accept="image/*"
+                                                                    onChange={handleEditBlogImageUpload}
+                                                                    className="hidden"
+                                                                    id={`edit-blog-image-${editingBlog.id}`}
+                                                                    disabled={isUploadingEditBlogImage}
+                                                                />
+                                                                <label
+                                                                    htmlFor={`edit-blog-image-${editingBlog.id}`}
+                                                                    className={`flex items-center gap-1 px-3 py-2 border border-dashed border-gray-300 rounded-lg text-xs cursor-pointer hover:border-pink-500 hover:bg-pink-50 transition-all whitespace-nowrap ${isUploadingEditBlogImage ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                                                >
+                                                                    {isUploadingEditBlogImage ? (
+                                                                        <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-pink-600" />
+                                                                    ) : (
+                                                                        <Upload className="w-3 h-3 text-gray-400" />
+                                                                    )}
+                                                                    {isUploadingEditBlogImage ? 'Uploading...' : 'Upload'}
+                                                                </label>
+                                                                <input
+                                                                    type="url"
+                                                                    value={editingBlog.image || ''}
+                                                                    onChange={(e) => setEditingBlog({ ...editingBlog, image: e.target.value })}
+                                                                    className="flex-1 px-3 py-2 border rounded-lg text-xs"
+                                                                    placeholder="Image URL"
+                                                                />
+                                                            </div>
+                                                            {editingBlog.image && (
+                                                                <img src={editingBlog.image} alt="Preview" className="w-20 h-20 object-cover rounded-lg border border-gray-200" />
+                                                            )}
                                                         </div>
                                                     </div>
                                                     <div className="flex items-center gap-2">
