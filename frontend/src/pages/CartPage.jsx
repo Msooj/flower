@@ -14,9 +14,8 @@ const CartPage = () => {
     const { cart, removeFromCart, updateQuantity, cartTotal, clearCart } = useCart();
     const [showCheckoutForm, setShowCheckoutForm] = useState(false);
     const [isProcessing, setIsProcessing] = useState(false);
-    const [paymentMethod, setPaymentMethod] = useState('mpesa'); // 'mpesa' or 'cash'
+    const [paymentMethod, setPaymentMethod] = useState('mpesa');
     const [mpesaNumber, setMpesaNumber] = useState('');
-    const [transactionId, setTransactionId] = useState('');
     const [paymentStatus, setPaymentStatus] = useState(null); // 'pending', 'success', 'failed'
     const [checkoutData, setCheckoutData] = useState({
         name: '',
@@ -120,18 +119,11 @@ const CartPage = () => {
 
             // Handle M-Pesa payment (manual confirmation)
             if (paymentMethod === 'mpesa') {
-                if (!transactionId) {
-                    toast.error('Please enter your M-Pesa transaction ID');
-                    setIsProcessing(false);
-                    return;
-                }
-
-                // Update order with transaction ID
+                // Update order with phone number
                 const { error: updateError } = await supabase
                     .from('orders')
                     .update({ 
                         payment_phone_number: mpesaNumber,
-                        transaction_id: transactionId,
                         payment_status: 'pending'
                     })
                     .eq('id', order.id);
@@ -327,7 +319,7 @@ const CartPage = () => {
                                         Payment Method
                                     </h2>
 
-                                    <div className="grid grid-cols-2 gap-4 mb-6">
+                                    <div className="grid grid-cols-1 gap-4 mb-6">
                                         <button
                                             type="button"
                                             onClick={() => setPaymentMethod('mpesa')}
@@ -338,17 +330,6 @@ const CartPage = () => {
                                         >
                                             <Smartphone className="w-8 h-8" />
                                             <span className="font-semibold">M-Pesa</span>
-                                        </button>
-                                        <button
-                                            type="button"
-                                            onClick={() => setPaymentMethod('cash')}
-                                            className={`p-4 rounded-xl border flex flex-col items-center gap-2 transition-all ${paymentMethod === 'cash'
-                                                ? 'border-pink-500 bg-pink-50 text-pink-700'
-                                                : 'border-gray-200 hover:border-pink-200 hover:bg-gray-50'
-                                                }`}
-                                        >
-                                            <CreditCard className="w-8 h-8" />
-                                            <span className="font-semibold">Cash on Delivery</span>
                                         </button>
                                     </div>
 
@@ -376,23 +357,11 @@ const CartPage = () => {
                                                 type="tel"
                                                 value={mpesaNumber}
                                                 onChange={(e) => setMpesaNumber(e.target.value)}
-                                                className="w-full px-4 py-3 rounded-lg border border-green-300 focus:border-green-500 focus:ring-2 focus:ring-green-200 outline-none mb-3"
+                                                className="w-full px-4 py-3 rounded-lg border border-green-300 focus:border-green-500 focus:ring-2 focus:ring-green-200 outline-none"
                                                 placeholder="e.g., 0712345678"
                                                 required={paymentMethod === 'mpesa'}
                                             />
-
-                                            <label className="block text-sm font-medium text-green-800 mb-2">
-                                                Enter M-Pesa Transaction ID:
-                                            </label>
-                                            <input
-                                                type="text"
-                                                value={transactionId}
-                                                onChange={(e) => setTransactionId(e.target.value)}
-                                                className="w-full px-4 py-3 rounded-lg border border-green-300 focus:border-green-500 focus:ring-2 focus:ring-green-200 outline-none"
-                                                placeholder="e.g., XYZ123ABC"
-                                                required={paymentMethod === 'mpesa'}
-                                            />
-                                            <p className="text-[11px] text-green-700 mt-1">Enter the transaction ID from your M-Pesa message after completing payment.</p>
+                                            <p className="text-[11px] text-green-700 mt-1">Complete the M-Pesa payment using the Paybill above, then enter your phone number.</p>
                                         </div>
                                     )}
                                 </div>
