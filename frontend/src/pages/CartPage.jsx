@@ -16,6 +16,7 @@ const CartPage = () => {
     const [isProcessing, setIsProcessing] = useState(false);
     const [paymentMethod, setPaymentMethod] = useState('mpesa'); // 'mpesa' or 'cash'
     const [mpesaNumber, setMpesaNumber] = useState('');
+    const [transactionId, setTransactionId] = useState('');
     const [paymentStatus, setPaymentStatus] = useState(null); // 'pending', 'success', 'failed'
     const [checkoutData, setCheckoutData] = useState({
         name: '',
@@ -117,48 +118,31 @@ const CartPage = () => {
 
             if (itemsResult.error) throw itemsResult.error;
 
-            // Handle M-Pesa payment
+            // Handle M-Pesa payment (manual confirmation)
             if (paymentMethod === 'mpesa') {
-                setPaymentStatus('pending');
-                const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000';
-                const paymentToastId = toast.loading('Sending M-Pesa payment prompt (STK Push) to your phone...');
-                
-                try {
-                    const response = await fetch(`${backendUrl}/api/mpesa/stk-push`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            phone_number: mpesaNumber,
-                            amount: cartTotal,
-                            order_id: order.id,
-                            account_reference: "432286",
-                            transaction_desc: "Flower Purchase"
-                        })
-                    });
-                    
-                    const resData = await response.json();
-                    
-                    if (response.ok && resData.success) {
-                        toast.dismiss(paymentToastId);
-                        toast.success('M-Pesa payment prompt sent! Enter PIN on your phone to complete.', { duration: 8000 });
-                    } else {
-                        toast.dismiss(paymentToastId);
-                        toast.error(`STK Push failed: ${resData.detail || 'Service unavailable'}`);
-                        toast.info('Please pay manually: Paybill 714888, Account 432286', { duration: 10000 });
-                    }
-                } catch (err) {
-                    console.error('M-Pesa STK push error:', err);
-                    toast.dismiss(paymentToastId);
-                    toast.error('STK Push request error. Please pay manually.');
-                    toast.info('Please pay manually: Paybill 714888, Account 432286', { duration: 10000 });
+                if (!transactionId) {
+                    toast.error('Please enter your M-Pesa transaction ID');
+                    setIsProcessing(false);
+                    return;
                 }
 
+                // Update order with transaction ID
+                const { error: updateError } = await supabase
+                    .from('orders')
+                    .update({ 
+                        payment_phone_number: mpesaNumber,
+                        transaction_id: transactionId,
+                        payment_status: 'pending'
+                    })
+                    .eq('id', order.id);
+
+                if (updateError) throw updateError;
+
                 clearCart();
+                toast.success('Order placed successfully! We will verify your payment and process your order.');
                 setTimeout(() => {
                     navigate('/');
-                }, 8000);
+                }, 3000);
             } else {
                 clearCart();
                 toast.success('Order placed successfully! Payment will be collected on delivery.');
@@ -386,17 +370,29 @@ const CartPage = () => {
                                             </div>
 
                                             <label className="block text-sm font-medium text-green-800 mb-2">
-                                                Enter M-Pesa phone number for payment request (STK Push):
+                                                Enter M-Pesa phone number used for payment:
                                             </label>
                                             <input
                                                 type="tel"
                                                 value={mpesaNumber}
                                                 onChange={(e) => setMpesaNumber(e.target.value)}
-                                                className="w-full px-4 py-3 rounded-lg border border-green-300 focus:border-green-500 focus:ring-2 focus:ring-green-200 outline-none"
+                                                className="w-full px-4 py-3 rounded-lg border border-green-300 focus:border-green-500 focus:ring-2 focus:ring-green-200 outline-none mb-3"
                                                 placeholder="e.g., 0712345678"
                                                 required={paymentMethod === 'mpesa'}
                                             />
-                                            <p className="text-[11px] text-green-700 mt-1">An STK push request will be sent to your phone once you click place order.</p>
+
+                                            <label className="block text-sm font-medium text-green-800 mb-2">
+                                                Enter M-Pesa Transaction ID:
+                                            </label>
+                                            <input
+                                                type="text"
+                                                value={transactionId}
+                                                onChange={(e) => setTransactionId(e.target.value)}
+                                                className="w-full px-4 py-3 rounded-lg border border-green-300 focus:border-green-500 focus:ring-2 focus:ring-green-200 outline-none"
+                                                placeholder="e.g., XYZ123ABC"
+                                                required={paymentMethod === 'mpesa'}
+                                            />
+                                            <p className="text-[11px] text-green-700 mt-1">Enter the transaction ID from your M-Pesa message after completing payment.</p>
                                         </div>
                                     )}
                                 </div>
