@@ -166,10 +166,10 @@ const FlowersPage = ({ isMobile = false }) => {
         h1: 'Premium Roses Collection'
       },
       'anniversary': {
-        title: 'Anniversary Flowers Nairobi | Wedding Anniversary Bouquets',
-        description: 'Celebrate your anniversary with beautiful flowers in Nairobi. Anniversary bouquets, romantic arrangements, same-day delivery.',
-        keywords: 'anniversary flowers Nairobi, anniversary bouquets, wedding anniversary flowers, romantic anniversary gifts',
-        content: 'Mark your special milestone with anniversary flowers that capture your love story. Our anniversary collection features elegant arrangements that symbolize your enduring commitment.',
+        title: 'Anniversary Flowers Nairobi | Wedding Anniversary Bouquets & Gifts',
+        description: 'Celebrate your wedding anniversary with beautiful flowers in Nairobi. Romantic anniversary bouquets, red roses, and special gifts with same-day delivery.',
+        keywords: 'anniversary flowers Nairobi, anniversary bouquets, wedding anniversary flowers, romantic anniversary gifts, anniversary roses',
+        content: 'Celebrate your love story with our stunning anniversary flower collection. From romantic red roses to elegant mixed bouquets, each arrangement is handcrafted to symbolize your enduring commitment. Perfect for 1st, 5th, 10th, 25th, and 50th anniversaries.',
         h1: 'Anniversary Flowers'
       },
       'combos': {
@@ -206,6 +206,10 @@ const FlowersPage = ({ isMobile = false }) => {
 
   const currentCategoryContent = getCategoryContent(activeCategory);
 
+  // Check if this is a product UUID URL (should not be indexed)
+  const productParam = searchParams.get('product');
+  const isProductUuidUrl = productParam && productParam.length > 10;
+
   const flowersCanonical = `${SITE_URL}/flowers${activeCategory !== 'all' ? `?category=${activeCategory}` : ''}`;
   const structuredDataBlocks = useMemo(() => {
     const list = productListSchema(filteredProducts);
@@ -226,6 +230,7 @@ const FlowersPage = ({ isMobile = false }) => {
         description={currentCategoryContent.description}
         keywords={currentCategoryContent.keywords}
         canonicalUrl={flowersCanonical}
+        noindex={isProductUuidUrl}
       />
       <StructuredData data={structuredDataBlocks} />
       <Header />

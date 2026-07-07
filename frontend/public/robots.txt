@@ -9,4 +9,7 @@ Disallow: /wishlist
 Disallow: /login
 Disallow: /signup
 
+# Product UUID URLs - prevent duplicate content indexing
+Disallow: /flowers?product=
+
 Sitemap: https://www.flowerlifestyle.co.ke/sitemap.xml
