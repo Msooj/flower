@@ -27,6 +27,7 @@ const STATIC_PAGES = [
 ];
 
 const CATEGORY_SLUGS = [
+  'girlfriends-day',
   'birthday',
   'romance',
   'roses',
@@ -93,7 +94,6 @@ async function main() {
       lastmod: today,
     })),
     ...articleEntries,
-    ...(await fetchProductUrls()),
   ];
 
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
