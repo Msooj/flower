@@ -153,7 +153,7 @@ class UserProfile(BaseModel):
 # M-Pesa Configuration
 MPESA_CONSUMER_KEY = os.environ.get("MPESA_CONSUMER_KEY", "")
 MPESA_CONSUMER_SECRET = os.environ.get("MPESA_CONSUMER_SECRET", "")
-MPESA_BUSINESS_SHORTCODE = os.environ.get("MPESA_BUSINESS_SHORTCODE", "174379")
+MPESA_BUSINESS_SHORTCODE = os.environ.get("MPESA_BUSINESS_SHORTCODE", "714888")
 MPESA_PASSKEY = os.environ.get("MPESA_PASSKEY", "")
 MPESA_CALLBACK_URL = os.environ.get("MPESA_CALLBACK_URL", "https://your-domain.com/api/mpesa/callback")
 MPESA_ENVIRONMENT = os.environ.get("MPESA_ENVIRONMENT", "sandbox")  # sandbox or production

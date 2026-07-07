@@ -1,6 +1,7 @@
 // Mock data for Flower Lifestyle website
 
 export const categories = [
+  { id: 10, name: "Girlfriend's Day", image: "https://images.unsplash.com/photo-1518199266791-5375a83190b7?w=400", slug: "girlfriends-day" },
   { id: 9, name: "Mother's Day", image: "https://images.unsplash.com/photo-1578439231583-9eca0a363860?w=400", slug: "mothers-day" },
   { id: 1, name: "Birthday", image: "https://images.unsplash.com/photo-1487530811176-3780de880c2d?w=400", slug: "birthday" },
   { id: 2, name: "Roses", image: "https://images.unsplash.com/photo-1578439231583-9eca0a363860?w=400", slug: "roses" },

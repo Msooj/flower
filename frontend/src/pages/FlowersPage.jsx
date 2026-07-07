@@ -137,6 +137,13 @@ const FlowersPage = ({ isMobile = false }) => {
 
   const getCategoryContent = (categorySlug) => {
     const categoryContent = {
+      'girlfriends-day': {
+        title: "Girlfriend's Day Flowers Nairobi | Romantic Bouquets & Gifts",
+        description: "Surprise your girlfriend with fresh flowers on Girlfriend's Day in Nairobi. Red roses, premium bouquets, and special gifts. Same-day delivery available.",
+        keywords: "girlfriends day flowers Nairobi, flowers for girlfriend, romantic bouquets Nairobi, same day delivery flowers",
+        content: "Celebrate Girlfriend's Day with our special flower arrangements. Handcrafted bouquets, premium roses, and thoughtful gifts to make her feel cherished.",
+        h1: "Girlfriend's Day Flowers"
+      },
       'birthday': {
         title: 'Birthday Flowers Nairobi | Same Day Delivery',
         description: 'Celebrate birthdays with beautiful flower bouquets delivered same day in Nairobi. Fresh birthday flowers, cake combos, and special arrangements.',

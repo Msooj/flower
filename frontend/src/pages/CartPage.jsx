@@ -120,11 +120,45 @@ const CartPage = () => {
             // Handle M-Pesa payment
             if (paymentMethod === 'mpesa') {
                 setPaymentStatus('pending');
-                toast.success('Order placed successfully! Please pay manually to: 0742 370 307', { duration: 5000 });
+                const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000';
+                const paymentToastId = toast.loading('Sending M-Pesa payment prompt (STK Push) to your phone...');
+                
+                try {
+                    const response = await fetch(`${backendUrl}/api/mpesa/stk-push`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            phone_number: mpesaNumber,
+                            amount: cartTotal,
+                            order_id: order.id,
+                            account_reference: "432286",
+                            transaction_desc: "Flower Purchase"
+                        })
+                    });
+                    
+                    const resData = await response.json();
+                    
+                    if (response.ok && resData.success) {
+                        toast.dismiss(paymentToastId);
+                        toast.success('M-Pesa payment prompt sent! Enter PIN on your phone to complete.', { duration: 8000 });
+                    } else {
+                        toast.dismiss(paymentToastId);
+                        toast.error(`STK Push failed: ${resData.detail || 'Service unavailable'}`);
+                        toast.info('Please pay manually: Paybill 714888, Account 432286', { duration: 10000 });
+                    }
+                } catch (err) {
+                    console.error('M-Pesa STK push error:', err);
+                    toast.dismiss(paymentToastId);
+                    toast.error('STK Push request error. Please pay manually.');
+                    toast.info('Please pay manually: Paybill 714888, Account 432286', { duration: 10000 });
+                }
+
                 clearCart();
                 setTimeout(() => {
                     navigate('/');
-                }, 4000);
+                }, 8000);
             } else {
                 clearCart();
                 toast.success('Order placed successfully! Payment will be collected on delivery.');
@@ -338,25 +372,31 @@ const CartPage = () => {
                                         <div className="bg-green-50 rounded-xl p-6 border border-green-100 mb-6">
                                             <h3 className="font-bold text-green-800 mb-2">Pay via M-Pesa</h3>
                                             <p className="text-sm text-green-700 mb-4">
-                                                Please send the total amount of <span className="font-bold">KSh {cartTotal.toLocaleString()}</span> to the number below:
+                                                Please send the total amount of <span className="font-bold">KSh {cartTotal.toLocaleString()}</span> using M-Pesa Paybill:
                                             </p>
-                                            <div className="bg-white p-4 rounded-lg border border-green-200 text-center mb-4">
-                                                <p className="text-sm text-green-700 mb-2">Send Money:</p>
-                                                <p className="text-2xl font-bold text-gray-800 tracking-wider">0742 370 307</p>
-                                                <p className="text-xs text-green-600 mt-1">Ian Mwangi</p>
+                                            <div className="bg-white p-4 rounded-lg border border-green-200 text-center mb-4 space-y-2">
+                                                <div>
+                                                    <p className="text-xs text-green-600 uppercase font-bold tracking-wider">Lipa na M-Pesa Paybill</p>
+                                                    <p className="text-2xl font-bold text-gray-800 tracking-wider">714888</p>
+                                                </div>
+                                                <div className="border-t border-gray-100 pt-2">
+                                                    <p className="text-xs text-green-600 uppercase font-bold tracking-wider">Account Number</p>
+                                                    <p className="text-xl font-bold text-gray-800 tracking-wider">432286</p>
+                                                </div>
                                             </div>
 
                                             <label className="block text-sm font-medium text-green-800 mb-2">
-                                                Enter the phone number you paid from:
+                                                Enter M-Pesa phone number for payment request (STK Push):
                                             </label>
                                             <input
                                                 type="tel"
                                                 value={mpesaNumber}
                                                 onChange={(e) => setMpesaNumber(e.target.value)}
                                                 className="w-full px-4 py-3 rounded-lg border border-green-300 focus:border-green-500 focus:ring-2 focus:ring-green-200 outline-none"
-                                                placeholder="e.g., 07XX XXX XXX"
+                                                placeholder="e.g., 0712345678"
                                                 required={paymentMethod === 'mpesa'}
                                             />
+                                            <p className="text-[11px] text-green-700 mt-1">An STK push request will be sent to your phone once you click place order.</p>
                                         </div>
                                     )}
                                 </div>
