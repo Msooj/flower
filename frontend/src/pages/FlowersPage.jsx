@@ -405,8 +405,8 @@ const FlowersPage = ({ isMobile = false }) => {
               </div>
             ) : (
               <div className={`grid gap-4 md:gap-6 justify-items-center ${gridSize === 'large'
-                ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'
-                : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4'
+                ? 'grid-cols-2 sm:grid-cols-2 lg:grid-cols-3'
+                : 'grid-cols-2 sm:grid-cols-2 lg:grid-cols-4'
                 }`}>
                 {filteredProducts.map((product, index) => (
                   <motion.div
