@@ -1,89 +1,94 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <!-- Core pages -->
   <url>
     <loc>https://www.flowerlifestyle.co.ke/</loc>
-    <lastmod>2026-06-29</lastmod>
+    <lastmod>2026-07-07</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://www.flowerlifestyle.co.ke/florist-kenya</loc>
-    <lastmod>2026-06-29</lastmod>
+    <lastmod>2026-07-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.95</priority>
   </url>
   <url>
     <loc>https://www.flowerlifestyle.co.ke/flowers</loc>
-    <lastmod>2026-06-29</lastmod>
+    <lastmod>2026-07-07</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://www.flowerlifestyle.co.ke/delivery</loc>
-    <lastmod>2026-06-29</lastmod>
+    <lastmod>2026-07-07</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
     <loc>https://www.flowerlifestyle.co.ke/faq</loc>
-    <lastmod>2026-06-29</lastmod>
+    <lastmod>2026-07-07</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.75</priority>
   </url>
   <url>
     <loc>https://www.flowerlifestyle.co.ke/about</loc>
-    <lastmod>2026-06-29</lastmod>
+    <lastmod>2026-07-07</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.flowerlifestyle.co.ke/blog</loc>
-    <lastmod>2026-06-29</lastmod>
+    <lastmod>2026-07-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
+
+  <!-- Category pages — each has its own canonical + unique title/description -->
   <url>
     <loc>https://www.flowerlifestyle.co.ke/flowers?category=birthday</loc>
-    <lastmod>2026-06-29</lastmod>
+    <lastmod>2026-07-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.flowerlifestyle.co.ke/flowers?category=romance</loc>
-    <lastmod>2026-06-29</lastmod>
+    <lastmod>2026-07-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.flowerlifestyle.co.ke/flowers?category=roses</loc>
-    <lastmod>2026-06-29</lastmod>
+    <lastmod>2026-07-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.flowerlifestyle.co.ke/flowers?category=anniversary</loc>
-    <lastmod>2026-06-29</lastmod>
+    <lastmod>2026-07-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.flowerlifestyle.co.ke/flowers?category=combos</loc>
-    <lastmod>2026-06-29</lastmod>
+    <lastmod>2026-07-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.flowerlifestyle.co.ke/flowers?category=mothers-day</loc>
-    <lastmod>2026-06-29</lastmod>
+    <lastmod>2026-07-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.flowerlifestyle.co.ke/flowers?category=money-bouquet</loc>
-    <lastmod>2026-06-29</lastmod>
+    <lastmod>2026-07-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
+
+  <!-- Blog articles -->
   <url>
     <loc>https://www.flowerlifestyle.co.ke/blog/best-birthday-flowers-nairobi</loc>
     <lastmod>2026-07-07</lastmod>
@@ -119,419 +124,5 @@
     <lastmod>2026-07-07</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.75</priority>
-  </url>
-  <url>
-    <loc>https://www.flowerlifestyle.co.ke/flowers?product=94c0909b-4543-40c7-a8ab-4f31215495de</loc>
-    <lastmod>2026-06-14</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.flowerlifestyle.co.ke/flowers?product=41813df2-74f0-4c6a-a318-b6d71a661e26</loc>
-    <lastmod>2026-06-03</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.flowerlifestyle.co.ke/flowers?product=2197b8c2-e5a3-4dd1-871e-1152786526a5</loc>
-    <lastmod>2026-05-22</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.flowerlifestyle.co.ke/flowers?product=a8eb8031-75f5-4cca-8d4b-c2e6fcb94ce6</loc>
-    <lastmod>2026-05-05</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.flowerlifestyle.co.ke/flowers?product=5846f88f-9b7a-4c67-98a6-7f9e2d0573f6</loc>
-    <lastmod>2026-05-05</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.flowerlifestyle.co.ke/flowers?product=f6176c8f-0a48-40aa-b6fc-3ee1c786426a</loc>
-    <lastmod>2026-05-05</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.flowerlifestyle.co.ke/flowers?product=15a6735f-52fa-4ac6-b13a-c8a91c9471eb</loc>
-    <lastmod>2026-05-05</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.flowerlifestyle.co.ke/flowers?product=9b2bbc4b-224f-41d5-a89b-23641fc2999d</loc>
-    <lastmod>2026-05-05</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.flowerlifestyle.co.ke/flowers?product=4944d341-77e3-476f-972e-41b662f54902</loc>
-    <lastmod>2026-05-05</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.flowerlifestyle.co.ke/flowers?product=c12a8ca3-45c0-47b3-8d11-4545c448e228</loc>
-    <lastmod>2026-05-05</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.flowerlifestyle.co.ke/flowers?product=petal-sonata</loc>
-    <lastmod>2026-04-07</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.flowerlifestyle.co.ke/flowers?product=862e3a24-6fc9-448d-a4c7-0d0c1c2b081d</loc>
-    <lastmod>2026-01-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.flowerlifestyle.co.ke/flowers?product=f07369f6-7321-40a5-b2cd-279ef5c4dae0</loc>
-    <lastmod>2026-01-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.flowerlifestyle.co.ke/flowers?product=03771964-0c62-402f-9223-6066be049442</loc>
-    <lastmod>2026-01-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.flowerlifestyle.co.ke/flowers?product=b3042744-4f4b-4fbc-a235-db27954d2719</loc>
-    <lastmod>2026-01-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.flowerlifestyle.co.ke/flowers?product=b6d774c7-c530-4b9e-b7f4-c3ba6c1edddd</loc>
-    <lastmod>2026-01-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.flowerlifestyle.co.ke/flowers?product=bcd80ea0-2bb5-47b0-9fda-23ed113df901</loc>
-    <lastmod>2026-01-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.flowerlifestyle.co.ke/flowers?product=65d09c0f-d823-418b-9a92-b652a07eb5db</loc>
-    <lastmod>2026-01-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.flowerlifestyle.co.ke/flowers?product=b724d093-d615-4ba8-b001-c9d5dbddd284</loc>
-    <lastmod>2026-01-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.flowerlifestyle.co.ke/flowers?product=ef8ac26d-540e-4bf2-a7df-737fc3a4edfc</loc>
-    <lastmod>2026-01-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.flowerlifestyle.co.ke/flowers?product=27dc0081-02d8-433c-b053-e3855c27570b</loc>
-    <lastmod>2026-01-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.flowerlifestyle.co.ke/flowers?product=850b0f58-aa02-4161-b7f0-ff598ad9e226</loc>
-    <lastmod>2026-01-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.flowerlifestyle.co.ke/flowers?product=e80a9daa-d5bf-4b87-920b-fb3eaa0278a6</loc>
-    <lastmod>2026-01-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.flowerlifestyle.co.ke/flowers?product=1d6c54ac-fb60-4d49-8c9e-b83cbb63e596</loc>
-    <lastmod>2026-01-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.flowerlifestyle.co.ke/flowers?product=56463d8a-7255-46f9-b5f2-e8fa2dd30f5b</loc>
-    <lastmod>2026-01-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.flowerlifestyle.co.ke/flowers?product=bf0f013f-dad3-4e1b-8ab9-9777f50fb51e</loc>
-    <lastmod>2026-01-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.flowerlifestyle.co.ke/flowers?product=6c92a46d-d6cc-4976-9977-c2039a80dc67</loc>
-    <lastmod>2026-01-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.flowerlifestyle.co.ke/flowers?product=8772391c-136b-400b-8823-a8f4736314ee</loc>
-    <lastmod>2026-01-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.flowerlifestyle.co.ke/flowers?product=c0337015-42aa-4126-8c91-fe14b1912afb</loc>
-    <lastmod>2026-01-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.flowerlifestyle.co.ke/flowers?product=933e6b25-8c71-44d2-9667-8fdfb5684764</loc>
-    <lastmod>2026-01-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.flowerlifestyle.co.ke/flowers?product=660bee8c-4a51-4bec-9096-1dfc1d52159f</loc>
-    <lastmod>2026-01-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.flowerlifestyle.co.ke/flowers?product=a41e57bf-9c98-4b41-a8da-4d6acee8c127</loc>
-    <lastmod>2026-01-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.flowerlifestyle.co.ke/flowers?product=8f92f894-5c18-4cdb-9935-4db7d8d581db</loc>
-    <lastmod>2026-01-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.flowerlifestyle.co.ke/flowers?product=ef1ee8f8-83cb-420a-9665-410636dd7fc6</loc>
-    <lastmod>2026-01-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.flowerlifestyle.co.ke/flowers?product=0c383ae4-d3cf-4837-a88e-fb9e0d55da6f</loc>
-    <lastmod>2026-01-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.flowerlifestyle.co.ke/flowers?product=8e3ec609-2752-4556-b8e8-51eec5c82ba0</loc>
-    <lastmod>2026-01-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.flowerlifestyle.co.ke/flowers?product=3999373b-2944-4d25-8725-18f5a9483126</loc>
-    <lastmod>2026-01-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.flowerlifestyle.co.ke/flowers?product=b46169ea-b962-4844-ac62-fb70223355d8</loc>
-    <lastmod>2026-01-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.flowerlifestyle.co.ke/flowers?product=50b4c0a6-bf8e-4557-a913-e16474909e9c</loc>
-    <lastmod>2026-01-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.flowerlifestyle.co.ke/flowers?product=8d2413e6-40d8-4ed0-8d28-70b8bfa70bd4</loc>
-    <lastmod>2026-01-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.flowerlifestyle.co.ke/flowers?product=ea5529af-e135-44a8-b9e7-a3ecc8a2c50c</loc>
-    <lastmod>2026-01-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.flowerlifestyle.co.ke/flowers?product=42186d7f-70bb-4d38-9506-3ea8285f35b3</loc>
-    <lastmod>2026-01-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.flowerlifestyle.co.ke/flowers?product=622a4592-1d15-4465-9c71-1b57ab160ec6</loc>
-    <lastmod>2026-01-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.flowerlifestyle.co.ke/flowers?product=a9987d4d-422e-4cdf-9626-ac9658b6c700</loc>
-    <lastmod>2026-01-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.flowerlifestyle.co.ke/flowers?product=451b3fa5-dd43-4f56-9b52-c727e1333930</loc>
-    <lastmod>2026-01-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.flowerlifestyle.co.ke/flowers?product=adf21b34-27a8-4013-9106-cbc5f97ab5d0</loc>
-    <lastmod>2026-01-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.flowerlifestyle.co.ke/flowers?product=e66b94a0-c5df-44af-81da-833fbdb672a7</loc>
-    <lastmod>2026-01-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.flowerlifestyle.co.ke/flowers?product=70347df4-dd7f-4b40-a9e8-5ac2091fe4a1</loc>
-    <lastmod>2026-01-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.flowerlifestyle.co.ke/flowers?product=23632206-b9d3-418f-bf4f-377ffe976b26</loc>
-    <lastmod>2026-01-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.flowerlifestyle.co.ke/flowers?product=98f5fa59-427f-4416-8bcf-521bd30b9c33</loc>
-    <lastmod>2026-01-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.flowerlifestyle.co.ke/flowers?product=99831f7d-65e5-457c-8d3d-65deab59bb90</loc>
-    <lastmod>2026-01-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.flowerlifestyle.co.ke/flowers?product=472d9ff1-cfc4-465b-b202-255c75c1e21e</loc>
-    <lastmod>2026-01-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.flowerlifestyle.co.ke/flowers?product=814d49bd-6a0f-4a2d-b7d7-893b92fd123f</loc>
-    <lastmod>2026-01-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.flowerlifestyle.co.ke/flowers?product=0433e1ee-2da0-462c-a7a1-55f1fd779f77</loc>
-    <lastmod>2026-01-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.flowerlifestyle.co.ke/flowers?product=382ed3ff-078c-4090-afe3-eb1023b91205</loc>
-    <lastmod>2026-01-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.flowerlifestyle.co.ke/flowers?product=6678dd3e-e5b4-44e8-b244-fc2f9cf7e486</loc>
-    <lastmod>2026-01-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.flowerlifestyle.co.ke/flowers?product=0feebfcb-5b3b-4399-8b21-62f4cf363bdf</loc>
-    <lastmod>2026-01-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.flowerlifestyle.co.ke/flowers?product=c494e332-485c-410c-9c94-7c02e0853627</loc>
-    <lastmod>2026-01-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.flowerlifestyle.co.ke/flowers?product=234179cc-9119-4824-b42a-9b25996b54a6</loc>
-    <lastmod>2026-01-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.flowerlifestyle.co.ke/flowers?product=26503ddf-5a08-44a6-8e7c-5c10d004e71f</loc>
-    <lastmod>2025-12-20</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.flowerlifestyle.co.ke/flowers?product=59b37cec-883a-4d7c-8e33-1c8a153dbdd5</loc>
-    <lastmod>2025-12-20</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.flowerlifestyle.co.ke/flowers?product=00aba7c7-6755-4c69-859e-60204f4743cc</loc>
-    <lastmod>2025-12-20</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.flowerlifestyle.co.ke/flowers?product=0166bef0-9215-4b96-b78d-63f3c8759c8e</loc>
-    <lastmod>2025-12-20</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.flowerlifestyle.co.ke/flowers?product=e3cc3a0c-25e1-4cc3-a824-0dd366e4f5a4</loc>
-    <lastmod>2025-12-20</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.flowerlifestyle.co.ke/flowers?product=58a6a1c0-492b-48bf-b1f8-fe9672d1c111</loc>
-    <lastmod>2025-12-20</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.flowerlifestyle.co.ke/flowers?product=f2645456-3457-4ec7-9429-d031733e8667</loc>
-    <lastmod>2025-12-20</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.flowerlifestyle.co.ke/flowers?product=3502c7d5-b74c-433d-9d72-b61859a9d41c</loc>
-    <lastmod>2025-12-20</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.flowerlifestyle.co.ke/flowers?product=b089b07f-a592-4f80-8e3f-00db2e142856</loc>
-    <lastmod>2025-12-20</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.flowerlifestyle.co.ke/flowers?product=dbd0723c-023a-484e-a6a2-f44d00d080f8</loc>
-    <lastmod>2025-12-19</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
   </url>
 </urlset>
