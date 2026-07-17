@@ -127,7 +127,7 @@ export const ARTICLES = [
   },
   {
     slug: 'girlfriends-day-flowers-gifts-kenya',
-    title: "National Girlfriend's Day 2024: Complete Flowers & Gifts Guide for Kenya",
+    title: "National Girlfriend's Day 2026: Complete Flowers & Gifts Guide for Kenya",
     excerpt:
       "Celebrate National Girlfriend's Day on August 1st with the perfect flowers and gifts in Nairobi. Discover romantic roses, friendship bouquets, same-day delivery, and thoughtful gift ideas she'll love.",
     category: 'Occasions',
