@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
-import { useCurrency } from '../components/ui/CurrencyConverter';
+import { useCurrency, CurrencySelector } from '../components/ui/CurrencyConverter';
 import { Button } from '../components/ui/button';
 import { Trash2, Plus, Minus, ArrowLeft, ArrowRight, MessageSquare, Calendar, Clock, CreditCard, Smartphone } from 'lucide-react';
 import Header from '../components/layout/Header';
@@ -424,7 +424,10 @@ const CartPage = () => {
             />
             <Header />
             <main className="flex-1 container mx-auto px-4 py-8">
-                <h1 className="text-3xl font-bold text-gray-900 mb-8">Shopping Cart</h1>
+                <div className="flex justify-between items-center mb-8">
+                    <h1 className="text-3xl font-bold text-gray-900">Shopping Cart</h1>
+                    <CurrencySelector />
+                </div>
 
                 <div className="flex flex-col lg:flex-row gap-8">
                     {/* Cart Items */}
