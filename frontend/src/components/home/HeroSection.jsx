@@ -2,7 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Truck, Award } from 'lucide-react';
 
-const HERO_IMAGE = encodeURI('/WhatsApp Image 2026-05-14 at 7.35.48 PM.jpeg');
+const HERO_IMAGE = encodeURI('/WhatsApp_Image_2025-12-21_at_6.52.59_PM__1_-removebg-preview.png');
 
 const HeroSection = ({ isMobile = false }) => {
   return (

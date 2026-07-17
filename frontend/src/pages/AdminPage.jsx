@@ -890,6 +890,12 @@ USING (
                 return;
             }
 
+            // Check authentication
+            const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+            if (sessionError || !session) {
+                throw new Error('No active session. Please log in again.');
+            }
+
             // Generate slug from title if not provided
             const slug = newBlog.slug.trim() || newBlog.title.trim()
                 .toLowerCase()
@@ -913,7 +919,14 @@ USING (
 
             const { error } = await supabase.from('blogs').insert([blogData]);
 
-            if (error) throw error;
+            if (error) {
+                if (error.code === '42501') {
+                    throw new Error(
+                        'Permission denied. Please ensure your account has admin role in user_profiles and RLS policy allows blog insertion.'
+                    );
+                }
+                throw error;
+            }
 
             toast.success(`Blog "${newBlog.title}" added successfully!`);
             setNewBlog({
@@ -931,7 +944,30 @@ USING (
             setActiveTab('blogs');
         } catch (error) {
             console.error('Error adding blog:', error);
-            toast.error(`Failed to add blog: ${error.message}`);
+            toast.error(
+                <div className="text-xs">
+                    <p className="font-bold mb-1">Blog Addition Failed: {error.message}</p>
+                    <p className="mb-2">Please check the following:</p>
+                    <ul className="list-disc ml-4 space-y-1">
+                        <li>Ensure you are logged in as an admin user.</li>
+                        <li>Verify RLS policy on blogs table allows INSERT for admin users.</li>
+                        <li>Check user_profiles table exists with a role column.</li>
+                        <li>Ensure your user has role='admin' in user_profiles table.</li>
+                    </ul>
+                    <div className="mt-3 p-2 bg-yellow-100 rounded">
+                        <p className="font-bold text-xs mb-1">Required RLS Policy for blogs table:</p>
+                        <code className="block text-xs bg-gray-800 text-white p-2 rounded">
+{`CREATE POLICY "Admins can insert blogs" ON blogs
+FOR INSERT
+TO authenticated users
+USING (
+    (SELECT role FROM user_profiles WHERE user_profiles.id = auth.uid())
+) = 'admin';`}
+                        </code>
+                    </div>
+                </div>,
+                { duration: 20000 }
+            );
         }
     };
 

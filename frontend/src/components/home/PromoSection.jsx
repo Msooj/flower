@@ -24,10 +24,10 @@ const PromoSection = () => {
                 Special Offer
               </span>
               <h3 className="text-2xl md:text-3xl font-bold text-white mb-3">
-                First Order Discount
+                Free Same Day Delivery
               </h3>
               <p className="text-white/90 mb-6 max-w-sm">
-                Get 15% off your first order! Use code <span className="font-bold">BLOOM15</span> at checkout.
+                Order before 2 PM for same day delivery within Nairobi. Express your love faster!
               </p>
               <a
                 href="/flowers"
