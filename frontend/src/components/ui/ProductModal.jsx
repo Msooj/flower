@@ -3,11 +3,12 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Heart, ShoppingBag, Star, Truck, Shield, RefreshCw } from 'lucide-react';
 import { Button } from './button';
 import { Badge } from './badge';
+import { useCurrency } from './CurrencyConverter';
 
 const ProductModal = ({ product, isOpen, onClose, onAddToCart, onToggleWishlist, isInWishlist }) => {
   if (!product) return null;
 
-  const formatPrice = (price) => `KSh ${price.toLocaleString()}`;
+  const { formatPrice } = useCurrency();
 
   return (
     <AnimatePresence>

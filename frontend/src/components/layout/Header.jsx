@@ -8,6 +8,7 @@ import { navLinks, contactInfo } from '../../data/mock';
 
 import { useCart } from '../../context/CartContext';
 import { useWishlist } from '../../context/WishlistContext';
+import { useCurrency, CurrencySelector } from '../ui/CurrencyConverter';
 import { supabase } from '../../lib/supabase';
 
 const Header = () => {
@@ -155,6 +156,11 @@ const Header = () => {
 
             {/* Right Actions */}
             <div className="flex items-center gap-2 md:gap-4">
+              {/* Currency Selector */}
+              <div className="hidden md:block">
+                <CurrencySelector />
+              </div>
+              
               {/* Search */}
               <Button
                 variant="ghost"

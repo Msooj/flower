@@ -8,6 +8,7 @@ import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
 import ProductModal from '../components/ui/ProductModal';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
+import { useCurrency } from '../components/ui/CurrencyConverter';
 import { categories } from '../data/mock';
 import PageMetaTags from '../components/seo/PageMetaTags';
 import { useProducts } from '../hooks/useProducts';
@@ -22,6 +23,7 @@ import { useEffect } from 'react';
 const FlowersPage = ({ isMobile = false }) => {
   const { addToCart } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
+  const { formatPrice } = useCurrency();
   const [searchParams, setSearchParams] = useSearchParams();
   const initialSearch = searchParams.get('search') || '';
   const [searchQuery, setSearchQuery] = useState(initialSearch);
@@ -87,8 +89,6 @@ const FlowersPage = ({ isMobile = false }) => {
       }
     });
   }, [dbProducts, activeCategory, searchQuery, sortBy]);
-
-  const formatPrice = (price) => `KSh ${price.toLocaleString()}`;
 
   // Product view handlers
   const handleViewProduct = (product) => {

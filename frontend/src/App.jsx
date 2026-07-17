@@ -6,6 +6,7 @@ import ScrollToTop from "./components/common/ScrollToTop";
 import { Toaster } from "./components/ui/sonner";
 import { CartProvider } from "./context/CartContext";
 import { WishlistProvider } from "./context/WishlistContext";
+import CurrencyProvider from "./components/ui/CurrencyConverter";
 import HomePage from "./pages/HomePage";
 import FlowersPage from "./pages/FlowersPage";
 import LoginPage from "./pages/LoginPage";
@@ -46,32 +47,34 @@ function App() {
     <div className="App">
       <CartProvider>
         <WishlistProvider>
-          <HelmetProvider>
-            <BrowserRouter>
-              <ScrollToTop />
-              <GoogleAnalytics />
-              <AuthWrapper>
-                <Routes>
-                  <Route path="/" element={<HomePage isMobile={isMobile} />} />
-                  <Route path="/flowers" element={<FlowersPage isMobile={isMobile} />} />
-                  <Route path="/florist-kenya" element={<FloristKenyaPage />} />
-                  <Route path="/delivery" element={<DeliveryPage />} />
-                  <Route path="/faq" element={<FaqPage />} />
-                  <Route path="/blog" element={<BlogPage />} />
-                  <Route path="/blog/:slug" element={<ArticlePage />} />
-                  <Route path="/login" element={<LoginPage />} />
-                  <Route path="/signup" element={<SignupPage />} />
-                  <Route path="/cart" element={<CartPage />} />
-                  <Route path="/wishlist" element={<WishlistPage />} />
-                  <Route path="/orders" element={<OrdersPage />} />
-                  <Route path="/about" element={<AboutPage />} />
-                  <Route path="/admin" element={<AdminPage />} />
-                </Routes>
-              </AuthWrapper>
-            </BrowserRouter>
-          </HelmetProvider>
-          <WhatsAppButton />
-          <Toaster position="top-right" richColors />
+          <CurrencyProvider>
+            <HelmetProvider>
+              <BrowserRouter>
+                <ScrollToTop />
+                <GoogleAnalytics />
+                <AuthWrapper>
+                  <Routes>
+                    <Route path="/" element={<HomePage isMobile={isMobile} />} />
+                    <Route path="/flowers" element={<FlowersPage isMobile={isMobile} />} />
+                    <Route path="/florist-kenya" element={<FloristKenyaPage />} />
+                    <Route path="/delivery" element={<DeliveryPage />} />
+                    <Route path="/faq" element={<FaqPage />} />
+                    <Route path="/blog" element={<BlogPage />} />
+                    <Route path="/blog/:slug" element={<ArticlePage />} />
+                    <Route path="/login" element={<LoginPage />} />
+                    <Route path="/signup" element={<SignupPage />} />
+                    <Route path="/cart" element={<CartPage />} />
+                    <Route path="/wishlist" element={<WishlistPage />} />
+                    <Route path="/orders" element={<OrdersPage />} />
+                    <Route path="/about" element={<AboutPage />} />
+                    <Route path="/admin" element={<AdminPage />} />
+                  </Routes>
+                </AuthWrapper>
+              </BrowserRouter>
+            </HelmetProvider>
+            <WhatsAppButton />
+            <Toaster position="top-right" richColors />
+          </CurrencyProvider>
         </WishlistProvider>
       </CartProvider>
     </div>

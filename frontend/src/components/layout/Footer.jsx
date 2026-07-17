@@ -207,8 +207,8 @@ const Footer = () => {
             </p>
             <div className="flex items-center gap-4">
               <img src="https://cdn.jsdelivr.net/gh/lipis/flag-icons@6.6.6/flags/4x3/ke.svg" alt="Kenya" className="h-4 object-contain" />
-              <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Visa_Inc._logo.svg/200px-Visa_Inc._logo.svg.png" alt="Visa" className="h-8 object-contain" onError={(e) => { e.target.style.display = 'none'; }} />
-              <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Mastercard-logo.svg/200px-Mastercard-logo.svg.png" alt="Mastercard" className="h-8 object-contain" onError={(e) => { e.target.style.display = 'none'; }} />
+              <img src="/visa.png" alt="Visa" className="h-8 object-contain" />
+              <img src="/Mastercard--Streamline-Svg-Logos.png" alt="Mastercard" className="h-8 object-contain" />
               <div className="bg-green-500 text-white px-3 py-1.5 rounded text-xs font-bold">M-PESA</div>
             </div>
           </div>
