@@ -1,6 +1,6 @@
 import React, { useState, useContext, createContext } from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './select';
-import { DollarSign, PoundSterling, Euro, Yen } from 'lucide-react';
+import { DollarSign, PoundSterling, Euro, CircleDollarSign } from 'lucide-react';
 
 // Exchange rates relative to KSh (Kenyan Shilling)
 const EXCHANGE_RATES = {
@@ -107,7 +107,7 @@ export const CurrencySelector = () => {
         </SelectItem>
         <SelectItem value="JPY">
           <div className="flex items-center gap-2">
-            <Yen className="w-4 h-4" />
+            <CircleDollarSign className="w-4 h-4" />
             <span className="font-medium">JPY</span>
             <span className="text-gray-500 text-sm">¥</span>
           </div>
