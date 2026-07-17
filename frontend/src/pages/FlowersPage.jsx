@@ -196,11 +196,11 @@ const FlowersPage = ({ isMobile = false }) => {
     };
 
     return categoryContent[categorySlug] || {
-      title: 'Order Flowers Online Nairobi | Fresh Flower Delivery',
-      description: 'Browse fresh flowers in Nairobi. Birthday flowers, anniversary bouquets, romance arrangements, roses, and combos. Same-day delivery available.',
-      keywords: 'order flowers online Nairobi, fresh flowers Nairobi, flower delivery Nairobi, nairobi florist',
-      content: 'Browse our stunning collection of handcrafted floral arrangements, perfect for any occasion.',
-      h1: 'All Flowers'
+      title: 'Florist in Nairobi | Flower Delivery in Nairobi | Same Day Delivery',
+      description: 'Nairobi flower shop with flower delivery Nairobi and same day flower delivery Nairobi. Shop birthday flowers Nairobi, wedding flowers Nairobi, sympathy flowers Nairobi, roses & bouquets for every occasion.',
+      keywords: 'florist in Nairobi, Nairobi flower shop, flower delivery Nairobi, same day flower delivery Nairobi, birthday flowers Nairobi, wedding flowers Nairobi, sympathy flowers Nairobi, nairobi florist',
+      content: 'Browse handcrafted floral arrangements from our Nairobi flower shop—perfect for birthdays, weddings, sympathy moments, and romantic gestures. Order online for delivery across Nairobi and same day flower delivery Nairobi when available.',
+      h1: 'Flower Delivery in Nairobi'
     };
   };
 

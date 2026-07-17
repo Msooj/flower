@@ -16,8 +16,8 @@ const HomePage = ({ isMobile }) => {
   return (
     <div className="min-h-screen bg-white">
       <PageMetaTags
-        title="Florist in Kenya | Same-Day Flower Delivery Nairobi | Flower Lifestyle"
-        description="Kenya's trusted online florist. Order fresh bouquets with same-day delivery in Nairobi — birthdays, roses, anniversaries & sympathy flowers. Pay with M-Pesa. Shop at City Market florist."
+        title="Flower Lifestyle Gift Shop and Online Flower Delivery Service in Kenya - Flower Lifestyle"
+        description="Flower Lifestyle is Kenya's largest and best same-day delivery online florist and gift shop. Find unique gifts for him or her that will make any occasion special and memorable. Personalise any gift item with your own custom design and font for a thoughtful touch."
         keywords={KENYA_KEYWORDS}
         canonicalUrl={`${SITE_URL}/`}
       />

@@ -37,6 +37,26 @@ const ALL_FAQS = [
     answer:
       'We accept M-Pesa, cash on delivery (where available), and card payments. M-Pesa is the most popular option for customers across Kenya.',
   },
+  {
+    question: 'Where is Flower Lifestyle located?',
+    answer:
+      'We are located at City Market, Nairobi, Kenya. We operate primarily online, which allows us to prepare fresh bouquets daily and deliver them directly to your destination without storage delays.',
+  },
+  {
+    question: 'What are your operating hours?',
+    answer:
+      'Our team is available Monday through Saturday from 8:00 AM to 7:00 PM, and on Sundays from 9:00 AM to 5:00 PM. You can place your orders online 24/7.',
+  },
+  {
+    question: 'Can I place a same-day flower delivery order in Nairobi?',
+    answer:
+      'Yes, we offer same-day flower delivery across Nairobi. To guarantee same-day delivery, please place your order by 2:00 PM. Orders placed after 2:00 PM will be delivered the following day, or processed on request if resources allow.',
+  },
+  {
+    question: 'Do you offer customized bouquets or gift baskets?',
+    answer:
+      'Absolutely! We specialize in custom flower arrangements and personalized gift baskets/hampers for birthdays, anniversaries, corporate events, and other milestones. Feel free to contact our florists via WhatsApp to discuss your unique design preferences.',
+  },
 ];
 
 const FaqPage = () => {

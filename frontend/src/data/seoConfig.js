@@ -8,7 +8,7 @@ export const BUSINESS = {
   name: 'Flower Lifestyle',
   legalName: 'Flower Lifestyle Kenya',
   description:
-    "Kenya's trusted online florist for fresh bouquets, same-day flower delivery in Nairobi, and nationwide gifting. Birthday flowers, roses, anniversary bouquets, funeral wreaths, and gift combos.",
+    "Flower Lifestyle is Kenya's largest and best same-day delivery online florist and gift shop. Find unique gifts for him or her that will make any occasion special and memorable. Personalise any gift item with your own custom design and font for a thoughtful touch.",
   url: SITE_URL,
   phone: '+254742370307',
   phoneDisplay: '0742 370 307',
@@ -28,7 +28,7 @@ export const BUSINESS = {
 };
 
 export const KENYA_KEYWORDS =
-  'florist in Kenya, florist Nairobi, online florist Kenya, flower delivery Kenya, best florist Nairobi, same day flower delivery Nairobi, order flowers online Kenya, flower shop Nairobi, roses delivery Kenya, birthday flowers Nairobi';
+  'gift shop Kenya, online flower delivery service Kenya, florist in Kenya, florist Nairobi, online florist Kenya, flower delivery Kenya, best florist Nairobi, same day flower delivery Nairobi, order flowers online Kenya, flower shop Nairobi, roses delivery Kenya, birthday flowers Nairobi, gift shop Nairobi, unique gifts Kenya, personalized gifts Kenya';
 
 export const floristSchema = () => ({
   '@context': 'https://schema.org',

@@ -12,9 +12,9 @@ const PageMetaTags = ({
   noindex = false,
 }) => {
   const defaultTitle =
-    'Florist in Kenya | Flower Delivery Nairobi | Flower Lifestyle';
+    'Flower Lifestyle Gift Shop and Online Flower Delivery Service in Kenya - Flower Lifestyle';
   const defaultDescription =
-    'Order flowers online from a leading florist in Kenya. Same-day flower delivery in Nairobi CBD, Westlands, Karen & countrywide. Birthday bouquets, roses, anniversary & funeral flowers. Pay with M-Pesa.';
+    "Flower Lifestyle is Kenya's largest and best same-day delivery online florist and gift shop. Find unique gifts for him or her that will make any occasion special and memorable. Personalise any gift item with your own custom design and font for a thoughtful touch.";
   const robotsContent = noindex ? 'noindex, nofollow' : robots;
 
   const pageTitle = title || defaultTitle;

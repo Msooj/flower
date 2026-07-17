@@ -307,16 +307,16 @@ const AdminPage = () => {
             toast.error(
                 <div className="text-xs">
                     <p className="font-bold mb-1">Product Addition Failed: {errorMsg}</p>
-                    <p className="mb-2">Please check:</p>
-                    <ol className="list-decimal ml-4 mt-1 space-y-1">
-                        <li>Supabase Storage bucket "products" exists and is public</li>
-                        <li>Storage policy allows "INSERT" for authenticated users</li>
-                        <li><strong>RLS Policy on products table allows INSERT for admin users</strong></li>
-                        <li>User_profiles table exists and has role column</li>
-                        <li>Your user has role='admin' in user_profiles table</li>
-                        <li>File size is less than 5MB</li>
-                        <li>File is a valid image format</li>
-                    </ol>
+                    <p className="mb-2">Please check the following to resolve the issue:</p>
+                    <ul className="list-disc ml-4 space-y-1">
+                        <li>Ensure Supabase Storage bucket "products" exists and is public.</li>
+                        <li>Verify storage policy allows "INSERT" for authenticated users.</li>
+                        <li>Confirm RLS policy on products table allows INSERT for admin users.</li>
+                        <li>Check user_profiles table exists with a role column.</li>
+                        <li>Ensure your user has role='admin' in user_profiles table.</li>
+                        <li>File size is less than 5MB.</li>
+                        <li>File is a valid image format.</li>
+                    </ul>
                     <div className="mt-3 p-2 bg-yellow-100 rounded">
                         <p className="font-bold text-xs mb-1">Required RLS Policy for products table:</p>
                         <code className="block text-xs bg-gray-800 text-white p-2 rounded">

@@ -48,11 +48,11 @@ const HeroSection = ({ isMobile = false }) => {
             )}
 
             <h1 className={`${isMobile ? 'text-3xl text-center' : 'text-4xl md:text-5xl lg:text-5xl'} font-bold text-gray-900 leading-tight mb-4 md:mb-6`}>
-              Florist in Kenya — Same-Day Flower Delivery in Nairobi
+              Online Flower & Gift Shop in Kenya — Same-Day Flower Delivery Nairobi
             </h1>
 
             <p className={`text-base md:text-lg text-gray-600 mb-6 md:mb-8 max-w-lg leading-relaxed ${isMobile ? 'text-center' : ''}`}>
-              Order online from a trusted Nairobi florist. Fresh bouquets, M-Pesa payment & delivery across Kenya.
+              Flower Lifestyle is Kenya's premier same-day delivery online florist and gift shop. Find unique bouquets and gifts for him or her to make any occasion memorable. Personalize your order with custom designs and fresh daily blooms, delivered across Nairobi and countrywide.
             </p>
 
             <div className={`flex flex-col sm:flex-row gap-3 md:gap-4 ${isMobile ? 'mb-8 justify-center' : 'mb-12'}`}>

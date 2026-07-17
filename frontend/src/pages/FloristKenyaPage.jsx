@@ -17,9 +17,9 @@ import {
 
 const FLORIST_FAQS = [
   {
-    question: 'Who is the best florist in Kenya for same-day delivery?',
+    question: 'Who is the best florist in Nairobi for same-day delivery?',
     answer:
-      'Flower Lifestyle is a top-rated florist in Kenya based at City Market, Nairobi CBD. We offer same-day flower delivery across Nairobi and can arrange countrywide delivery for birthdays, anniversaries, romance, and sympathy flowers.',
+      'Flower Lifestyle is a top-rated florist in Nairobi based at City Market, Nairobi CBD. We offer same day flower delivery Nairobi across Westlands, Karen, Kilimani, Lavington, CBD and more, and we can arrange countrywide delivery for birthday flowers Nairobi, wedding flowers Nairobi, romance, and sympathy flowers Nairobi.',
   },
   {
     question: 'Do you deliver flowers outside Nairobi?',
@@ -33,8 +33,8 @@ const FLORIST_FAQS = [
   },
   {
     question: 'What occasions do you supply flowers for?',
-    answer:
-      'We create bouquets for birthdays, anniversaries, weddings, romance, Mother\'s Day, corporate gifts, get-well wishes, and funeral or sympathy arrangements. Browse our categories or tell us your occasion for a custom bouquet.',
+      answer:
+      'We create bouquets for birthday flowers Nairobi, wedding flowers Nairobi, anniversaries, romance, Mother\'s Day, corporate gifts, get-well wishes, and sympathy flowers Nairobi. Browse our categories or tell us your occasion for a custom bouquet.',
   },
   {
     question: 'Where is your flower shop located in Nairobi?',
@@ -49,9 +49,9 @@ const FloristKenyaPage = () => {
   return (
     <div className="min-h-screen bg-white">
       <PageMetaTags
-        title="Florist in Kenya | Same-Day Flower Delivery Nairobi | Flower Lifestyle"
-        description="Looking for a trusted florist in Kenya? Flower Lifestyle offers fresh bouquets, same-day delivery in Nairobi, M-Pesa payments & countrywide orders. City Market florist since day one."
-        keywords="florist in Kenya, best florist Kenya, florist Nairobi, online florist Kenya, flower shop Kenya, Nairobi florist, flower delivery Kenya, same day flowers Nairobi"
+        title="Florist in Nairobi | Flower Delivery in Nairobi | Flower Lifestyle"
+        description="Florist in Nairobi offering same day flower delivery Nairobi from City Market. Order fresh bouquets for birthday flowers Nairobi, wedding flowers Nairobi & sympathy flowers Nairobi. Pay with M-Pesa & deliver across Nairobi and Kenya."
+        keywords="florist in Nairobi, Nairobi flower shop, flower delivery Nairobi, same day flower delivery Nairobi, birthday flowers Nairobi, wedding flowers Nairobi, sympathy flowers Nairobi, nairobi florist"
         canonicalUrl={canonical}
       />
       <StructuredData
@@ -82,14 +82,13 @@ const FloristKenyaPage = () => {
           className="prose prose-pink max-w-none"
         >
           <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-            Florist in Kenya — Fresh Flowers & Same-Day Delivery in Nairobi
+            Flower Delivery in Nairobi — Florist in Nairobi
           </h1>
           <p className="text-lg text-gray-600 leading-relaxed mb-6">
-            <strong>Flower Lifestyle</strong> is a leading online florist in Kenya, serving customers
-            who want reliable flower delivery in Nairobi and beautiful bouquets sent anywhere in the
-            country. From our base at <strong>City Market, Nairobi CBD</strong>, our florists handcraft
-            fresh arrangements daily for birthdays, romance, anniversaries, corporate gifting, and
-            sympathy flowers.
+            <strong>Flower Lifestyle</strong> is a trusted Nairobi flower shop offering flower delivery Nairobi with
+            reliable, same day flower delivery Nairobi from <strong>City Market, Nairobi CBD</strong>. We handcraft fresh
+            bouquets for <strong>birthday flowers Nairobi</strong>, <strong>wedding flowers Nairobi</strong>, romance,
+            corporate gifting, and <strong>sympathy flowers Nairobi</strong>, then deliver them across Nairobi and beyond.
           </p>
 
           <div className="grid sm:grid-cols-3 gap-4 not-prose mb-10">
