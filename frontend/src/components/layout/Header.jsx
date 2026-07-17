@@ -157,9 +157,7 @@ const Header = () => {
             {/* Right Actions */}
             <div className="flex items-center gap-2 md:gap-4">
               {/* Currency Selector */}
-              <div className="hidden md:block">
-                <CurrencySelector />
-              </div>
+              <CurrencySelector />
               
               {/* Search */}
               <Button
