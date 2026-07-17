@@ -6,6 +6,7 @@ import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { featuredProducts as mockFeaturedProducts } from '../../data/mock';
 import { useProducts } from '../../hooks/useProducts';
+import { useCurrency } from '../ui/CurrencyConverter';
 
 import { useCart } from '../../context/CartContext';
 import { toast } from 'sonner';
@@ -13,10 +14,7 @@ import { toast } from 'sonner';
 const ProductCard = ({ product, index }) => {
   const navigate = useNavigate();
   const { addToCart } = useCart();
-
-  const formatPrice = (price) => {
-    return `KSh ${price.toLocaleString()}`;
-  };
+  const { formatPrice } = useCurrency();
 
   const getBadgeColor = (badge) => {
     switch (badge) {

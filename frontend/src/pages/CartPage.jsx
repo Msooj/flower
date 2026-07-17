@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
+import { useCurrency } from '../components/ui/CurrencyConverter';
 import { Button } from '../components/ui/button';
 import { Trash2, Plus, Minus, ArrowLeft, ArrowRight, MessageSquare, Calendar, Clock, CreditCard, Smartphone } from 'lucide-react';
 import Header from '../components/layout/Header';
@@ -12,6 +13,7 @@ import PageMetaTags from '../components/seo/PageMetaTags';
 const CartPage = () => {
     const navigate = useNavigate();
     const { cart, removeFromCart, updateQuantity, cartTotal, clearCart } = useCart();
+    const { formatPrice } = useCurrency();
     const [showCheckoutForm, setShowCheckoutForm] = useState(false);
     const [isProcessing, setIsProcessing] = useState(false);
     const [paymentMethod, setPaymentMethod] = useState('mpesa');
@@ -337,7 +339,7 @@ const CartPage = () => {
                                         <div className="bg-green-50 rounded-xl p-6 border border-green-100 mb-6">
                                             <h3 className="font-bold text-green-800 mb-2">Pay via M-Pesa</h3>
                                             <p className="text-sm text-green-700 mb-4">
-                                                Please send the total amount of <span className="font-bold">KSh {cartTotal.toLocaleString()}</span> using M-Pesa Paybill:
+                                                Please send the total amount of <span className="font-bold">{formatPrice(cartTotal)}</span> using M-Pesa Paybill:
                                             </p>
                                             <div className="bg-white p-4 rounded-lg border border-green-200 text-center mb-4 space-y-2">
                                                 <div>
@@ -373,12 +375,12 @@ const CartPage = () => {
                                         {cart.map((item) => (
                                             <div key={item.id} className="flex justify-between">
                                                 <span>{item.name} x{item.quantity}</span>
-                                                <span>KSh {(item.price * item.quantity).toLocaleString()}</span>
+                                                <span>{formatPrice(item.price * item.quantity)}</span>
                                             </div>
                                         ))}
                                         <div className="border-t border-pink-200 pt-2 flex justify-between font-bold text-lg">
                                             <span>Total</span>
-                                            <span className="text-pink-600">KSh {cartTotal.toLocaleString()}</span>
+                                            <span className="text-pink-600">{formatPrice(cartTotal)}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -470,7 +472,7 @@ const CartPage = () => {
                                             </div>
                                             <div className="text-right">
                                                 <p className="text-lg font-bold text-pink-600">
-                                                    KSh {(item.price * item.quantity).toLocaleString()}
+                                                    {formatPrice(item.price * item.quantity)}
                                                 </p>
                                             </div>
                                         </div>
@@ -481,7 +483,7 @@ const CartPage = () => {
 
                         <div className="mt-6 flex justify-between items-center bg-gray-50 p-4 rounded-xl">
                             <span className="text-gray-600 font-medium">Subtotal</span>
-                            <span className="text-xl font-bold text-gray-900">KSh {cartTotal.toLocaleString()}</span>
+                            <span className="text-xl font-bold text-gray-900">{formatPrice(cartTotal)}</span>
                         </div>
                     </div>
 
@@ -493,7 +495,7 @@ const CartPage = () => {
                             <div className="space-y-4 mb-6">
                                 <div className="border-t border-gray-100 pt-4 flex justify-between font-bold text-lg">
                                     <span>Total</span>
-                                    <span className="text-pink-600">KSh {cartTotal.toLocaleString()}</span>
+                                    <span className="text-pink-600">{formatPrice(cartTotal)}</span>
                                 </div>
                             </div>
 

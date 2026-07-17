@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Heart, ShoppingBag, Star, Truck, Shield, RefreshCw } from 'lucide-react';
 import { Button } from './button';
 import { Badge } from './badge';
-import { useCurrency } from './CurrencyConverter';
+import { useCurrency, CurrencySelector } from './CurrencyConverter';
 
 const ProductModal = ({ product, isOpen, onClose, onAddToCart, onToggleWishlist, isInWishlist }) => {
   if (!product) return null;
@@ -33,14 +33,17 @@ const ProductModal = ({ product, isOpen, onClose, onAddToCart, onToggleWishlist,
             {/* Header */}
             <div className="flex items-center justify-between p-4 border-b border-gray-100">
               <h2 className="text-xl font-semibold text-gray-800">Product Details</h2>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={onClose}
-                className="rounded-full"
-              >
-                <X className="w-5 h-5" />
-              </Button>
+              <div className="flex items-center gap-2">
+                <CurrencySelector />
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={onClose}
+                  className="rounded-full"
+                >
+                  <X className="w-5 h-5" />
+                </Button>
+              </div>
             </div>
 
             {/* Content */}

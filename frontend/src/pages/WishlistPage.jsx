@@ -7,12 +7,14 @@ import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import { useWishlist } from '../context/WishlistContext';
 import { useCart } from '../context/CartContext';
+import { useCurrency } from '../components/ui/CurrencyConverter';
 import { toast } from 'sonner';
 import PageMetaTags from '../components/seo/PageMetaTags';
 
 const WishlistPage = () => {
     const { wishlist, removeFromWishlist } = useWishlist();
     const { addToCart } = useCart();
+    const { formatPrice } = useCurrency();
 
     const handleAddToCart = (product) => {
         addToCart(product);
@@ -102,11 +104,11 @@ const WishlistPage = () => {
                                     </h3>
                                     <div className="flex items-center gap-2 mb-4">
                                         <span className="text-lg font-bold text-pink-600">
-                                            KSh {product.price.toLocaleString()}
+                                            {formatPrice(product.price)}
                                         </span>
                                         {product.originalPrice && (
                                             <span className="text-sm text-gray-400 line-through">
-                                                KSh {product.originalPrice.toLocaleString()}
+                                                {formatPrice(product.originalPrice)}
                                             </span>
                                         )}
                                     </div>
