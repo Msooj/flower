@@ -253,5 +253,6 @@ export const navLinks = [
   { name: "Shop", href: "/flowers" },
   { name: "Birthday", href: "/flowers?category=birthday" },
   { name: "Romance", href: "/flowers?category=romance" },
-  { name: "Combos", href: "/flowers?category=combos" }
+  { name: "Combos", href: "/flowers?category=combos" },
+  { name: "FAQ", href: "/faq" }
 ];
