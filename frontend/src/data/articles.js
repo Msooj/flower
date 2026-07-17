@@ -125,6 +125,27 @@ export const ARTICLES = [
     ctaLink: '/flowers?category=money-bouquet',
     ctaLabel: 'View Money Bouquets',
   },
+  {
+    slug: 'girlfriends-day-flowers-gifts-kenya',
+    title: "Girlfriend's Day Flowers & Gifts in Kenya: August 1st Celebration Guide",
+    excerpt:
+      "Celebrate Girlfriend's Day on August 1st with beautiful flowers and thoughtful gifts in Nairobi. Same-day delivery, romantic bouquet ideas, and gift combos she'll love.",
+    category: 'Occasions',
+    publishedAt: '2026-07-17',
+    updatedAt: '2026-07-17',
+    readMinutes: 6,
+    image: 'https://images.unsplash.com/photo-1518199266791-5375a83190b7?w=800',
+    keywords: 'Girlfriends Day flowers Kenya, Girlfriend Day gifts Nairobi, romantic flowers Kenya, August 1st flowers, flower gifts for girlfriend',
+    body: [
+      "Girlfriend's Day on August 1st is the perfect opportunity to celebrate your special someone with beautiful flowers and thoughtful gifts. Whether you're in a new relationship or have been together for years, a stunning bouquet shows you care and makes the day memorable.",
+      "For Girlfriend's Day, consider romantic red roses to express deep love, or opt for pink roses for admiration and sweetness. Mixed bouquets with lilies, gerberas, and seasonal blooms create a vibrant, modern look that many girlfriends appreciate. Our florists at City Market can customize arrangements with her favourite colours.",
+      "Beyond flowers, consider gift combos that elevate the experience. Pair a beautiful bouquet with chocolates, a handwritten card, or even a small piece of jewelry. These thoughtful touches show you've put extra thought into making her feel special on August 1st.",
+      "Same-day delivery across Nairobi makes it easy to surprise her at work, home, or a restaurant. Order before 2 PM for the best chance of same-day delivery. We deliver to CBD, Westlands, Kilimani, Karen, and most Nairobi areas.",
+      "Don't wait until the last minute — popular bouquets sell out quickly around Girlfriend's Day. Browse our collection online or message us on WhatsApp at 0742 370 307 for custom arrangements and gift recommendations.",
+    ],
+    ctaLink: '/flowers?category=girlfriends-day',
+    ctaLabel: "Shop Girlfriend's Day Flowers",
+  },
 ];
 
 export const getArticleBySlug = (slug) => ARTICLES.find((a) => a.slug === slug);
