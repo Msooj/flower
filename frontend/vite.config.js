@@ -21,5 +21,18 @@ export default defineConfig({
             },
         }
     },
-
+    build: {
+        rollupOptions: {
+            output: {
+                manualChunks: {
+                    'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+                    'animation-vendor': ['framer-motion'],
+                    'ui-vendor': ['lucide-react'],
+                },
+            },
+        },
+        // Improve chunk size warning threshold
+        chunkSizeWarningLimit: 600,
+    },
 })
+

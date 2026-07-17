@@ -14,6 +14,8 @@ const HeroSection = ({ isMobile = false }) => {
             src={HERO_IMAGE}
             alt="Fresh flower bouquet delivery in Nairobi - beautiful arrangement ready for same day delivery"
             className="w-full h-full object-cover"
+            fetchpriority="high"
+            loading="eager"
           />
           <div className="absolute inset-0 bg-white/20" />
         </div>
@@ -98,6 +100,8 @@ const HeroSection = ({ isMobile = false }) => {
                     src={HERO_IMAGE}
                     alt="Fresh flower bouquet delivery in Nairobi - beautiful arrangement ready for same day delivery"
                     className="h-[500px] w-full object-cover"
+                    fetchpriority="high"
+                    loading="eager"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-pink-900/20 to-transparent" />
                 </div>

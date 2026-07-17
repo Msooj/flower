@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Phone, Mail, MapPin, Clock, Instagram, Send } from 'lucide-react';
+import { Phone, Mail, MapPin, Clock, Instagram, MessageCircle } from 'lucide-react';
 import { Button } from '../ui/button';
 import { contactInfo } from '../../data/mock';
 
@@ -9,8 +9,7 @@ const Footer = () => {
 
   return (
     <footer className="bg-gradient-to-b from-pink-50 to-pink-100">
-      {/* Location Map */}
-      <div className="border-b border-pink-200 bg-white">
+        <div className="border-b border-pink-200 bg-white">
         <div className="container mx-auto px-4 py-8">
           <div className="text-center mb-6">
             <h3 className="text-xl md:text-2xl font-bold text-gray-800 flex items-center justify-center gap-2">
@@ -27,7 +26,7 @@ const Footer = () => {
               allowFullScreen=""
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
-              title="Flower Lifestyle Location"
+              title="Flower Lifestyle Location - City Market Nairobi"
               className="grayscale-[20%] group-hover:grayscale-0 transition-all duration-500"
             ></iframe>
             {/* Custom Red Pin Overlay */}
@@ -37,6 +36,18 @@ const Footer = () => {
                 <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-4 h-1.5 bg-black/30 rounded-full blur-[2px]"></div>
               </div>
             </div>
+          </div>
+          {/* Google Maps / Business Profile link */}
+          <div className="text-center mt-4">
+            <a
+              href="https://www.google.com/maps/search/flowerlifstyle/@-1.2777859,36.815201,16z/data=!3m1!4b1?entry=ttu&g_ep=EgoyMDI2MDcxNC4wIKXMDSoASAFQAw%3D%3D"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 text-pink-600 hover:text-pink-800 font-medium text-sm underline underline-offset-2 transition-colors"
+            >
+              <MapPin className="w-4 h-4" />
+              Find us on Google Maps
+            </a>
           </div>
         </div>
       </div>
@@ -62,9 +73,18 @@ const Footer = () => {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-10 h-10 rounded-full bg-white shadow-md flex items-center justify-center text-pink-500 hover:bg-pink-500 hover:text-white transition-colors"
-                aria-label="Instagram"
+                aria-label="Follow us on Instagram"
               >
                 <Instagram className="w-5 h-5" />
+              </a>
+              <a
+                href="https://wa.me/254742370307"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-10 h-10 rounded-full bg-white shadow-md flex items-center justify-center text-green-500 hover:bg-green-500 hover:text-white transition-colors"
+                aria-label="Chat with us on WhatsApp"
+              >
+                <MessageCircle className="w-5 h-5" />
               </a>
             </div>
           </div>
@@ -154,40 +174,48 @@ const Footer = () => {
           {/* Contact Info */}
           <div>
             <h4 className="text-lg font-semibold text-gray-800 mb-4">Contact Us</h4>
-            <ul className="space-y-4">
-              <li className="flex items-start gap-3">
-                <Phone className="w-5 h-5 text-pink-500 mt-0.5" />
-                <div>
-                  <p className="text-gray-800 font-medium">Phone / WhatsApp</p>
-                  <span className="text-gray-600">
-                    {contactInfo.phone}
-                  </span>
-                </div>
-              </li>
-              <li className="flex items-start gap-3">
-                <Mail className="w-5 h-5 text-pink-500 mt-0.5" />
-                <div>
-                  <p className="text-gray-800 font-medium">Email</p>
-                  <span className="text-gray-600">
-                    {contactInfo.email}
-                  </span>
-                </div>
-              </li>
-              <li className="flex items-start gap-3">
-                <MapPin className="w-5 h-5 text-pink-500 mt-0.5" />
-                <div>
-                  <p className="text-gray-800 font-medium">Address</p>
-                  <p className="text-gray-600">{contactInfo.address}</p>
-                </div>
-              </li>
-              <li className="flex items-start gap-3">
-                <Clock className="w-5 h-5 text-pink-500 mt-0.5" />
-                <div>
-                  <p className="text-gray-800 font-medium">Working Hours</p>
-                  <p className="text-gray-600">{contactInfo.hours}</p>
-                </div>
-              </li>
-            </ul>
+            <address className="not-italic">
+              <ul className="space-y-4">
+                <li className="flex items-start gap-3">
+                  <Phone className="w-5 h-5 text-pink-500 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="text-gray-800 font-medium">Phone / WhatsApp</p>
+                    <a
+                      href="tel:+254742370307"
+                      className="text-gray-600 hover:text-pink-600 transition-colors"
+                    >
+                      {contactInfo.phone}
+                    </a>
+                  </div>
+                </li>
+                <li className="flex items-start gap-3">
+                  <Mail className="w-5 h-5 text-pink-500 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="text-gray-800 font-medium">Email</p>
+                    <a
+                      href="mailto:flowerlifestyle@gmail.com"
+                      className="text-gray-600 hover:text-pink-600 transition-colors"
+                    >
+                      {contactInfo.email}
+                    </a>
+                  </div>
+                </li>
+                <li className="flex items-start gap-3">
+                  <MapPin className="w-5 h-5 text-pink-500 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="text-gray-800 font-medium">Address</p>
+                    <p className="text-gray-600">{contactInfo.address}</p>
+                  </div>
+                </li>
+                <li className="flex items-start gap-3">
+                  <Clock className="w-5 h-5 text-pink-500 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="text-gray-800 font-medium">Working Hours</p>
+                    <p className="text-gray-600">{contactInfo.hours}</p>
+                  </div>
+                </li>
+              </ul>
+            </address>
           </div>
         </div>
       </div>
@@ -198,7 +226,11 @@ const Footer = () => {
           {/* NAP - Local SEO */}
           <div className="text-center mb-4">
             <div className="text-sm text-gray-600 font-medium">
-              <strong>Flower Lifestyle</strong> | City Market, Nairobi, Kenya | Phone: 0742370307 | Email: flowerlifestyle@gmail.com
+              <strong>Flower Lifestyle</strong> | City Market, Nairobi, Kenya |{' '}
+              Phone:{' '}
+              <a href="tel:+254742370307" className="hover:text-pink-600 transition-colors">0742 370 307</a>{' '}
+              | Email:{' '}
+              <a href="mailto:flowerlifestyle@gmail.com" className="hover:text-pink-600 transition-colors">flowerlifestyle@gmail.com</a>
             </div>
           </div>
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">

@@ -23,6 +23,7 @@ import BlogPage from "./pages/BlogPage";
 import ArticlePage from "./pages/ArticlePage";
 import WhatsAppButton from "./components/common/WhatsAppButton";
 import GoogleAnalytics from "./components/seo/GoogleAnalytics";
+import NotFoundPage from "./pages/NotFoundPage";
 import { useAuthCallback } from "./hooks/useAuthCallback";
 
 // Wrapper component to use hooks that need Router context
@@ -68,6 +69,7 @@ function App() {
                     <Route path="/orders" element={<OrdersPage />} />
                     <Route path="/about" element={<AboutPage />} />
                     <Route path="/admin" element={<AdminPage />} />
+                    <Route path="*" element={<NotFoundPage />} />
                   </Routes>
                 </AuthWrapper>
               </BrowserRouter>

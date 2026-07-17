@@ -78,7 +78,12 @@ const Header = () => {
       <div className="bg-pink-600 text-white py-2 px-4 text-center text-sm">
         <div className="container mx-auto flex items-center justify-center gap-2">
           <Phone className="w-4 h-4" />
-          <span>We deliver country wide! | Call us: {contactInfo.phone}</span>
+          <span>
+            We deliver country wide! | Call us:{' '}
+            <a href="tel:+254742370307" className="font-semibold hover:underline">
+              {contactInfo.phone}
+            </a>
+          </span>
         </div>
       </div>
 

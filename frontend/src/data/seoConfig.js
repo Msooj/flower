@@ -25,6 +25,7 @@ export const BUSINESS = {
   priceRange: 'KES 3000-15000',
   instagram: 'https://www.instagram.com/flowerlifestyle_giftshop/',
   whatsapp: 'https://wa.me/254742370307',
+  googleMaps: 'https://www.google.com/maps/search/flowerlifstyle/@-1.2777859,36.815201,16z/data=!3m1!4b1?entry=ttu&g_ep=EgoyMDI2MDcxNC4wIKXMDSoASAFQAw%3D%3D',
 };
 
 export const KENYA_KEYWORDS =
@@ -32,7 +33,7 @@ export const KENYA_KEYWORDS =
 
 export const floristSchema = () => ({
   '@context': 'https://schema.org',
-  '@type': 'Florist',
+  '@type': ['Florist', 'LocalBusiness'],
   '@id': `${SITE_URL}/#florist`,
   name: BUSINESS.name,
   description: BUSINESS.description,
@@ -43,6 +44,7 @@ export const floristSchema = () => ({
   priceRange: BUSINESS.priceRange,
   currenciesAccepted: 'KES',
   paymentAccepted: 'Cash, M-Pesa, Credit Card',
+  hasMap: BUSINESS.googleMaps,
   address: {
     '@type': 'PostalAddress',
     streetAddress: BUSINESS.address.street,
@@ -74,7 +76,7 @@ export const floristSchema = () => ({
     { '@type': 'City', name: 'Nairobi' },
     { '@type': 'Country', name: 'Kenya' },
   ],
-  sameAs: [BUSINESS.instagram],
+  sameAs: [BUSINESS.instagram, BUSINESS.whatsapp],
 });
 
 export const websiteSchema = () => ({
