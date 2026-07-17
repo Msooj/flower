@@ -35,7 +35,7 @@ const ALL_FAQS = [
   {
     question: 'What payment methods do you accept?',
     answer:
-      'We accept M-Pesa, cash on delivery (where available), and card payments. M-Pesa is the most popular option for customers across Kenya.',
+      'We accept M-Pesa, and card payments. M-Pesa is the most popular option for customers across Kenya.',
   },
   {
     question: 'Where is Flower Lifestyle located?',
