@@ -50,10 +50,10 @@ const HeroSection = ({ isMobile = false }) => {
             )}
 
             <h1 className={`${isMobile ? 'text-3xl text-center' : 'text-4xl md:text-5xl lg:text-5xl'} font-bold text-gray-900 leading-tight mb-4 md:mb-6`}>
-              Online Flower & Gift Shop in Kenya — Same-Day Flower Delivery Nairobi
+              Flower Delivery Nairobi | Florist in Nairobi | Online Flower Shop Kenya — Same-Day Delivery
             </h1>
             <h2 className={`${isMobile ? 'text-xl text-center' : 'text-2xl md:text-3xl'} font-semibold text-pink-600 mb-4 md:mb-6`}>
-              Events • Weddings • Birthdays • Funerals • Romance • Girlfriend's Day • Combos • Roses • Anniversary • Money Bouquet
+              Birthday Flowers Nairobi • Anniversary Bouquets Kenya • Funeral Wreaths Nairobi • Red Roses Delivery • Same Day Flower Delivery • Wedding Flowers • Gift Combos • Money Bouquets
             </h2>
 
             <p className={`text-base md:text-lg text-gray-600 mb-6 md:mb-8 max-w-lg leading-relaxed ${isMobile ? 'text-center' : ''}`}>
