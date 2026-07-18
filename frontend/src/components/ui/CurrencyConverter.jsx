@@ -45,7 +45,7 @@ export const CurrencyProvider = ({ children }) => {
   };
 
   const formatPrice = (priceInKES) => {
-    const convertedPrice = convertPrice(currency === 'KES' ? priceInKES : priceInKES);
+    const convertedPrice = convertPrice(priceInKES);
     const symbol = CURRENCY_SYMBOLS[currency];
     
     if (currency === 'JPY') {

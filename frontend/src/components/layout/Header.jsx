@@ -5,6 +5,7 @@ import { Search, User, ShoppingBag, Menu, X, Heart, Phone } from 'lucide-react';
 import { Button } from '../ui/button';
 import { toast } from 'sonner';
 import { navLinks, contactInfo } from '../../data/mock';
+import { CurrencySelector } from '../ui/CurrencyConverter';
 
 import { useCart } from '../../context/CartContext';
 import { useWishlist } from '../../context/WishlistContext';
@@ -160,6 +161,9 @@ const Header = () => {
 
             {/* Right Actions */}
             <div className="flex items-center gap-2 md:gap-4">
+              {/* Currency Selector */}
+              <CurrencySelector />
+              
               {/* Search */}
               <Button
                 variant="ghost"
@@ -309,6 +313,11 @@ const Header = () => {
             >
               <div className="container mx-auto px-4 py-4">
                 <nav className="flex flex-col gap-2">
+                  {/* Currency Selector for Mobile */}
+                  <div className="px-4 py-2">
+                    <CurrencySelector />
+                  </div>
+                  
                   {navLinks.map((link) => (
                     <Link
                       key={link.name}
