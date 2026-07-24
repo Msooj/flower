@@ -170,6 +170,7 @@ const Header = () => {
                 size="icon"
                 className="text-gray-700 hover:text-pink-600 hover:bg-pink-50"
                 onClick={() => setIsSearchOpen(!isSearchOpen)}
+                aria-label="Toggle search bar"
               >
                 <Search className="w-5 h-5" />
               </Button>
@@ -180,6 +181,7 @@ const Header = () => {
                 size="icon"
                 className="hidden md:flex text-gray-700 hover:text-pink-600 hover:bg-pink-50 relative"
                 onClick={() => navigate('/wishlist')}
+                aria-label="View wishlist"
               >
                 <Heart className="w-5 h-5" />
                 {wishlist.length > 0 && (
@@ -201,6 +203,7 @@ const Header = () => {
                   size="icon"
                   className="relative text-gray-700 hover:text-pink-600 hover:bg-pink-50"
                   onClick={() => navigate('/cart')}
+                  aria-label="View shopping cart"
                 >
                   <ShoppingBag className="w-5 h-5" />
                   {cartCount > 0 && (
@@ -256,6 +259,7 @@ const Header = () => {
                 size="icon"
                 className="xl:hidden text-gray-700"
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                aria-label="Toggle main menu"
               >
                 {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
               </Button>

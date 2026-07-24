@@ -444,13 +444,19 @@ const FlowersPage = ({ isMobile = false }) => {
                               : 'bg-white text-pink-500 hover:bg-pink-500 hover:text-white'
                               }`}
                             onClick={() => toggleWishlist(product)}
+                            aria-label={isInWishlist(product.id) ? "Remove from wishlist" : "Add to wishlist"}
                           >
                             <Heart className={`w-4 h-4 ${isInWishlist(product.id) ? 'fill-current' : ''}`} />
                           </Button>
 
-                          <Button size="icon" className="bg-pink-500 text-white hover:bg-pink-600 rounded-full shadow-lg h-9 w-9" onClick={() => {
-                            addToCart(product);
-                          }}>
+                          <Button 
+                            size="icon" 
+                            className="bg-pink-500 text-white hover:bg-pink-600 rounded-full shadow-lg h-9 w-9" 
+                            onClick={() => {
+                              addToCart(product);
+                            }}
+                            aria-label="Add to cart"
+                          >
                             <ShoppingBag className="w-4 h-4" />
                           </Button>
                         </div>

@@ -66,7 +66,7 @@ const PromoSection = () => {
                 href="/flowers"
                 className="w-fit border-white text-white hover:bg-white hover:text-pink-600 rounded-full group inline-flex items-center justify-center text-center font-medium py-3 px-8 transition-colors"
               >
-                Learn More
+                Browse Collection
                 <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </a>
             </div>

@@ -74,7 +74,7 @@ export const CurrencySelector = () => {
 
   return (
     <Select value={currency} onValueChange={setCurrency}>
-      <SelectTrigger className="w-[140px]">
+      <SelectTrigger className="w-[140px]" aria-label="Select currency">
         <SelectValue placeholder="Select currency" />
       </SelectTrigger>
       <SelectContent>
