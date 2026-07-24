@@ -235,9 +235,14 @@ CREATE POLICY "Allow mpesa payment creation"
     ON mpesa_payments FOR INSERT
     WITH CHECK (true);
 
-CREATE POLICY "Allow mpesa payment updates"
+CREATE POLICY "Admins can update mpesa payments"
     ON mpesa_payments FOR UPDATE
-    USING (true);
+    USING (
+        EXISTS (
+            SELECT 1 FROM user_profiles
+            WHERE id = auth.uid() AND role = 'admin'
+        )
+    );
 
 -- Create indexes for better performance
 CREATE INDEX IF NOT EXISTS idx_user_profiles_email ON user_profiles(email);

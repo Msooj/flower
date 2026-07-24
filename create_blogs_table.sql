@@ -48,24 +48,44 @@ ON blogs FOR SELECT
 TO authenticated
 USING (true);
 
--- Policy: Allow all authenticated users to insert blogs
-CREATE POLICY "Authenticated users can insert blogs"
+-- Policy: Allow admins to insert blogs
+CREATE POLICY "Admins can insert blogs"
 ON blogs FOR INSERT
 TO authenticated
-WITH CHECK (true);
+WITH CHECK (
+    EXISTS (
+        SELECT 1 FROM public.user_profiles
+        WHERE id = auth.uid() AND role = 'admin'
+    )
+);
 
--- Policy: Allow all authenticated users to update blogs
-CREATE POLICY "Authenticated users can update blogs"
+-- Policy: Allow admins to update blogs
+CREATE POLICY "Admins can update blogs"
 ON blogs FOR UPDATE
 TO authenticated
-USING (true)
-WITH CHECK (true);
+USING (
+    EXISTS (
+        SELECT 1 FROM public.user_profiles
+        WHERE id = auth.uid() AND role = 'admin'
+    )
+)
+WITH CHECK (
+    EXISTS (
+        SELECT 1 FROM public.user_profiles
+        WHERE id = auth.uid() AND role = 'admin'
+    )
+);
 
--- Policy: Allow all authenticated users to delete blogs
-CREATE POLICY "Authenticated users can delete blogs"
+-- Policy: Allow admins to delete blogs
+CREATE POLICY "Admins can delete blogs"
 ON blogs FOR DELETE
 TO authenticated
-USING (true);
+USING (
+    EXISTS (
+        SELECT 1 FROM public.user_profiles
+        WHERE id = auth.uid() AND role = 'admin'
+    )
+);
 
 -- Function to automatically update updated_at timestamp
 CREATE OR REPLACE FUNCTION update_updated_at_column()
