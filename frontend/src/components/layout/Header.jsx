@@ -116,7 +116,7 @@ const Header = () => {
             </Link>
 
             {/* Desktop Navigation */}
-            <nav className="hidden xl:flex items-center gap-6">
+            <nav className="hidden lg:flex items-center gap-6">
               {navLinks.map((link) => (
                 <Link
                   key={link.name}
@@ -257,7 +257,7 @@ const Header = () => {
               <Button
                 variant="ghost"
                 size="icon"
-                className="xl:hidden text-gray-700"
+                className="lg:hidden text-gray-700"
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                 aria-label="Toggle main menu"
               >
@@ -313,7 +313,7 @@ const Header = () => {
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
-              className="xl:hidden border-t border-pink-100 bg-white"
+              className="lg:hidden border-t border-pink-100 bg-white"
             >
               <div className="container mx-auto px-4 py-4">
                 <nav className="flex flex-col gap-2">
