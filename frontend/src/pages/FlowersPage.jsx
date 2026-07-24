@@ -26,6 +26,7 @@ const FlowersPage = ({ isMobile = false }) => {
   const { formatPrice } = useCurrency();
   const [searchParams, setSearchParams] = useSearchParams();
   const initialSearch = searchParams.get('search') || '';
+  const productParam = searchParams.get('product');
   const [searchQuery, setSearchQuery] = useState(initialSearch);
   const [sortBy, setSortBy] = useState('featured');
   const [gridSize, setGridSize] = useState('large');
@@ -42,6 +43,17 @@ const FlowersPage = ({ isMobile = false }) => {
     const urlSearch = searchParams.get('search') || '';
     setSearchQuery(urlSearch);
   }, [searchParams]);
+
+  // Sync selectedProduct with ?product= in URL
+  useEffect(() => {
+    if (productParam && dbProducts && dbProducts.length > 0) {
+      const product = dbProducts.find(p => String(p.id) === String(productParam));
+      if (product) {
+        setSelectedProduct(product);
+        setIsModalOpen(true);
+      }
+    }
+  }, [productParam, dbProducts]);
 
   // Get active category from URL or default to 'all'
   const activeCategory = searchParams.get('category') || 'all';
@@ -94,11 +106,15 @@ const FlowersPage = ({ isMobile = false }) => {
   const handleViewProduct = (product) => {
     setSelectedProduct(product);
     setIsModalOpen(true);
+    searchParams.set('product', product.id);
+    setSearchParams(searchParams);
   };
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setSelectedProduct(null);
+    searchParams.delete('product');
+    setSearchParams(searchParams);
   };
 
   const handleAddToCart = (product) => {
@@ -206,31 +222,50 @@ const FlowersPage = ({ isMobile = false }) => {
 
   const currentCategoryContent = getCategoryContent(activeCategory);
 
-  // Check if this is a product UUID URL (should not be indexed)
-  const productParam = searchParams.get('product');
-  const isProductUuidUrl = productParam && productParam.length > 10;
+  // Dynamic meta title based on active product or category
+  const pageMetaTitle = useMemo(() => {
+    if (productParam && selectedProduct) {
+      return `${selectedProduct.name} | Flowerlifestyle Giftshop`;
+    }
+    return currentCategoryContent.title;
+  }, [productParam, selectedProduct, currentCategoryContent.title]);
 
-  const flowersCanonical = `${SITE_URL}/flowers${activeCategory !== 'all' ? `?category=${activeCategory}` : ''}`;
+  // Dynamic meta description based on active product or category
+  const pageMetaDescription = useMemo(() => {
+    if (productParam && selectedProduct) {
+      return selectedProduct.description || `${selectedProduct.name} — Beautiful handcrafted flowers from Flowerlifestyle Giftshop. Same day delivery in Nairobi.`;
+    }
+    return currentCategoryContent.description;
+  }, [productParam, selectedProduct, currentCategoryContent.description]);
+
+  // Dynamic canonical URL to prevent "Duplicate without user-selected canonical"
+  const pageCanonicalUrl = useMemo(() => {
+    if (productParam) {
+      return `${SITE_URL}/flowers?product=${productParam}`;
+    }
+    return `${SITE_URL}/flowers${activeCategory !== 'all' ? `?category=${activeCategory}` : ''}`;
+  }, [productParam, activeCategory]);
+
   const structuredDataBlocks = useMemo(() => {
     const list = productListSchema(filteredProducts);
     const crumbs = breadcrumbSchema([
       { name: 'Home', url: SITE_URL },
       { name: 'Shop Flowers', url: `${SITE_URL}/flowers` },
       ...(activeCategory !== 'all'
-        ? [{ name: currentCategoryContent.h1, url: flowersCanonical }]
+        ? [{ name: currentCategoryContent.h1, url: pageCanonicalUrl }]
         : []),
     ]);
     return list ? [crumbs, list] : [crumbs];
-  }, [filteredProducts, activeCategory, flowersCanonical, currentCategoryContent.h1]);
+  }, [filteredProducts, activeCategory, pageCanonicalUrl, currentCategoryContent.h1]);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-pink-50 to-white">
       <PageMetaTags 
-        title={currentCategoryContent.title}
-        description={currentCategoryContent.description}
+        title={pageMetaTitle}
+        description={pageMetaDescription}
         keywords={currentCategoryContent.keywords}
-        canonicalUrl={flowersCanonical}
-        noindex={isProductUuidUrl}
+        canonicalUrl={pageCanonicalUrl}
+        noindex={false}
       />
       <StructuredData data={structuredDataBlocks} />
       <Header />
