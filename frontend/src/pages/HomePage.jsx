@@ -16,7 +16,7 @@ const HomePage = ({ isMobile }) => {
   return (
     <div className="min-h-screen bg-white">
       <PageMetaTags
-        title="Same-Day Flower Delivery Nairobi | Flower Lifestyle Kenya"
+        title="Flowerlifestyle Giftshop | Same-Day Flower Delivery Nairobi"
         description="Kenya's best online florist & gift shop. Fresh flowers & personalized gifts with same-day delivery in Nairobi. Order now!"
         keywords={KENYA_KEYWORDS}
         canonicalUrl={`${SITE_URL}/`}

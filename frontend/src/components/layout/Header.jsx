@@ -277,7 +277,7 @@ const Header = () => {
                 <div className="relative max-w-2xl mx-auto">
                   <input
                     type="text"
-                    placeholder="Search for flowers, bouquets, gifts..."
+                    placeholder="Search Flowerlifestyle giftshop..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     onKeyDown={(e) => {

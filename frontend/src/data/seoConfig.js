@@ -29,7 +29,7 @@ export const BUSINESS = {
 };
 
 export const KENYA_KEYWORDS =
-  'gift shop Kenya, online flower delivery service Kenya, florist in Kenya, florist Nairobi, online florist Kenya, flower delivery Kenya, best florist Nairobi, same day flower delivery Nairobi, order flowers online Kenya, flower shop Nairobi, roses delivery Kenya, birthday flowers Nairobi, gift shop Nairobi, unique gifts Kenya, personalized gifts Kenya';
+  'florist near me, flower shop near me, flower delivery near me, florist in Nairobi, florist in Nairobi near me, gift shop Kenya, online flower delivery service Kenya, florist in Kenya, florist Nairobi, online florist Kenya, flower delivery Kenya, best florist Nairobi, same day flower delivery Nairobi, order flowers online Kenya, flower shop Nairobi, roses delivery Kenya, birthday flowers Nairobi, gift shop Nairobi, unique gifts Kenya, personalized gifts Kenya';
 
 export const floristSchema = () => ({
   '@context': 'https://schema.org',

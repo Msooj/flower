@@ -38,16 +38,7 @@ const HeroSection = ({ isMobile = false }) => {
             transition={{ duration: 0.6 }}
             className="relative z-10"
           >
-            {!isMobile && (
-              <motion.span
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-                className="inline-block px-4 py-2 bg-pink-100 text-pink-600 rounded-full text-sm font-medium mb-4 md:mb-6"
-              >
-                Fresh Flowers Delivered Daily
-              </motion.span>
-            )}
+
 
             <h1 className={`${isMobile ? 'text-3xl text-center' : 'text-4xl md:text-5xl lg:text-5xl'} font-bold text-gray-900 leading-tight mb-4 md:mb-6`}>
               Flower Delivery Nairobi | Florist in Nairobi | Online Flower Shop Kenya — Same-Day Delivery

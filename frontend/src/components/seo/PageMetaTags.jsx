@@ -12,7 +12,7 @@ const PageMetaTags = ({
   noindex = false,
 }) => {
   const defaultTitle =
-    'Same-Day Flower Delivery Nairobi | Flower Lifestyle Kenya';
+    'Flowerlifestyle Giftshop | Same-Day Flower Delivery Nairobi';
   const defaultDescription =
     "Kenya's best online florist & gift shop. Fresh flowers & personalized gifts with same-day delivery in Nairobi. Order now!";
   const robotsContent = noindex ? 'noindex, nofollow' : robots;

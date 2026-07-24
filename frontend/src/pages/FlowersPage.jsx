@@ -300,7 +300,7 @@ const FlowersPage = ({ isMobile = false }) => {
             <div className="lg:col-span-2 relative">
               <input
                 type="text"
-                placeholder="Search flowers..."
+                placeholder="Search Flowerlifestyle giftshop..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-10 pr-4 py-3 rounded-xl border border-pink-200 focus:border-pink-400 focus:ring-2 focus:ring-pink-100 outline-none"
