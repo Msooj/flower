@@ -251,8 +251,5 @@ export const contactInfo = {
 export const navLinks = [
   { name: "Home", href: "/" },
   { name: "Shop", href: "/flowers" },
-  { name: "Birthday", href: "/flowers?category=birthday" },
-  { name: "Romance", href: "/flowers?category=romance" },
-  { name: "Combos", href: "/flowers?category=combos" },
   { name: "FAQ", href: "/faq" }
 ];
