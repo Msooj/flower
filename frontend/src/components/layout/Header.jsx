@@ -98,17 +98,17 @@ const Header = () => {
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-20">
             {/* Logo */}
-            <Link to="/" className="flex items-center gap-2">
+            <Link to="/" className="flex-shrink-0">
               <motion.div
                 whileHover={{ scale: 1.02 }}
-                className="flex items-center gap-3"
+                className="flex items-center gap-2"
               >
                 <img
                   src="/WhatsApp_Image_2025-12-21_at_6.52.59_PM__1_-removebg-preview.png"
                   alt="Flower Lifestyle Logo"
-                  className="h-12 w-auto"
+                  className="h-10 xl:h-12 w-auto flex-shrink-0"
                 />
-                <span className="text-2xl md:text-3xl font-bold tracking-tight">
+                <span className="text-lg xl:text-2xl font-bold tracking-tight flex-shrink-0">
                   <span className="text-pink-600">Flower</span>
                   <span className="text-pink-400">Lifestyle</span>
                 </span>
@@ -116,12 +116,12 @@ const Header = () => {
             </Link>
 
             {/* Desktop Navigation */}
-            <nav className="hidden lg:flex items-center gap-6">
+            <nav className="hidden lg:flex items-center gap-3 xl:gap-6 flex-shrink-0">
               {navLinks.map((link) => (
                 <Link
                   key={link.name}
                   to={link.href}
-                  className={`relative text-sm font-medium transition-colors hover:text-pink-600 ${location.pathname === link.href ||
+                  className={`relative text-xs xl:text-sm font-semibold transition-colors hover:text-pink-600 ${location.pathname === link.href ||
                     (link.href !== '/' && location.pathname.startsWith(link.href.split('?')[0]))
                     ? 'text-pink-600'
                     : 'text-gray-700'
@@ -140,27 +140,27 @@ const Header = () => {
               {user && (
                 <Link
                   to="/orders"
-                  className={`relative text-sm font-medium transition-colors hover:text-pink-600 ${location.pathname === '/orders' ? 'text-pink-600' : 'text-gray-700'}`}
+                  className={`relative text-xs xl:text-sm font-semibold transition-colors hover:text-pink-600 ${location.pathname === '/orders' ? 'text-pink-600' : 'text-gray-700'}`}
                 >
                   My Orders
                 </Link>
               )}
               <Link
                 to="/blog"
-                className={`relative text-sm font-medium transition-colors hover:text-pink-600 ${location.pathname.startsWith('/blog') ? 'text-pink-600' : 'text-gray-700'}`}
+                className={`relative text-xs xl:text-sm font-semibold transition-colors hover:text-pink-600 ${location.pathname.startsWith('/blog') ? 'text-pink-600' : 'text-gray-700'}`}
               >
                 Blog
               </Link>
               <Link
                 to="/about"
-                className={`relative text-sm font-medium transition-colors hover:text-pink-600 ${location.pathname === '/about' ? 'text-pink-600' : 'text-gray-700'}`}
+                className={`relative text-xs xl:text-sm font-semibold transition-colors hover:text-pink-600 ${location.pathname === '/about' ? 'text-pink-600' : 'text-gray-700'}`}
               >
                 About Us
               </Link>
             </nav>
 
             {/* Right Actions */}
-            <div className="flex items-center gap-2 md:gap-4">
+            <div className="flex items-center gap-1 xl:gap-3 flex-shrink-0">
               {/* Currency Selector */}
               <CurrencySelector />
               
@@ -168,22 +168,22 @@ const Header = () => {
               <Button
                 variant="ghost"
                 size="icon"
-                className="text-gray-700 hover:text-pink-600 hover:bg-pink-50"
+                className="text-gray-700 hover:text-pink-600 hover:bg-pink-50 w-8 h-8 xl:w-9 xl:h-9"
                 onClick={() => setIsSearchOpen(!isSearchOpen)}
                 aria-label="Toggle search bar"
               >
-                <Search className="w-5 h-5" />
+                <Search className="w-4 h-4 xl:w-5 xl:h-5" />
               </Button>
 
               {/* Wishlist */}
               <Button
                 variant="ghost"
                 size="icon"
-                className="hidden md:flex text-gray-700 hover:text-pink-600 hover:bg-pink-50 relative"
+                className="hidden md:flex text-gray-700 hover:text-pink-600 hover:bg-pink-50 relative w-8 h-8 xl:w-9 xl:h-9"
                 onClick={() => navigate('/wishlist')}
                 aria-label="View wishlist"
               >
-                <Heart className="w-5 h-5" />
+                <Heart className="w-4 h-4 xl:w-5 xl:h-5" />
                 {wishlist.length > 0 && (
                   <span className="absolute -top-1 -right-1 w-4 h-4 bg-pink-500 text-white text-[10px] rounded-full flex items-center justify-center">
                     {wishlist.length}
@@ -201,13 +201,13 @@ const Header = () => {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="relative text-gray-700 hover:text-pink-600 hover:bg-pink-50"
+                  className="relative text-gray-700 hover:text-pink-600 hover:bg-pink-50 w-8 h-8 xl:w-9 xl:h-9"
                   onClick={() => navigate('/cart')}
                   aria-label="View shopping cart"
                 >
-                  <ShoppingBag className="w-5 h-5" />
+                  <ShoppingBag className="w-4 h-4 xl:w-5 xl:h-5" />
                   {cartCount > 0 && (
-                    <span className="absolute -top-1 -right-1 w-5 h-5 bg-pink-500 text-white text-xs rounded-full flex items-center justify-center">
+                    <span className="absolute -top-1 -right-1 w-4 h-4 bg-pink-500 text-white text-[9px] rounded-full flex items-center justify-center">
                       {cartCount}
                     </span>
                   )}
@@ -215,16 +215,16 @@ const Header = () => {
               </motion.div>
 
               {/* Auth Buttons */}
-              <div className="hidden md:flex items-center gap-2">
+              <div className="hidden lg:flex items-center gap-1.5 xl:gap-2">
                 {user ? (
-                  <div className="flex items-center gap-4">
-                    <span className="text-sm font-medium text-gray-700">
-                      Welcome, <span className="text-pink-600 font-semibold">{userProfile?.full_name || user.user_metadata?.full_name || user.email?.split('@')[0]}</span>
+                  <div className="flex items-center gap-2 xl:gap-3">
+                    <span className="text-xs xl:text-sm font-medium text-gray-700 max-w-[100px] truncate">
+                      Hi, <span className="text-pink-600 font-semibold">{userProfile?.full_name?.split(' ')[0] || user.user_metadata?.full_name?.split(' ')[0] || user.email?.split('@')[0]}</span>
                     </span>
                     <Button
                       variant="outline"
                       size="sm"
-                      className="border-pink-200 text-pink-600 hover:bg-pink-50"
+                      className="border-pink-200 text-pink-600 hover:bg-pink-50 text-xs px-2 h-8"
                       onClick={async () => {
                         await supabase.auth.signOut();
                         toast.success('Logged out successfully');
@@ -238,13 +238,15 @@ const Header = () => {
                   <>
                     <Button
                       variant="ghost"
-                      className="text-gray-700 hover:text-pink-600 hover:bg-pink-50"
+                      size="sm"
+                      className="text-gray-700 hover:text-pink-600 hover:bg-pink-50 text-xs px-2 h-8"
                       onClick={() => navigate('/login')}
                     >
                       Login
                     </Button>
                     <Button
-                      className="bg-pink-500 hover:bg-pink-600 text-white"
+                      size="sm"
+                      className="bg-pink-500 hover:bg-pink-600 text-white text-xs px-3 h-8"
                       onClick={() => navigate('/signup')}
                     >
                       Sign Up
