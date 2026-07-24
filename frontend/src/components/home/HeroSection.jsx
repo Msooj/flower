@@ -30,7 +30,7 @@ const HeroSection = ({ isMobile = false }) => {
       )}
 
       <div className={`container mx-auto px-4 relative z-20 ${isMobile ? 'py-12' : 'py-16 md:py-24'}`}>
-        <div className={`grid lg:grid-cols-2 gap-8 md:gap-12 items-center ${isMobile ? 'max-w-md mx-auto' : ''}`}>
+        <div className={`grid md:grid-cols-2 gap-8 md:gap-12 items-center ${isMobile ? 'max-w-md mx-auto' : ''}`}>
           {/* Text Content */}
           <motion.div
             initial={{ opacity: 0, x: -50 }}
@@ -40,14 +40,14 @@ const HeroSection = ({ isMobile = false }) => {
           >
 
 
-            <h1 className={`${isMobile ? 'text-3xl text-center' : 'text-4xl md:text-5xl lg:text-5xl'} font-bold text-gray-900 leading-tight mb-4 md:mb-6`}>
+            <h1 className={`${isMobile ? 'text-3xl text-center' : 'text-3xl md:text-4xl lg:text-5xl'} font-bold text-gray-900 leading-tight mb-4 md:mb-6`}>
               Flower Delivery Nairobi | Florist in Nairobi | Online Flower Shop Kenya — Same-Day Delivery
             </h1>
-            <h2 className={`${isMobile ? 'text-xl text-center' : 'text-2xl md:text-3xl'} font-semibold text-pink-600 mb-4 md:mb-6`}>
+            <h2 className={`${isMobile ? 'text-xl text-center' : 'text-lg md:text-xl lg:text-2xl'} font-semibold text-pink-600 mb-4 md:mb-6`}>
               Birthday Flowers Nairobi • Anniversary Bouquets Kenya • Funeral Wreaths Nairobi • Red Roses Delivery • Same Day Flower Delivery • Wedding Flowers • Gift Combos • Money Bouquets
             </h2>
 
-            <p className={`text-base md:text-lg text-gray-600 mb-6 md:mb-8 max-w-lg leading-relaxed ${isMobile ? 'text-center' : ''}`}>
+            <p className={`text-sm md:text-base lg:text-lg text-gray-600 mb-6 md:mb-8 max-w-lg leading-relaxed ${isMobile ? 'text-center' : ''}`}>
               Flower Lifestyle is Kenya's premier same-day delivery online florist and gift shop. Find unique bouquets and gifts for him or her to make any occasion memorable. Personalize your order with custom designs and fresh daily blooms, delivered across Nairobi and countrywide.
             </p>
 
@@ -90,7 +90,7 @@ const HeroSection = ({ isMobile = false }) => {
                   <img
                     src={HERO_IMAGE}
                     alt="Fresh flower bouquet delivery in Nairobi - beautiful arrangement ready for same day delivery"
-                    className="h-[500px] w-full object-cover"
+                    className="h-[300px] md:h-[400px] lg:h-[500px] w-full object-cover"
                     fetchpriority="high"
                     loading="eager"
                   />
