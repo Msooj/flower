@@ -52,16 +52,30 @@ USING (
 
 
 -- 2. SECURE THE 'mpesa_payments' TABLE
--- Before: Any public user could update M-Pesa payment records (including receipt numbers, checkout status).
--- After: Only authenticated users with role = 'admin' can update M-Pesa records.
+-- Check if table exists, create it, and ensure RLS is enabled.
+CREATE TABLE IF NOT EXISTS public.mpesa_payments (
+    id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::TEXT,
+    order_id TEXT NOT NULL REFERENCES public.orders(id) ON DELETE CASCADE,
+    phone_number TEXT NOT NULL,
+    amount DECIMAL(10, 2) NOT NULL,
+    merchant_request_id TEXT,
+    checkout_request_id TEXT,
+    mpesa_receipt_number TEXT,
+    transaction_date TIMESTAMPTZ,
+    status TEXT NOT NULL DEFAULT 'pending',
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
 
--- Drop insecure public update policy
-DROP POLICY IF EXISTS "Allow mpesa payment updates" ON mpesa_payments;
-DROP POLICY IF EXISTS "Admins can update mpesa payments" ON mpesa_payments;
+ALTER TABLE public.mpesa_payments ENABLE ROW LEVEL SECURITY;
+
+-- Drop insecure public update policy if exists
+DROP POLICY IF EXISTS "Allow mpesa payment updates" ON public.mpesa_payments;
+DROP POLICY IF EXISTS "Admins can update mpesa payments" ON public.mpesa_payments;
 
 -- Create secure Admin-only policy for updating M-Pesa payments
 CREATE POLICY "Admins can update mpesa payments"
-ON mpesa_payments FOR UPDATE
+ON public.mpesa_payments FOR UPDATE
 TO authenticated
 USING (
     EXISTS (
@@ -70,15 +84,21 @@ USING (
     )
 );
 
+-- Ensure base public creation/insertion is enabled
+DROP POLICY IF EXISTS "Allow mpesa payment creation" ON public.mpesa_payments;
+CREATE POLICY "Allow mpesa payment creation"
+ON public.mpesa_payments FOR INSERT
+WITH CHECK (true);
+
 -- OPTIONAL: Secure SELECT access to mpesa_payments
 -- Before: Only admins could view. If regular users need to check their transaction logs, they can only select their own.
-DROP POLICY IF EXISTS "Users can view their own mpesa payments" ON mpesa_payments;
+DROP POLICY IF EXISTS "Users can view their own mpesa payments" ON public.mpesa_payments;
 CREATE POLICY "Users can view their own mpesa payments"
-ON mpesa_payments FOR SELECT
+ON public.mpesa_payments FOR SELECT
 TO authenticated
 USING (
     EXISTS (
-        SELECT 1 FROM orders
+        SELECT 1 FROM public.orders
         WHERE orders.id = mpesa_payments.order_id
         AND orders.user_id = auth.uid()
     ) OR
