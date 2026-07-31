@@ -1,7 +1,7 @@
 User-agent: *
 Allow: /
 
-# Account, checkout, and admin — not for search indexing
+# Private account, checkout, and admin pages — not for search indexing
 Disallow: /admin
 Disallow: /orders
 Disallow: /cart
@@ -9,7 +9,8 @@ Disallow: /wishlist
 Disallow: /login
 Disallow: /signup
 
-# Product UUID URLs - prevent duplicate content indexing
-Disallow: /flowers?product=
+# Block only direct product modal URLs (UUID pattern), NOT category filter pages
+# Note: /flowers?category=* pages ARE allowed and indexed via sitemap
+Disallow: /flowers?product=*
 
 Sitemap: https://www.flowerlifestyle.co.ke/sitemap.xml
