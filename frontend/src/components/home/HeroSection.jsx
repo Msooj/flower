@@ -2,7 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Truck, Award } from 'lucide-react';
 
-const HERO_IMAGE = encodeURI('/hero_roses_bouquet_nairobi.jpg');
+const HERO_IMAGE = encodeURI('/WhatsApp_Image_2025-12-21_at_6.52.59_PM__1_-removebg-preview.png');
 
 const HeroSection = ({ isMobile = false }) => {
   return (
@@ -12,7 +12,7 @@ const HeroSection = ({ isMobile = false }) => {
         <div className="absolute inset-0 z-0">
           <img
             src={HERO_IMAGE}
-            alt="Red roses bouquet with champagne and chocolates — premium gift combo from Flower Lifestyle gift shop Nairobi"
+            alt="Fresh flower bouquet delivery in Nairobi - beautiful arrangement ready for same day delivery"
             className="w-full h-full object-cover"
             fetchpriority="high"
             loading="eager"
@@ -89,7 +89,7 @@ const HeroSection = ({ isMobile = false }) => {
                 <div className="relative rounded-3xl overflow-hidden shadow-2xl">
                   <img
                     src={HERO_IMAGE}
-                    alt="Red roses bouquet with champagne and chocolates — premium gift combo from Flower Lifestyle gift shop Nairobi"
+                    alt="Fresh flower bouquet delivery in Nairobi - beautiful arrangement ready for same day delivery"
                     className="h-[300px] md:h-[400px] lg:h-[500px] w-full object-cover"
                     fetchpriority="high"
                     loading="eager"
