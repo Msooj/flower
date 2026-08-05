@@ -220,6 +220,62 @@ const Footer = () => {
         </div>
       </div>
 
+      {/* We Deliver To — neighbourhood links for SEO */}
+      <div className="border-t border-pink-200 bg-pink-50">
+        <div className="container mx-auto px-4 py-8">
+          <h3 className="text-sm font-bold text-gray-700 mb-4 uppercase tracking-widest">We Deliver Flowers To</h3>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2 mb-4">
+            {[
+              { label: 'Westlands', href: '/flower-delivery-westlands' },
+              { label: 'Kilimani', href: '/flower-delivery-kilimani' },
+              { label: 'Karen', href: '/flower-delivery-karen' },
+              { label: 'Lavington', href: '/flower-delivery-lavington' },
+              { label: 'Gigiri', href: '/flower-delivery-gigiri' },
+              { label: 'Kasarani', href: '/flower-delivery-kasarani' },
+            ].map(({ label, href }) => (
+              <Link
+                key={href}
+                to={href}
+                className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white border border-pink-200 text-sm font-medium text-gray-700 hover:text-pink-600 hover:border-pink-400 hover:shadow-sm transition-all"
+              >
+                <MapPin className="w-3.5 h-3.5 text-pink-400 flex-shrink-0" />
+                {label}
+              </Link>
+            ))}
+          </div>
+          <div className="flex flex-wrap gap-3">
+            <Link to="/same-day-flower-delivery-nairobi" className="text-xs text-pink-600 hover:underline font-medium">Same-Day Delivery Nairobi</Link>
+            <span className="text-gray-300">·</span>
+            <Link to="/money-bouquet-nairobi" className="text-xs text-pink-600 hover:underline font-medium">Money Bouquet Nairobi</Link>
+            <span className="text-gray-300">·</span>
+            <Link to="/corporate-flower-gifts-nairobi" className="text-xs text-pink-600 hover:underline font-medium">Corporate Flower Gifts</Link>
+            <span className="text-gray-300">·</span>
+            <Link to="/florist-kenya" className="text-xs text-pink-600 hover:underline font-medium">Florist in Kenya</Link>
+          </div>
+        </div>
+      </div>
+
+      {/* Google Business Profile Review CTA */}
+      <div className="bg-gradient-to-r from-pink-600 to-rose-500">
+        <div className="container mx-auto px-4 py-5">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="text-white text-center sm:text-left">
+              <p className="font-bold text-sm">⭐ Loved your flowers? Leave us a Google Review!</p>
+              <p className="text-pink-100 text-xs mt-0.5">Your review helps other Nairobi customers find us and means the world to our team.</p>
+            </div>
+            <a
+              href="https://g.page/r/CRwgWLfGXh4bEAI/review"
+              target="_blank"
+              rel="noopener noreferrer"
+              id="google-review-cta"
+              className="flex-shrink-0 inline-flex items-center gap-2 bg-white text-pink-600 font-bold text-sm px-5 py-2.5 rounded-full hover:bg-pink-50 transition-colors shadow-md"
+            >
+              ⭐ Write a Review
+            </a>
+          </div>
+        </div>
+      </div>
+
       {/* Bottom Bar */}
       <div className="border-t border-pink-200">
         <div className="container mx-auto px-4 py-6">

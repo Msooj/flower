@@ -21,10 +21,15 @@ import DeliveryPage from "./pages/DeliveryPage";
 import FaqPage from "./pages/FaqPage";
 import BlogPage from "./pages/BlogPage";
 import ArticlePage from "./pages/ArticlePage";
+import NeighborhoodPage from "./pages/NeighborhoodPage";
+import SameDayDeliveryPage from "./pages/SameDayDeliveryPage";
+import MoneyBouquetPage from "./pages/MoneyBouquetPage";
+import CorporateGiftsPage from "./pages/CorporateGiftsPage";
 import WhatsAppButton from "./components/common/WhatsAppButton";
 import GoogleAnalytics from "./components/seo/GoogleAnalytics";
 import NotFoundPage from "./pages/NotFoundPage";
 import { useAuthCallback } from "./hooks/useAuthCallback";
+import { neighborhoods } from "./data/neighborhoodData";
 
 // Wrapper component to use hooks that need Router context
 const AuthWrapper = ({ children }) => {
@@ -69,6 +74,21 @@ function App() {
                     <Route path="/orders" element={<OrdersPage />} />
                     <Route path="/about" element={<AboutPage />} />
                     <Route path="/admin" element={<AdminPage />} />
+
+                    {/* Neighborhood local SEO pages */}
+                    {neighborhoods.map((n) => (
+                      <Route
+                        key={n.slug}
+                        path={n.route}
+                        element={<NeighborhoodPage data={n} />}
+                      />
+                    ))}
+
+                    {/* Topical authority pages */}
+                    <Route path="/same-day-flower-delivery-nairobi" element={<SameDayDeliveryPage />} />
+                    <Route path="/money-bouquet-nairobi" element={<MoneyBouquetPage />} />
+                    <Route path="/corporate-flower-gifts-nairobi" element={<CorporateGiftsPage />} />
+
                     <Route path="*" element={<NotFoundPage />} />
                   </Routes>
                 </AuthWrapper>

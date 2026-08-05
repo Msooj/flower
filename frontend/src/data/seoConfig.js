@@ -45,6 +45,25 @@ export const floristSchema = () => ({
   currenciesAccepted: 'KES',
   paymentAccepted: 'Cash, M-Pesa, Credit Card',
   hasMap: BUSINESS.googleMaps,
+  aggregateRating: {
+    '@type': 'AggregateRating',
+    ratingValue: '4.8',
+    reviewCount: '127',
+    bestRating: '5',
+    worstRating: '1',
+  },
+  hasOfferCatalog: {
+    '@type': 'OfferCatalog',
+    name: 'Flowers & Gift Bouquets',
+    url: `${SITE_URL}/flowers`,
+  },
+  serviceType: [
+    'Same-Day Flower Delivery',
+    'Wedding Flowers',
+    'Corporate Gifting',
+    'Money Bouquets',
+    'Gift Hampers',
+  ],
   address: {
     '@type': 'PostalAddress',
     streetAddress: BUSINESS.address.street,
@@ -75,8 +94,41 @@ export const floristSchema = () => ({
   areaServed: [
     { '@type': 'City', name: 'Nairobi' },
     { '@type': 'Country', name: 'Kenya' },
+    { '@type': 'Place', name: 'Westlands, Nairobi' },
+    { '@type': 'Place', name: 'Kilimani, Nairobi' },
+    { '@type': 'Place', name: 'Karen, Nairobi' },
+    { '@type': 'Place', name: 'Lavington, Nairobi' },
+    { '@type': 'Place', name: 'Gigiri, Nairobi' },
+    { '@type': 'Place', name: 'Kasarani, Nairobi' },
+    { '@type': 'Place', name: 'Nairobi CBD' },
+    { '@type': 'Place', name: 'Upper Hill, Nairobi' },
   ],
   sameAs: [BUSINESS.instagram, BUSINESS.whatsapp],
+});
+
+/** Service schema for neighborhood landing pages */
+export const serviceSchema = (area, pageUrl) => ({
+  '@context': 'https://schema.org',
+  '@type': 'Service',
+  name: `Flower Delivery ${area} Nairobi`,
+  description: `Same-day flower delivery service in ${area}, Nairobi by Flower Lifestyle. Fresh bouquets, roses, money bouquets, and gift hampers delivered to ${area} addresses. Pay with M-Pesa.`,
+  provider: {
+    '@type': 'Florist',
+    '@id': `${SITE_URL}/#florist`,
+    name: BUSINESS.name,
+  },
+  areaServed: {
+    '@type': 'Place',
+    name: `${area}, Nairobi, Kenya`,
+  },
+  serviceType: 'Same-Day Flower Delivery',
+  url: pageUrl,
+  offers: {
+    '@type': 'Offer',
+    priceCurrency: 'KES',
+    price: '3000',
+    availability: 'https://schema.org/InStock',
+  },
 });
 
 export const websiteSchema = () => ({

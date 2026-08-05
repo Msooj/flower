@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, User, ShoppingBag, Menu, X, Heart, Phone } from 'lucide-react';
+import { Search, User, ShoppingBag, Menu, X, Heart, Phone, MapPin, ChevronDown } from 'lucide-react';
 import { Button } from '../ui/button';
 import { toast } from 'sonner';
 import { navLinks, contactInfo } from '../../data/mock';
@@ -57,9 +57,32 @@ const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isDeliveryOpen, setIsDeliveryOpen] = useState(false);
+  const [isMobileDeliveryOpen, setIsMobileDeliveryOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const deliveryRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
+
+  const DELIVERY_AREAS = [
+    { label: 'Westlands', href: '/flower-delivery-westlands' },
+    { label: 'Kilimani', href: '/flower-delivery-kilimani' },
+    { label: 'Karen', href: '/flower-delivery-karen' },
+    { label: 'Lavington', href: '/flower-delivery-lavington' },
+    { label: 'Gigiri', href: '/flower-delivery-gigiri' },
+    { label: 'Kasarani', href: '/flower-delivery-kasarani' },
+  ];
+
+  // Close delivery dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (deliveryRef.current && !deliveryRef.current.contains(e.target)) {
+        setIsDeliveryOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -145,6 +168,62 @@ const Header = () => {
                   My Orders
                 </Link>
               )}
+
+              {/* Delivery Areas Dropdown */}
+              <div className="relative" ref={deliveryRef}>
+                <button
+                  id="delivery-areas-menu"
+                  onClick={() => setIsDeliveryOpen(!isDeliveryOpen)}
+                  className={`flex items-center gap-1 text-xs xl:text-sm font-semibold transition-colors hover:text-pink-600 ${
+                    DELIVERY_AREAS.some((a) => location.pathname === a.href) ? 'text-pink-600' : 'text-gray-700'
+                  }`}
+                  aria-expanded={isDeliveryOpen}
+                  aria-haspopup="true"
+                >
+                  <MapPin className="w-3.5 h-3.5" />
+                  Delivery Areas
+                  <ChevronDown className={`w-3.5 h-3.5 transition-transform ${isDeliveryOpen ? 'rotate-180' : ''}`} />
+                </button>
+                <AnimatePresence>
+                  {isDeliveryOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 8, scale: 0.97 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 8, scale: 0.97 }}
+                      transition={{ duration: 0.15 }}
+                      className="absolute top-full left-0 mt-2 w-52 bg-white rounded-2xl shadow-xl border border-pink-100 py-2 z-50"
+                      role="menu"
+                    >
+                      <p className="px-4 py-1.5 text-[10px] font-semibold text-gray-400 uppercase tracking-widest">Nairobi Delivery</p>
+                      {DELIVERY_AREAS.map((area) => (
+                        <Link
+                          key={area.href}
+                          to={area.href}
+                          onClick={() => setIsDeliveryOpen(false)}
+                          className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium transition-colors hover:bg-pink-50 hover:text-pink-600 ${
+                            location.pathname === area.href ? 'text-pink-600 bg-pink-50' : 'text-gray-700'
+                          }`}
+                          role="menuitem"
+                        >
+                          <MapPin className="w-3.5 h-3.5 text-pink-400" />
+                          {area.label}
+                        </Link>
+                      ))}
+                      <div className="border-t border-pink-100 mt-1 pt-1">
+                        <Link
+                          to="/florist-kenya"
+                          onClick={() => setIsDeliveryOpen(false)}
+                          className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-pink-600 hover:bg-pink-50 transition-colors"
+                          role="menuitem"
+                        >
+                          All Kenya Delivery →
+                        </Link>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
               <Link
                 to="/blog"
                 className={`relative text-xs xl:text-sm font-semibold transition-colors hover:text-pink-600 ${location.pathname.startsWith('/blog') ? 'text-pink-600' : 'text-gray-700'}`}
@@ -336,6 +415,51 @@ const Header = () => {
                       {link.name}
                     </Link>
                   ))}
+                  {/* Mobile Delivery Areas */}
+                  <div>
+                    <button
+                      onClick={() => setIsMobileDeliveryOpen(!isMobileDeliveryOpen)}
+                      className="w-full flex items-center justify-between px-4 py-3 rounded-lg font-medium text-gray-700 hover:bg-pink-50 hover:text-pink-600 transition-colors"
+                    >
+                      <span className="flex items-center gap-2">
+                        <MapPin className="w-4 h-4 text-pink-400" />
+                        Delivery Areas
+                      </span>
+                      <ChevronDown className={`w-4 h-4 transition-transform ${isMobileDeliveryOpen ? 'rotate-180' : ''}`} />
+                    </button>
+                    <AnimatePresence>
+                      {isMobileDeliveryOpen && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: 'auto' }}
+                          exit={{ opacity: 0, height: 0 }}
+                          className="pl-4 flex flex-col gap-1 mt-1"
+                        >
+                          {DELIVERY_AREAS.map((area) => (
+                            <Link
+                              key={area.href}
+                              to={area.href}
+                              className={`px-4 py-2.5 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 ${
+                                location.pathname === area.href
+                                  ? 'bg-pink-50 text-pink-600'
+                                  : 'text-gray-600 hover:bg-pink-50 hover:text-pink-600'
+                              }`}
+                            >
+                              <MapPin className="w-3.5 h-3.5 text-pink-300" />
+                              {area.label}
+                            </Link>
+                          ))}
+                          <Link
+                            to="/florist-kenya"
+                            className="px-4 py-2.5 rounded-lg text-sm font-semibold text-pink-600 hover:bg-pink-50 transition-colors"
+                          >
+                            All Kenya →
+                          </Link>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+
                   <Link
                     to="/blog"
                     className={`px-4 py-3 rounded-lg font-medium transition-colors ${location.pathname.startsWith('/blog')
