@@ -238,10 +238,14 @@ const FlowersPage = ({ isMobile = false }) => {
     return currentCategoryContent.description;
   }, [productParam, selectedProduct, currentCategoryContent.description]);
 
-  // Dynamic canonical URL to prevent "Duplicate without user-selected canonical"
+  // Dynamic canonical URL — product modal URLs MUST point canonical to /flowers
+  // (not to themselves) to fix "Duplicate without user-selected canonical" in GSC.
+  // Google seeing ?product=UUID as its own canonical caused it to treat each modal
+  // URL as a standalone page — identical to /flowers — triggering the duplicate flag.
   const pageCanonicalUrl = useMemo(() => {
+    // ?product= is a UI-only modal overlay — the real page is always /flowers
     if (productParam) {
-      return `${SITE_URL}/flowers?product=${productParam}`;
+      return `${SITE_URL}/flowers`;
     }
     return `${SITE_URL}/flowers${activeCategory !== 'all' ? `?category=${activeCategory}` : ''}`;
   }, [productParam, activeCategory]);
@@ -260,12 +264,12 @@ const FlowersPage = ({ isMobile = false }) => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-pink-50 to-white">
-      <PageMetaTags 
+      <PageMetaTags
         title={pageMetaTitle}
         description={pageMetaDescription}
         keywords={currentCategoryContent.keywords}
         canonicalUrl={pageCanonicalUrl}
-        noindex={false}
+        noindex={!!productParam}
       />
       <StructuredData data={structuredDataBlocks} />
       <Header />
