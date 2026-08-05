@@ -1,16 +1,34 @@
 User-agent: *
 Allow: /
 
-# Private account, checkout, and admin pages — not for search indexing
+# ── Priority SEO pages ──────────────────────────────────────────────
+# Explicitly allow all neighbourhood and topical landing pages
+Allow: /flower-delivery-westlands
+Allow: /flower-delivery-kilimani
+Allow: /flower-delivery-karen
+Allow: /flower-delivery-lavington
+Allow: /flower-delivery-gigiri
+Allow: /flower-delivery-kasarani
+Allow: /same-day-flower-delivery-nairobi
+Allow: /money-bouquet-nairobi
+Allow: /corporate-flower-gifts-nairobi
+Allow: /florist-kenya
+Allow: /flowers
+Allow: /blog
+
+# ── Block modal/overlay product URLs ────────────────────────────────
+# /flowers?product=UUID are NOT standalone pages — they open a modal
+# on the /flowers page. Indexing them would create duplicate content
+# and waste crawl budget. Category filter URLs (?category=*) remain
+# fully allowed and are listed in the sitemap.
+Disallow: /flowers?product=
+
+# ── Block private account & admin pages ─────────────────────────────
 Disallow: /admin
 Disallow: /orders
 Disallow: /cart
 Disallow: /wishlist
 Disallow: /login
 Disallow: /signup
-
-# Block only direct product modal URLs (UUID pattern), NOT category filter pages
-# Note: /flowers?category=* pages ARE allowed and indexed via sitemap
-Disallow: /flowers?product=*
 
 Sitemap: https://www.flowerlifestyle.co.ke/sitemap.xml
