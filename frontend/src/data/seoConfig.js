@@ -26,6 +26,9 @@ export const BUSINESS = {
   instagram: 'https://www.instagram.com/flowerlifestyle_giftshop/',
   whatsapp: 'https://wa.me/254742370307',
   googleMaps: 'https://www.google.com/maps/search/flowerlifstyle/@-1.2777859,36.815201,16z/data=!3m1!4b1?entry=ttu&g_ep=EgoyMDI2MDcxNC4wIKXMDSoASAFQAw%3D%3D',
+  // Direct "Write a Review" link — opens the Google review dialog for the GBP listing.
+  // To get your exact personal link: Google Business Profile dashboard → "Ask for reviews" → copy URL.
+  reviewUrl: 'https://www.google.com/maps/search/Flower+Lifestyle+Giftshop+Nairobi/@-1.2777859,36.815201,16z',
 };
 
 export const KENYA_KEYWORDS =

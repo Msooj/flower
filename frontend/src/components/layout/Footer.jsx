@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Phone, Mail, MapPin, Clock, Instagram, MessageCircle } from 'lucide-react';
 import { Button } from '../ui/button';
 import { contactInfo } from '../../data/mock';
+import { BUSINESS } from '../../data/seoConfig';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -264,7 +265,7 @@ const Footer = () => {
               <p className="text-pink-100 text-xs mt-0.5">Your review helps other Nairobi customers find us and means the world to our team.</p>
             </div>
             <a
-              href="https://g.page/r/CRwgWLfGXh4bEAI/review"
+              href={BUSINESS.reviewUrl}
               target="_blank"
               rel="noopener noreferrer"
               id="google-review-cta"
