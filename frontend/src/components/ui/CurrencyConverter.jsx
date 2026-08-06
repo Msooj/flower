@@ -29,7 +29,7 @@ const CURRENCY_NAMES = {
 
 const CurrencyContext = createContext({
   currency: 'KES',
-  setCurrency: () => {},
+  setCurrency: () => { },
   convertPrice: (price) => price,
   formatPrice: (price) => `KSh ${price.toLocaleString()}`
 });
@@ -47,11 +47,11 @@ export const CurrencyProvider = ({ children }) => {
   const formatPrice = (priceInKES) => {
     const convertedPrice = convertPrice(priceInKES);
     const symbol = CURRENCY_SYMBOLS[currency];
-    
+
     if (currency === 'JPY') {
       return `${symbol}${Math.round(convertedPrice).toLocaleString()}`;
     }
-    
+
     return `${symbol}${convertedPrice.toFixed(2).toLocaleString()}`;
   };
 
@@ -74,7 +74,7 @@ export const CurrencySelector = () => {
 
   return (
     <Select value={currency} onValueChange={setCurrency}>
-      <SelectTrigger className="w-[140px]" aria-label="Select currency">
+      <SelectTrigger className="w-[100px] sm:w-[140px]" aria-label="Select currency">
         <SelectValue placeholder="Select currency" />
       </SelectTrigger>
       <SelectContent>

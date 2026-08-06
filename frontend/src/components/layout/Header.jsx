@@ -99,10 +99,10 @@ const Header = () => {
   return (
     <>
       {/* Top Bar */}
-      <div className="bg-pink-600 text-white py-2 px-4 text-center text-sm">
-        <div className="container mx-auto flex items-center justify-center gap-2">
-          <Phone className="w-4 h-4" />
-          <span>
+      <div className="bg-pink-600 text-white py-2 px-4 text-center text-xs sm:text-sm overflow-hidden">
+        <div className="container mx-auto flex items-center justify-center gap-2 min-w-0">
+          <Phone className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
+          <span className="truncate">
             We deliver country wide! | Call us:{' '}
             <a href="tel:+254742370307" className="font-semibold hover:underline">
               {contactInfo.phone}
@@ -113,12 +113,12 @@ const Header = () => {
 
       {/* Main Header */}
       <header
-        className={`sticky top-0 z-50 transition-all duration-300 ${isScrolled
+        className={`sticky top-0 z-50 transition-all duration-300 w-full overflow-hidden ${isScrolled
           ? 'glass-effect shadow-lg border-b border-pink-100'
           : 'bg-white'
           }`}
       >
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-3 sm:px-4 max-w-full">
           <div className="flex items-center justify-between h-20">
             {/* Logo */}
             <Link to="/" className="flex-shrink-0">
@@ -174,9 +174,8 @@ const Header = () => {
                 <button
                   id="delivery-areas-menu"
                   onClick={() => setIsDeliveryOpen(!isDeliveryOpen)}
-                  className={`flex items-center gap-1 text-xs xl:text-sm font-semibold transition-colors hover:text-pink-600 ${
-                    DELIVERY_AREAS.some((a) => location.pathname === a.href) ? 'text-pink-600' : 'text-gray-700'
-                  }`}
+                  className={`flex items-center gap-1 text-xs xl:text-sm font-semibold transition-colors hover:text-pink-600 ${DELIVERY_AREAS.some((a) => location.pathname === a.href) ? 'text-pink-600' : 'text-gray-700'
+                    }`}
                   aria-expanded={isDeliveryOpen}
                   aria-haspopup="true"
                 >
@@ -200,9 +199,8 @@ const Header = () => {
                           key={area.href}
                           to={area.href}
                           onClick={() => setIsDeliveryOpen(false)}
-                          className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium transition-colors hover:bg-pink-50 hover:text-pink-600 ${
-                            location.pathname === area.href ? 'text-pink-600 bg-pink-50' : 'text-gray-700'
-                          }`}
+                          className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium transition-colors hover:bg-pink-50 hover:text-pink-600 ${location.pathname === area.href ? 'text-pink-600 bg-pink-50' : 'text-gray-700'
+                            }`}
                           role="menuitem"
                         >
                           <MapPin className="w-3.5 h-3.5 text-pink-400" />
@@ -240,9 +238,11 @@ const Header = () => {
 
             {/* Right Actions */}
             <div className="flex items-center gap-1 xl:gap-3 flex-shrink-0">
-              {/* Currency Selector */}
-              <CurrencySelector />
-              
+              {/* Currency Selector - hidden on mobile, shown in mobile menu */}
+              <div className="hidden sm:block">
+                <CurrencySelector />
+              </div>
+
               {/* Search */}
               <Button
                 variant="ghost"
@@ -402,7 +402,7 @@ const Header = () => {
                   <div className="px-4 py-2">
                     <CurrencySelector />
                   </div>
-                  
+
                   {navLinks.map((link) => (
                     <Link
                       key={link.name}
@@ -439,11 +439,10 @@ const Header = () => {
                             <Link
                               key={area.href}
                               to={area.href}
-                              className={`px-4 py-2.5 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 ${
-                                location.pathname === area.href
+                              className={`px-4 py-2.5 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 ${location.pathname === area.href
                                   ? 'bg-pink-50 text-pink-600'
                                   : 'text-gray-600 hover:bg-pink-50 hover:text-pink-600'
-                              }`}
+                                }`}
                             >
                               <MapPin className="w-3.5 h-3.5 text-pink-300" />
                               {area.label}

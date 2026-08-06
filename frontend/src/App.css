@@ -28,6 +28,7 @@
     from {
         transform: rotate(0deg);
     }
+
     to {
         transform: rotate(360deg);
     }
@@ -36,4 +37,7 @@
 /* Remove text center alignment for natural reading flow */
 .App {
     text-align: left;
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100vw;
 }

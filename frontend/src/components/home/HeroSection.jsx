@@ -6,7 +6,7 @@ const HERO_IMAGE = encodeURI('/WhatsApp_Image_2025-12-21_at_6.52.59_PM__1_-remov
 
 const HeroSection = ({ isMobile = false }) => {
   return (
-    <section className={`relative overflow-hidden ${isMobile ? '' : 'bg-gradient-to-br from-pink-50 via-white to-pink-100'}`}>
+    <section className={`relative overflow-hidden w-full ${isMobile ? '' : 'bg-gradient-to-br from-pink-50 via-white to-pink-100'}`}>
       {/* Background Image for Mobile */}
       {isMobile && (
         <div className="absolute inset-0 z-0">
@@ -29,8 +29,8 @@ const HeroSection = ({ isMobile = false }) => {
         </>
       )}
 
-      <div className={`container mx-auto px-4 relative z-20 ${isMobile ? 'py-12' : 'py-16 md:py-24'}`}>
-        <div className={`grid md:grid-cols-2 gap-8 md:gap-12 items-center ${isMobile ? 'max-w-md mx-auto' : ''}`}>
+      <div className={`container mx-auto px-4 relative z-20 ${isMobile ? 'py-10' : 'py-16 md:py-24'}`}>
+        <div className={`${isMobile ? 'flex flex-col items-center' : 'grid md:grid-cols-2 gap-8 md:gap-12 items-center'}`}>
           {/* Text Content */}
           <motion.div
             initial={{ opacity: 0, x: -50 }}
@@ -40,10 +40,10 @@ const HeroSection = ({ isMobile = false }) => {
           >
 
 
-            <h1 className={`${isMobile ? 'text-3xl text-center' : 'text-3xl md:text-4xl lg:text-5xl'} font-bold text-gray-900 leading-tight mb-4 md:mb-6`}>
+            <h1 className={`${isMobile ? 'text-2xl sm:text-3xl text-center' : 'text-3xl md:text-4xl lg:text-5xl'} font-bold text-gray-900 leading-tight mb-3 md:mb-6`}>
               Nairobi's Favourite Florist &amp; Gift Shop — Fresh Flowers Delivered to Your Door
             </h1>
-            <h2 className={`${isMobile ? 'text-xl text-center' : 'text-lg md:text-xl lg:text-2xl'} font-semibold text-pink-600 mb-4 md:mb-6`}>
+            <h2 className={`${isMobile ? 'text-base sm:text-lg text-center' : 'text-lg md:text-xl lg:text-2xl'} font-semibold text-pink-600 mb-3 md:mb-6`}>
               Birthdays • Anniversaries • Weddings • Corporate Gifts • Romantic Occasions — Same-Day Flower Delivery Across Nairobi &amp; Near You
             </h2>
 

@@ -80,7 +80,7 @@ const FlowersPage = ({ isMobile = false }) => {
     // Filter by search (optimized)
     if (searchQuery) {
       const searchLower = searchQuery.toLowerCase();
-      products = products.filter(p => 
+      products = products.filter(p =>
         p.name.toLowerCase().includes(searchLower)
       );
     }
@@ -263,7 +263,7 @@ const FlowersPage = ({ isMobile = false }) => {
   }, [filteredProducts, activeCategory, pageCanonicalUrl, currentCategoryContent.h1]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-pink-50 to-white">
+    <div className="min-h-screen bg-gradient-to-b from-pink-50 to-white overflow-x-hidden">
       <PageMetaTags
         title={pageMetaTitle}
         description={pageMetaDescription}
@@ -488,9 +488,9 @@ const FlowersPage = ({ isMobile = false }) => {
                             <Heart className={`w-4 h-4 ${isInWishlist(product.id) ? 'fill-current' : ''}`} />
                           </Button>
 
-                          <Button 
-                            size="icon" 
-                            className="bg-pink-500 text-white hover:bg-pink-600 rounded-full shadow-lg h-9 w-9" 
+                          <Button
+                            size="icon"
+                            className="bg-pink-500 text-white hover:bg-pink-600 rounded-full shadow-lg h-9 w-9"
                             onClick={() => {
                               addToCart(product);
                             }}
@@ -506,14 +506,14 @@ const FlowersPage = ({ isMobile = false }) => {
                         <h3 className="font-semibold text-gray-800 mb-2 group-hover:text-pink-600 transition-colors line-clamp-1">
                           {product.name}
                         </h3>
-                        
+
                         {/* Product Description */}
                         <p className="text-sm text-gray-600 mb-3 line-clamp-2">
-                          {product.description || 
+                          {product.description ||
                             `Beautiful ${product.name} perfect for any occasion. Handcrafted with fresh flowers.`
                           }
                         </p>
-                        
+
                         <div className="flex items-center gap-2 mb-3">
                           <span className="text-lg font-bold text-pink-600">
                             {formatPrice(product.price)}
@@ -524,7 +524,7 @@ const FlowersPage = ({ isMobile = false }) => {
                             </span>
                           )}
                         </div>
-                        
+
                         {/* View Details Button */}
                         <Button
                           variant="outline"

@@ -124,7 +124,7 @@ const CartPage = () => {
                 // Update order with phone number
                 const { error: updateError } = await supabase
                     .from('orders')
-                    .update({ 
+                    .update({
                         payment_phone_number: mpesaNumber,
                         payment_status: 'pending'
                     })
@@ -161,7 +161,7 @@ const CartPage = () => {
 
     if (cart.length === 0) {
         return (
-            <div className="min-h-screen flex flex-col bg-gray-50">
+            <div className="min-h-screen flex flex-col bg-gray-50 overflow-x-hidden">
                 <Header />
                 <main className="flex-1 flex flex-col items-center justify-center p-4">
                     <div className="text-center">
@@ -182,7 +182,7 @@ const CartPage = () => {
 
     if (showCheckoutForm) {
         return (
-            <div className="min-h-screen flex flex-col bg-gray-50">
+            <div className="min-h-screen flex flex-col bg-gray-50 overflow-x-hidden">
                 <Header />
                 <main className="flex-1 container mx-auto px-4 py-8">
                     <div className="max-w-2xl mx-auto">
@@ -415,8 +415,8 @@ const CartPage = () => {
     }
 
     return (
-        <div className="min-h-screen flex flex-col bg-gray-50">
-            <PageMetaTags 
+        <div className="min-h-screen flex flex-col bg-gray-50 overflow-x-hidden">
+            <PageMetaTags
                 title="Shopping Cart"
                 description="Your flower shopping cart"
                 canonicalUrl="https://www.flowerlifestyle.co.ke/cart"
@@ -425,7 +425,7 @@ const CartPage = () => {
             <Header />
             <main className="flex-1 container mx-auto px-4 py-8">
                 <div className="flex justify-between items-center mb-8">
-                    <h1 className="text-3xl font-bold text-gray-900">Shopping Cart</h1>
+                    <h1 className="text-xl sm:text-3xl font-bold text-gray-900">Shopping Cart</h1>
                     <CurrencySelector />
                 </div>
 

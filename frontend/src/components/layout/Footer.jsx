@@ -10,7 +10,7 @@ const Footer = () => {
 
   return (
     <footer className="bg-gradient-to-b from-pink-50 to-pink-100">
-        <div className="border-b border-pink-200 bg-white">
+      <div className="border-b border-pink-200 bg-white">
         <div className="container mx-auto px-4 py-8">
           <div className="text-center mb-6">
             <h3 className="text-xl md:text-2xl font-bold text-gray-800 flex items-center justify-center gap-2">
@@ -278,11 +278,11 @@ const Footer = () => {
       </div>
 
       {/* Bottom Bar */}
-      <div className="border-t border-pink-200">
+      <div className="border-t border-pink-200 overflow-hidden">
         <div className="container mx-auto px-4 py-6">
           {/* NAP - Local SEO */}
           <div className="text-center mb-4">
-            <div className="text-sm text-gray-600 font-medium">
+            <div className="text-xs sm:text-sm text-gray-600 font-medium leading-relaxed">
               <strong>Flower Lifestyle</strong> | City Market, Nairobi, Kenya |{' '}
               Phone:{' '}
               <a href="tel:+254742370307" className="hover:text-pink-600 transition-colors">0742 370 307</a>{' '}
@@ -290,15 +290,15 @@ const Footer = () => {
               <a href="mailto:flowerlifestyle@gmail.com" className="hover:text-pink-600 transition-colors">flowerlifestyle@gmail.com</a>
             </div>
           </div>
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <p className="text-gray-600 text-sm text-center md:text-left">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <p className="text-gray-600 text-sm text-center sm:text-left">
               © {currentYear} Flower Lifestyle. All rights reserved. Made with love in Kenya.
             </p>
-            <div className="flex items-center gap-4">
-              <img src="https://cdn.jsdelivr.net/gh/lipis/flag-icons@6.6.6/flags/4x3/ke.svg" alt="Kenya" className="h-5 object-contain" />
-              <img src="/visa.png" alt="Visa" className="h-12 object-contain" />
-              <img src="/Mastercard--Streamline-Svg-Logos.png" alt="Mastercard" className="h-12 object-contain" />
-              <div className="bg-green-500 text-white px-3 py-1.5 rounded text-xs font-bold">M-PESA</div>
+            <div className="flex items-center flex-wrap justify-center gap-3">
+              <img src="https://cdn.jsdelivr.net/gh/lipis/flag-icons@6.6.6/flags/4x3/ke.svg" alt="Kenya" className="h-4 sm:h-5 object-contain" />
+              <img src="/visa.png" alt="Visa" className="h-8 sm:h-12 object-contain" />
+              <img src="/Mastercard--Streamline-Svg-Logos.png" alt="Mastercard" className="h-8 sm:h-12 object-contain" />
+              <div className="bg-green-500 text-white px-2 sm:px-3 py-1 sm:py-1.5 rounded text-xs font-bold">M-PESA</div>
             </div>
           </div>
         </div>
