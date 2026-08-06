@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Search, Filter, SlidersHorizontal, Grid3X3, LayoutGrid, Heart, ShoppingBag, Star, Eye, ChevronDown, X } from 'lucide-react';
 import Header from '../components/layout/Header';
@@ -24,6 +24,8 @@ const FlowersPage = ({ isMobile = false }) => {
   const { addToCart } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
   const { formatPrice } = useCurrency();
+  const navigate = useNavigate();
+  const { category: categoryParam } = useParams(); // from /flowers/:category
   const [searchParams, setSearchParams] = useSearchParams();
   const initialSearch = searchParams.get('search') || '';
   const productParam = searchParams.get('product');
@@ -37,6 +39,21 @@ const FlowersPage = ({ isMobile = false }) => {
     limit: 50,
     fallbackToMock: true,
   });
+
+  // --- Clean URL priority: route param > query param (backward compat) ---
+  // If user hits /flowers?category=birthday, redirect to /flowers/birthday
+  const legacyQueryCategory = searchParams.get('category');
+  useEffect(() => {
+    if (legacyQueryCategory && !categoryParam) {
+      const newParams = new URLSearchParams(searchParams);
+      newParams.delete('category');
+      const qs = newParams.toString();
+      navigate(`/flowers/${legacyQueryCategory}${qs ? `?${qs}` : ''}`, { replace: true });
+    }
+  }, [legacyQueryCategory, categoryParam]);
+
+  // Determine active category: prefer route param, fall back to 'all'
+  const activeCategory = categoryParam || 'all';
 
   // Keep searchQuery in sync with ?search= in URL
   useEffect(() => {
@@ -54,9 +71,6 @@ const FlowersPage = ({ isMobile = false }) => {
       }
     }
   }, [productParam, dbProducts]);
-
-  // Get active category from URL or default to 'all'
-  const activeCategory = searchParams.get('category') || 'all';
 
   // State for mobile category dropdown
   const [selectedCategory, setSelectedCategory] = useState(activeCategory);
@@ -142,13 +156,14 @@ const FlowersPage = ({ isMobile = false }) => {
     }
   };
 
+  // Navigate to clean /flowers/:category URL
   const handleCategoryChange = (category) => {
+    const qs = searchParams.toString().replace(/category=[^&]*/g, '').replace(/^&|&$/g, '');
     if (category === 'all') {
-      searchParams.delete('category');
+      navigate(`/flowers${qs ? `?${qs}` : ''}`);
     } else {
-      searchParams.set('category', category);
+      navigate(`/flowers/${category}${qs ? `?${qs}` : ''}`);
     }
-    setSearchParams(searchParams);
   };
 
   const getCategoryContent = (categorySlug) => {
@@ -157,66 +172,66 @@ const FlowersPage = ({ isMobile = false }) => {
         title: "Girlfriend's Day Flowers Nairobi | Romantic Bouquets & Gifts",
         description: "Surprise your girlfriend with fresh flowers on Girlfriend's Day in Nairobi. Red roses, premium bouquets, and special gifts. Same-day delivery available.",
         keywords: "girlfriends day flowers Nairobi, flowers for girlfriend, romantic bouquets Nairobi, same day delivery flowers",
-        content: "Celebrate Girlfriend's Day with our special flower arrangements. Handcrafted bouquets, premium roses, and thoughtful gifts to make her feel cherished.",
-        h1: "Girlfriend's Day Flowers"
+        content: "Celebrate Girlfriend's Day with something truly special from Flower Lifestyle. Our Girlfriend's Day collection features handcrafted bouquets of premium red roses, pink peonies, and mixed seasonal blooms — all freshly sourced and beautifully arranged. Whether you want a classic dozen roses, an elegant box arrangement, or a luxurious flower and gift combo, we have the perfect option to make her feel cherished. Every bouquet is prepared the same day and delivered across Nairobi, including Westlands, Kilimani, Karen, Lavington, and the CBD. Add a personalised message card to make it even more meaningful. Order before 2 PM for same-day delivery in Nairobi.",
+        h1: "Girlfriend's Day Flowers in Nairobi"
       },
       'birthday': {
-        title: 'Birthday Flowers Nairobi | Same Day Delivery',
-        description: 'Celebrate birthdays with beautiful flower bouquets delivered same day in Nairobi. Fresh birthday flowers, cake combos, and special arrangements.',
-        keywords: 'birthday flowers Nairobi, birthday flower delivery, birthday bouquets Kenya, same day birthday flowers',
-        content: 'Make their birthday unforgettable with our stunning birthday flower collection. From vibrant roses to elegant lilies, each bouquet is hand-crafted with fresh blooms and delivered with care throughout Nairobi.',
+        title: 'Birthday Flowers Nairobi | Same Day Birthday Bouquet Delivery',
+        description: 'Celebrate birthdays with beautiful flower bouquets delivered same day in Nairobi. Fresh birthday flowers, cake combos, and special arrangements from KES 2,500.',
+        keywords: 'birthday flowers Nairobi, birthday flower delivery, birthday bouquets Kenya, same day birthday flowers, birthday roses Nairobi',
+        content: "Make their birthday truly unforgettable with our stunning birthday flower collection. From vibrant sunflower arrangements to elegant mixed roses and lilies, every bouquet is hand-crafted with the freshest blooms sourced daily at City Market, Nairobi CBD. We offer a wide range of birthday flowers — from single-stem roses to grand floral towers — as well as flower and cake combos that turn a birthday into a full celebration. Our expert florists add thoughtful personal touches to every order, including custom message cards and premium wrapping. We deliver same-day to all major Nairobi neighbourhoods including Westlands, Kilimani, Karen, Lavington, Kasarani, and Gigiri. Prices start from KES 2,500. Order before 2 PM for same-day delivery.",
         h1: 'Birthday Flowers in Nairobi'
       },
       'romance': {
-        title: 'Romantic Flowers Nairobi | Anniversary & Love Bouquets',
-        description: 'Express your love with romantic flowers in Nairobi. Red roses, romantic bouquets, anniversary flowers with same-day delivery.',
-        keywords: 'romantic flowers Nairobi, red roses delivery, anniversary flowers, romantic bouquets Kenya',
-        content: 'Ignite romance with our collection of passionate red roses and romantic arrangements. Perfect for anniversaries, date nights, or when you want to say "I love you" with flowers.',
-        h1: 'Romantic Flowers & Roses'
+        title: 'Romantic Flowers Nairobi | Red Roses & Love Bouquets | Same Day',
+        description: 'Express your love with romantic flowers in Nairobi. Red roses, romantic bouquets, and anniversary flowers with same-day delivery across Nairobi from KES 2,500.',
+        keywords: 'romantic flowers Nairobi, red roses delivery Nairobi, romantic bouquets Kenya, love flowers Nairobi, Valentine flowers Nairobi',
+        content: "Ignite romance with our exquisite collection of love flowers and passionate red rose arrangements. Whether you're celebrating Valentine's Day, a anniversary, a first date, or simply want to say 'I love you', our romantic bouquets are designed to leave a lasting impression. Choose from classic dozen red rose bouquets, premium mixed arrangements with lilies and peonies, or our signature luxury romance packages complete with chocolates and a scented candle. All arrangements are handcrafted by our skilled Nairobi florists using the freshest flowers available. We offer same-day delivery across Nairobi to Westlands, Kilimani, Karen, Lavington, Gigiri, Kasarani, and the CBD. Order by 2 PM for same-day delivery. Prices start from KES 2,500.",
+        h1: 'Romantic Flowers & Red Roses in Nairobi'
       },
       'roses': {
-        title: 'Roses Delivery Nairobi | Red Roses & Premium Rose Bouquets',
-        description: 'Premium roses delivery in Nairobi. Red roses, pink roses, white roses with same-day delivery. Fresh rose bouquets for every occasion.',
-        keywords: 'roses delivery Nairobi, red roses Nairobi, rose bouquets Kenya, fresh roses delivery',
-        content: 'Experience the timeless elegance of roses. Our premium rose collection features the freshest blooms in stunning arrangements, from classic red roses to delicate pink and white varieties.',
-        h1: 'Premium Roses Collection'
+        title: 'Roses Delivery Nairobi | Red, Pink & White Roses | Same Day',
+        description: 'Premium rose bouquet delivery in Nairobi. Red roses, pink roses, white roses with same-day delivery. Fresh rose arrangements from KES 2,500. Order online now.',
+        keywords: 'roses delivery Nairobi, red roses Nairobi, rose bouquets Kenya, fresh roses delivery, buy roses Nairobi, pink roses Kenya',
+        content: "Experience the timeless elegance of our premium rose collection. We stock a wide variety of fresh roses daily — classic red roses, romantic pink roses, pure white roses, and colourful mixed varieties — all sourced fresh every morning to guarantee lasting beauty. Our rose bouquets range from a simple single-stem presentation to grand 50-rose arrangements, suitable for every occasion and budget. Roses are Kenya's most popular flower gift, and Flower Lifestyle is Nairobi's trusted rose delivery specialist. Each bouquet is hand-tied by our expert florists, wrapped in premium paper, and delivered in protective packaging to ensure the blooms arrive in perfect condition. We deliver same-day across Nairobi including Westlands, Kilimani, Karen, Lavington, Gigiri, Kasarani, and Upper Hill. Prices start from KES 2,500.",
+        h1: 'Premium Roses Delivery in Nairobi'
       },
       'anniversary': {
         title: 'Anniversary Flowers Nairobi | Wedding Anniversary Bouquets & Gifts',
-        description: 'Celebrate your wedding anniversary with beautiful flowers in Nairobi. Romantic anniversary bouquets, red roses, and special gifts with same-day delivery.',
-        keywords: 'anniversary flowers Nairobi, anniversary bouquets, wedding anniversary flowers, romantic anniversary gifts, anniversary roses',
-        content: 'Celebrate your love story with our stunning anniversary flower collection. From romantic red roses to elegant mixed bouquets, each arrangement is handcrafted to symbolize your enduring commitment. Perfect for 1st, 5th, 10th, 25th, and 50th anniversaries.',
-        h1: 'Anniversary Flowers'
+        description: 'Celebrate your wedding anniversary with beautiful flowers in Nairobi. Romantic anniversary bouquets, red roses, and special gifts with same-day delivery from KES 3,000.',
+        keywords: 'anniversary flowers Nairobi, anniversary bouquets Kenya, wedding anniversary flowers, romantic anniversary gifts, anniversary roses Nairobi',
+        content: "Celebrate every chapter of your love story with our curated anniversary flower collection. Whether it's your 1st, 5th, 10th, 25th, or 50th anniversary, we have the perfect arrangement to honour the occasion. Our anniversary bouquets feature luxurious red roses, elegant white lilies, and premium mixed blooms — all handcrafted by our Nairobi florists with meticulous care. Pair a bouquet with our anniversary gift combos, which include champagne, chocolates, and personalised keepsakes for a truly memorable gift. We understand that anniversaries are milestone moments, which is why we treat every order with special attention to detail. Same-day delivery is available across Nairobi to Westlands, Karen, Kilimani, Lavington, Gigiri, Kasarani, and the CBD. Prices start from KES 3,000. Order before 2 PM for same-day delivery.",
+        h1: 'Anniversary Flowers in Nairobi'
       },
       'combos': {
-        title: 'Flower Combos Nairobi | Flowers with Cakes & Gifts',
-        description: 'Flower combos in Nairobi with cakes, chocolates, and gifts. Perfect flower and gift combinations for every occasion.',
-        keywords: 'flower combos Nairobi, flowers with cake, flower gift sets, flower and chocolate combos',
-        content: 'Elevate your gifting with our exclusive flower combinations. From flowers with cakes to gift sets with chocolates, our combos create unforgettable moments.',
-        h1: 'Flower Combos & Gift Sets'
+        title: 'Flower Gift Combos Nairobi | Flowers with Cake, Chocolate & Gifts',
+        description: 'Order flower gift combos in Nairobi — flowers with cakes, chocolates, and premium gifts. Same-day delivery available. Perfect for birthdays & anniversaries.',
+        keywords: 'flower combos Nairobi, flowers with cake Nairobi, gift combos Kenya, flower and chocolate gift, birthday flower combo Nairobi',
+        content: "Elevate your gifting with our exclusive flower and gift combination packages. Our combos are designed to make a bigger impact than flowers alone — pairing stunning fresh bouquets with premium extras like custom celebration cakes, artisan chocolates, scented candles, soft toys, and luxury gift wrapping. Our flower combos are perfect for birthdays, anniversaries, graduations, Mother's Day, Girlfriend's Day, and any celebration where you want to go the extra mile. Available in a range of sizes from a 'Standard Combo' to our spectacular 'Mega Celebration Package', there's an option for every budget. All combos are assembled on the day of delivery to ensure freshness and are delivered across Nairobi including Westlands, Kilimani, Karen, Lavington, Kasarani, and the CBD. Prices start from KES 4,500.",
+        h1: 'Flower Gift Combos in Nairobi'
       },
       'mothers-day': {
         title: "Mother's Day Flowers Kenya | Bouquets for Mum | Nairobi Delivery",
-        description: "Beautiful Mother's Day flowers in Kenya. Surprise mum with fresh bouquets, roses & gift combos. Same-day delivery in Nairobi.",
-        keywords: "Mother's Day flowers Kenya, Mother's Day bouquets Nairobi, flowers for mum Kenya",
-        content: "Celebrate Mum with elegant Mother's Day bouquets crafted by our Nairobi florists. Fresh flowers delivered across Kenya with love.",
-        h1: "Mother's Day Flowers"
+        description: "Beautiful Mother's Day flowers in Kenya. Surprise mum with fresh bouquets, roses & gift combos. Same-day delivery in Nairobi from KES 2,500. Order online.",
+        keywords: "Mother's Day flowers Kenya, Mother's Day bouquets Nairobi, flowers for mum Kenya, mothers day roses Nairobi",
+        content: "Show Mum just how much she means to you with an exquisitely crafted Mother's Day bouquet from Flower Lifestyle. Our Mother's Day collection is designed to reflect a mother's elegance and warmth, featuring the freshest pink and white roses, cheerful gerberas, soft carnations, and lush mixed seasonal blooms. Choose from a simple yet heartfelt bouquet to a grand arrangement paired with chocolates and a personalised card. Our Nairobi florists prepare every order with love and care, ensuring the highest quality blooms are used in each arrangement. We offer same-day delivery across Nairobi including Westlands, Kilimani, Karen, Lavington, Gigiri, Kasarani, and the CBD. Don't leave it too late — order early to guarantee same-day delivery. Prices start from KES 2,500.",
+        h1: "Mother's Day Flowers in Nairobi & Kenya"
       },
       'money-bouquet': {
-        title: 'Money Bouquet Nairobi Kenya | Creative Cash Flower Gifts',
-        description: 'Order stunning money bouquets in Nairobi & Kenya. Creative cash flower arrangements for birthdays, graduations & celebrations.',
-        keywords: 'money bouquet Nairobi, money bouquet Kenya, cash bouquet flowers, graduation money bouquet',
-        content: 'Make celebrations unforgettable with our signature money bouquets — artistic arrangements that combine fresh flowers with thoughtful cash gifting.',
-        h1: 'Money Bouquet Collection'
+        title: 'Money Bouquet Nairobi | Creative Cash Flower Gifts | Same Day',
+        description: 'Order creative money bouquets in Nairobi & Kenya. Cash flower arrangements for birthdays, graduations & celebrations. Same-day delivery. Pay via M-Pesa.',
+        keywords: 'money bouquet Nairobi, money bouquet Kenya, cash bouquet flowers Nairobi, graduation money bouquet, money roses Kenya',
+        content: "Surprise someone with a truly unique gift — a Flower Lifestyle Money Bouquet. Our signature money bouquets artistically combine fresh flowers with cash notes, creating a stunning arrangement that is as generous as it is beautiful. Ideal for graduations, 21st birthdays, farewell gifts, or any occasion where cash is the perfect present, our money bouquets are handcrafted to impress. Available in a range of denominations to suit your budget, each money bouquet is assembled with fresh blooms including roses and seasonal fillers, then finished with premium ribbon and wrapping. We deliver same-day across Nairobi to Westlands, Kilimani, Karen, Lavington, Kasarani, Gigiri, and the CBD. Payment is accepted via M-Pesa, Visa, and Mastercard. Order before 2 PM for same-day delivery in Nairobi.",
+        h1: 'Money Bouquet Delivery in Nairobi'
       }
     };
 
     return categoryContent[categorySlug] || {
       title: 'Florist in Nairobi | Flower Delivery in Nairobi | Same Day Delivery',
-      description: 'Nairobi flower shop with flower delivery Nairobi and same day flower delivery Nairobi. Shop birthday flowers Nairobi, wedding flowers Nairobi, sympathy flowers Nairobi, roses & bouquets for every occasion.',
-      keywords: 'florist in Nairobi, Nairobi flower shop, flower delivery Nairobi, same day flower delivery Nairobi, birthday flowers Nairobi, wedding flowers Nairobi, sympathy flowers Nairobi, nairobi florist',
-      content: 'Browse handcrafted floral arrangements from our Nairobi flower shop—perfect for birthdays, weddings, sympathy moments, and romantic gestures. Order online for delivery across Nairobi and same day flower delivery Nairobi when available.',
-      h1: 'Flower Delivery in Nairobi'
+      description: 'Nairobi flower shop with same-day flower delivery across Nairobi. Shop birthday flowers, anniversary bouquets, romantic roses, gift combos & money bouquets. Order online, pay via M-Pesa.',
+      keywords: 'florist in Nairobi, Nairobi flower shop, flower delivery Nairobi, same day flower delivery Nairobi, birthday flowers Nairobi, roses Nairobi, nairobi florist, buy flowers online Kenya',
+      content: 'Browse our full collection of handcrafted floral arrangements from Flower Lifestyle — Nairobi\'s trusted online florist and gift shop based at City Market, Nairobi CBD. We specialise in same-day flower delivery across all major Nairobi neighbourhoods including Westlands, Kilimani, Karen, Lavington, Kasarani, and Gigiri. Whether you need birthday flowers, anniversary roses, romantic bouquets, money bouquets, or complete gift combos, our skilled florists craft every arrangement with fresh blooms sourced daily. We also deliver flowers countrywide across Kenya. All orders can be paid via M-Pesa, Visa, or Mastercard. Prices start from KES 2,500.',
+      h1: 'Flower Delivery in Nairobi — Same Day'
     };
   };
 
@@ -238,23 +253,21 @@ const FlowersPage = ({ isMobile = false }) => {
     return currentCategoryContent.description;
   }, [productParam, selectedProduct, currentCategoryContent.description]);
 
-  // Dynamic canonical URL — product modal URLs MUST point canonical to /flowers
-  // (not to themselves) to fix "Duplicate without user-selected canonical" in GSC.
-  // Google seeing ?product=UUID as its own canonical caused it to treat each modal
-  // URL as a standalone page — identical to /flowers — triggering the duplicate flag.
+  // Clean canonical URL — uses /flowers/:category format (no query params)
+  // Product modal overlay points canonical back to the category page to avoid duplicates.
   const pageCanonicalUrl = useMemo(() => {
-    // ?product= is a UI-only modal overlay — the real page is always /flowers
-    if (productParam) {
-      return `${SITE_URL}/flowers`;
-    }
-    return `${SITE_URL}/flowers${activeCategory !== 'all' ? `?category=${activeCategory}` : ''}`;
-  }, [productParam, activeCategory]);
+    const base = activeCategory !== 'all'
+      ? `${SITE_URL}/flowers/${activeCategory}`
+      : `${SITE_URL}/flowers`;
+    // ?product= is UI-only — canonical always points to the category page
+    return base;
+  }, [activeCategory]);
 
   const structuredDataBlocks = useMemo(() => {
     const list = productListSchema(filteredProducts);
     const crumbs = breadcrumbSchema([
       { name: 'Home', url: SITE_URL },
-      { name: 'Shop Flowers', url: `${SITE_URL}/flowers` },
+      { name: 'Flower Delivery Nairobi', url: `${SITE_URL}/flowers` },
       ...(activeCategory !== 'all'
         ? [{ name: currentCategoryContent.h1, url: pageCanonicalUrl }]
         : []),

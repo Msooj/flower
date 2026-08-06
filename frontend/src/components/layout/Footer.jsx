@@ -1,7 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Phone, Mail, MapPin, Clock, Instagram, MessageCircle } from 'lucide-react';
-import { Button } from '../ui/button';
 import { contactInfo } from '../../data/mock';
 import { BUSINESS } from '../../data/seoConfig';
 
@@ -10,6 +9,8 @@ const Footer = () => {
 
   return (
     <footer className="bg-gradient-to-b from-pink-50 to-pink-100">
+
+      {/* Map Section */}
       <div className="border-b border-pink-200 bg-white">
         <div className="container mx-auto px-4 py-8">
           <div className="text-center mb-6">
@@ -30,7 +31,6 @@ const Footer = () => {
               title="Flower Lifestyle Location - City Market Nairobi"
               className="grayscale-[20%] group-hover:grayscale-0 transition-all duration-500"
             ></iframe>
-            {/* Custom Red Pin Overlay */}
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
               <div className="relative">
                 <MapPin className="w-12 h-12 text-red-600 fill-white drop-shadow-lg animate-bounce" />
@@ -38,7 +38,6 @@ const Footer = () => {
               </div>
             </div>
           </div>
-          {/* Google Maps / Business Profile link */}
           <div className="text-center mt-4">
             <a
               href="https://www.google.com/maps/search/flowerlifstyle/@-1.2777859,36.815201,16z/data=!3m1!4b1?entry=ttu&g_ep=EgoyMDI2MDcxNC4wIKXMDSoASAFQAw%3D%3D"
@@ -53,9 +52,10 @@ const Footer = () => {
         </div>
       </div>
 
-      {/* Main Footer */}
+      {/* Main Footer Grid */}
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+
           {/* Brand */}
           <div>
             <Link to="/" className="inline-block mb-4">
@@ -92,63 +92,16 @@ const Footer = () => {
 
           {/* Quick Links */}
           <div>
-            <h4 className="text-lg font-semibold text-gray-800 mb-4">Quick Links</h4>
+            <h4 className="text-lg font-semibold text-gray-800 mb-4">Shop Flowers</h4>
             <ul className="space-y-3">
-              <li>
-                <Link to="/florist-kenya" className="text-gray-600 hover:text-pink-600 transition-colors">
-                  Florist in Kenya
-                </Link>
-              </li>
-              <li>
-                <Link to="/flowers" className="text-gray-600 hover:text-pink-600 transition-colors">
-                  Shop All Flowers
-                </Link>
-              </li>
-              <li>
-                <Link to="/flowers?category=birthday" className="text-gray-600 hover:text-pink-600 transition-colors">
-                  Birthday Flowers
-                </Link>
-              </li>
-              <li>
-                <Link to="/flowers?category=romance" className="text-gray-600 hover:text-pink-600 transition-colors">
-                  Romance & Love
-                </Link>
-              </li>
-              <li>
-                <Link to="/flowers?category=anniversary" className="text-gray-600 hover:text-pink-600 transition-colors">
-                  Anniversary
-                </Link>
-              </li>
-              <li>
-                <Link to="/flowers?category=roses" className="text-gray-600 hover:text-pink-600 transition-colors">
-                  Roses Collection
-                </Link>
-              </li>
-              <li>
-                <Link to="/flowers?category=combos" className="text-gray-600 hover:text-pink-600 transition-colors">
-                  Gift Combos
-                </Link>
-              </li>
-              <li>
-                <Link to="/flowers?category=mothers-day" className="text-gray-600 hover:text-pink-600 transition-colors">
-                  Mother&apos;s Day Flowers
-                </Link>
-              </li>
-              <li>
-                <Link to="/flowers?category=money-bouquet" className="text-gray-600 hover:text-pink-600 transition-colors">
-                  Money Bouquets
-                </Link>
-              </li>
-              <li>
-                <Link to="/blog" className="text-gray-600 hover:text-pink-600 transition-colors">
-                  Blog & Articles
-                </Link>
-              </li>
-              <li>
-                <Link to="/about" className="text-gray-600 hover:text-pink-600 transition-colors">
-                  About Us
-                </Link>
-              </li>
+              <li><Link to="/flowers" className="text-gray-600 hover:text-pink-600 transition-colors text-sm">All Flowers</Link></li>
+              <li><Link to="/flowers/birthday" className="text-gray-600 hover:text-pink-600 transition-colors text-sm">Birthday Flowers</Link></li>
+              <li><Link to="/flowers/romance" className="text-gray-600 hover:text-pink-600 transition-colors text-sm">Romance &amp; Love</Link></li>
+              <li><Link to="/flowers/roses" className="text-gray-600 hover:text-pink-600 transition-colors text-sm">Roses Collection</Link></li>
+              <li><Link to="/flowers/anniversary" className="text-gray-600 hover:text-pink-600 transition-colors text-sm">Anniversary Flowers</Link></li>
+              <li><Link to="/flowers/combos" className="text-gray-600 hover:text-pink-600 transition-colors text-sm">Gift Combos</Link></li>
+              <li><Link to="/flowers/money-bouquet" className="text-gray-600 hover:text-pink-600 transition-colors text-sm">Money Bouquets</Link></li>
+              <li><Link to="/flowers/mothers-day" className="text-gray-600 hover:text-pink-600 transition-colors text-sm">Mother's Day</Link></li>
             </ul>
           </div>
 
@@ -156,19 +109,11 @@ const Footer = () => {
           <div>
             <h4 className="text-lg font-semibold text-gray-800 mb-4">Customer Service</h4>
             <ul className="space-y-3">
-              <li>
-                <Link to="/delivery" className="text-gray-600 hover:text-pink-600 transition-colors">
-                  Delivery Information
-                </Link>
-              </li>
-              <li>
-                <Link to="/faq" className="text-gray-600 hover:text-pink-600 transition-colors">
-                  FAQs
-                </Link>
-              </li>
-              <li className="text-gray-600">Returns & Refunds</li>
-              <li className="text-gray-600">Privacy Policy</li>
-              <li className="text-gray-600">Terms of Service</li>
+              <li><Link to="/delivery" className="text-gray-600 hover:text-pink-600 transition-colors text-sm">Delivery Information</Link></li>
+              <li><Link to="/faq" className="text-gray-600 hover:text-pink-600 transition-colors text-sm">FAQs</Link></li>
+              <li><Link to="/blog" className="text-gray-600 hover:text-pink-600 transition-colors text-sm">Blog &amp; Articles</Link></li>
+              <li><Link to="/about" className="text-gray-600 hover:text-pink-600 transition-colors text-sm">About Us</Link></li>
+              <li><Link to="/florist-kenya" className="text-gray-600 hover:text-pink-600 transition-colors text-sm">Florist in Kenya</Link></li>
             </ul>
           </div>
 
@@ -180,11 +125,8 @@ const Footer = () => {
                 <li className="flex items-start gap-3">
                   <Phone className="w-5 h-5 text-pink-500 mt-0.5 flex-shrink-0" />
                   <div>
-                    <p className="text-gray-800 font-medium">Phone / WhatsApp</p>
-                    <a
-                      href="tel:+254742370307"
-                      className="text-gray-600 hover:text-pink-600 transition-colors"
-                    >
+                    <p className="text-gray-800 font-medium text-sm">Phone / WhatsApp</p>
+                    <a href="tel:+254742370307" className="text-gray-600 hover:text-pink-600 transition-colors text-sm">
                       {contactInfo.phone}
                     </a>
                   </div>
@@ -192,11 +134,8 @@ const Footer = () => {
                 <li className="flex items-start gap-3">
                   <Mail className="w-5 h-5 text-pink-500 mt-0.5 flex-shrink-0" />
                   <div>
-                    <p className="text-gray-800 font-medium">Email</p>
-                    <a
-                      href="mailto:flowerlifestyle@gmail.com"
-                      className="text-gray-600 hover:text-pink-600 transition-colors"
-                    >
+                    <p className="text-gray-800 font-medium text-sm">Email</p>
+                    <a href="mailto:flowerlifestyle@gmail.com" className="text-gray-600 hover:text-pink-600 transition-colors text-sm">
                       {contactInfo.email}
                     </a>
                   </div>
@@ -204,20 +143,21 @@ const Footer = () => {
                 <li className="flex items-start gap-3">
                   <MapPin className="w-5 h-5 text-pink-500 mt-0.5 flex-shrink-0" />
                   <div>
-                    <p className="text-gray-800 font-medium">Address</p>
-                    <p className="text-gray-600">{contactInfo.address}</p>
+                    <p className="text-gray-800 font-medium text-sm">Address</p>
+                    <p className="text-gray-600 text-sm">{contactInfo.address}</p>
                   </div>
                 </li>
                 <li className="flex items-start gap-3">
                   <Clock className="w-5 h-5 text-pink-500 mt-0.5 flex-shrink-0" />
                   <div>
-                    <p className="text-gray-800 font-medium">Working Hours</p>
-                    <p className="text-gray-600">{contactInfo.hours}</p>
+                    <p className="text-gray-800 font-medium text-sm">Working Hours</p>
+                    <p className="text-gray-600 text-sm">{contactInfo.hours}</p>
                   </div>
                 </li>
               </ul>
             </address>
           </div>
+
         </div>
       </div>
 
@@ -292,7 +232,7 @@ const Footer = () => {
           </div>
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <p className="text-gray-600 text-sm text-center sm:text-left">
-              © {currentYear} Flower Lifestyle. All rights reserved. Made with love in Kenya.
+              &copy; {currentYear} Flower Lifestyle. All rights reserved. Made with love in Kenya.
             </p>
             <div className="flex items-center flex-wrap justify-center gap-3">
               <img src="https://cdn.jsdelivr.net/gh/lipis/flag-icons@6.6.6/flags/4x3/ke.svg" alt="Kenya" className="h-4 sm:h-5 object-contain" />
@@ -303,6 +243,7 @@ const Footer = () => {
           </div>
         </div>
       </div>
+
     </footer>
   );
 };

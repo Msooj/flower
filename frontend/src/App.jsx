@@ -62,6 +62,8 @@ function App() {
                   <Routes>
                     <Route path="/" element={<HomePage isMobile={isMobile} />} />
                     <Route path="/flowers" element={<FlowersPage isMobile={isMobile} />} />
+                    {/* Clean SEO category URLs: /flowers/birthday, /flowers/roses, etc. */}
+                    <Route path="/flowers/:category" element={<FlowersPage isMobile={isMobile} />} />
                     <Route path="/florist-kenya" element={<FloristKenyaPage />} />
                     <Route path="/delivery" element={<DeliveryPage />} />
                     <Route path="/faq" element={<FaqPage />} />
