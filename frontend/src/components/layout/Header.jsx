@@ -113,7 +113,7 @@ const Header = () => {
 
       {/* Main Header */}
       <header
-        className={`sticky top-0 z-50 transition-all duration-300 w-full overflow-hidden ${isScrolled
+        className={`sticky top-0 z-50 transition-all duration-300 w-full ${isScrolled
           ? 'glass-effect shadow-lg border-b border-pink-100'
           : 'bg-white'
           }`}
@@ -440,8 +440,8 @@ const Header = () => {
                               key={area.href}
                               to={area.href}
                               className={`px-4 py-2.5 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 ${location.pathname === area.href
-                                  ? 'bg-pink-50 text-pink-600'
-                                  : 'text-gray-600 hover:bg-pink-50 hover:text-pink-600'
+                                ? 'bg-pink-50 text-pink-600'
+                                : 'text-gray-600 hover:bg-pink-50 hover:text-pink-600'
                                 }`}
                             >
                               <MapPin className="w-3.5 h-3.5 text-pink-300" />
