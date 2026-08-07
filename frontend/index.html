@@ -25,7 +25,7 @@
   <meta name="description"
     content="Kenya's best online florist & gift shop. Fresh flowers & personalized gifts with same-day delivery in Nairobi. Order now!" />
   <meta name="keywords"
-    content="florist near me, flower shop near me, flower delivery near me, florist in Nairobi, florist in Nairobi near me, flower delivery Nairobi, florist in Nairobi, online flower shop Kenya, birthday flowers Nairobi, anniversary bouquets Kenya, funeral wreaths Nairobi, same day flower delivery Nairobi, order flowers online Nairobi, red roses delivery Nairobi, lilies and carnations Kenya, florist in Kenya, florist Nairobi, online florist Kenya, flower delivery Kenya, best florist Nairobi, order flowers online Kenya, roses delivery Kenya, flower shop Nairobi, City Market florist, gift shop Kenya, online flower delivery service Kenya, unique gifts Kenya, personalized gifts Kenya" />
+    content="flower delivery Nairobi, same-day flower delivery Nairobi, florist Nairobi, online flower shop Kenya, buy flowers online Kenya, flower gift shop Nairobi" />
   <meta name="google-site-verification" content="yiWSRx4T-9w8nFpjfkAbD_4iAaQk5iCoYYkZXZ7RIyk" />
   <meta name="author" content="Flower Lifestyle Kenya" />
   <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
@@ -72,7 +72,7 @@
   <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@type": "Florist",
+      "@type": ["Florist", "LocalBusiness"],
       "name": "Flower Lifestyle",
       "description": "Kenya's premier online florist offering fresh flowers, bouquets, and same-day delivery in Nairobi and across Kenya.",
       "url": "https://www.flowerlifestyle.co.ke/",
@@ -91,7 +91,20 @@
         "latitude": "-1.2921",
         "longitude": "36.8219"
       },
-      "openingHours": "Mo-Sa 08:00-19:00, Su 09:00-17:00",
+      "openingHoursSpecification": [
+        {
+          "@type": "OpeningHoursSpecification",
+          "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+          "opens": "08:00",
+          "closes": "19:00"
+        },
+        {
+          "@type": "OpeningHoursSpecification",
+          "dayOfWeek": "Sunday",
+          "opens": "09:00",
+          "closes": "17:00"
+        }
+      ],
       "priceRange": "KES 3000-15000",
       "paymentAccepted": "Cash, Credit Card, M-Pesa",
       "currenciesAccepted": "KES",
@@ -199,10 +212,9 @@
         <ul>
           <li><a href="/">Home</a></li>
           <li><a href="/flowers">Shop All Flowers</a></li>
-          <li><a href="/flowers?category=birthday">Birthday Flowers</a></li>
-          <li><a href="/flowers?category=romance">Romance &amp; Love</a></li>
-          <li><a href="/flowers?category=roses">Roses Collection</a></li>
-          <li><a href="/flowers?category=anniversary">Anniversary Flowers</a></li>
+          <li><a href="/birthday-flowers-nairobi">Birthday Flowers Nairobi</a></li>
+          <li><a href="/roses-delivery-nairobi">Red Roses Delivery</a></li>
+          <li><a href="/anniversary-flowers-nairobi">Anniversary Flowers</a></li>
           <li><a href="/flowers?category=combos">Gift Combos</a></li>
           <li><a href="/flowers?category=money-bouquet">Money Bouquets</a></li>
           <li><a href="/blog">Blog &amp; Articles</a></li>

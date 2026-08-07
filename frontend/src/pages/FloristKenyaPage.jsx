@@ -10,6 +10,7 @@ import { Button } from '../components/ui/button';
 import {
   SITE_URL,
   BUSINESS,
+  PAGE_KEYWORDS,
   floristSchema,
   breadcrumbSchema,
   faqSchema,
@@ -51,7 +52,7 @@ const FloristKenyaPage = () => {
       <PageMetaTags
         title="Florist in Nairobi | Flower Delivery in Nairobi | Flower Lifestyle"
         description="Florist in Nairobi offering same day flower delivery Nairobi from City Market. Order fresh bouquets for birthday flowers Nairobi, wedding flowers Nairobi & sympathy flowers Nairobi. Pay with M-Pesa & deliver across Nairobi and Kenya."
-        keywords="florist in Nairobi, Nairobi flower shop, flower delivery Nairobi, same day flower delivery Nairobi, birthday flowers Nairobi, wedding flowers Nairobi, sympathy flowers Nairobi, nairobi florist"
+        keywords={PAGE_KEYWORDS.floristKenya}
         canonicalUrl={canonical}
       />
       <StructuredData
@@ -133,16 +134,16 @@ const FloristKenyaPage = () => {
           <h2 className="text-2xl font-bold text-gray-900 mb-3">Shop by occasion</h2>
           <div className="flex flex-wrap gap-2 not-prose mb-10">
             {[
-              { label: 'Birthday flowers', cat: 'birthday' },
-              { label: 'Romance & roses', cat: 'romance' },
-              { label: 'Anniversary', cat: 'anniversary' },
-              { label: 'Roses collection', cat: 'roses' },
-              { label: 'Gift combos', cat: 'combos' },
-              { label: "Mother's Day", cat: 'mothers-day' },
-            ].map(({ label, cat }) => (
+              { label: 'Birthday flowers', href: '/birthday-flowers-nairobi' },
+              { label: 'Red roses delivery', href: '/roses-delivery-nairobi' },
+              { label: 'Anniversary flowers', href: '/anniversary-flowers-nairobi' },
+              { label: 'Gift combos', cat: 'combos', href: null },
+              { label: "Mother's Day", cat: 'mothers-day', href: null },
+              { label: 'Money bouquets', href: '/money-bouquet-nairobi' },
+            ].map(({ label, cat, href }) => (
               <Link
-                key={cat}
-                to={`/flowers?category=${cat}`}
+                key={label}
+                to={href || `/flowers?category=${cat}`}
                 className="px-4 py-2 rounded-full bg-pink-100 text-pink-700 text-sm font-medium hover:bg-pink-200 transition-colors"
               >
                 {label}

@@ -11,7 +11,7 @@ import ArticlesSection from '../components/home/ArticlesSection';
 import TrustSignalsBar from '../components/home/TrustSignalsBar';
 import PageMetaTags from '../components/seo/PageMetaTags';
 import StructuredData from '../components/seo/StructuredData';
-import { SITE_URL, KENYA_KEYWORDS, floristSchema, websiteSchema } from '../data/seoConfig';
+import { SITE_URL, PAGE_KEYWORDS, floristSchema, websiteSchema } from '../data/seoConfig';
 
 const HomePage = ({ isMobile }) => {
   return (
@@ -19,7 +19,7 @@ const HomePage = ({ isMobile }) => {
       <PageMetaTags
         title="Flowerlifestyle Giftshop | Same-Day Flower Delivery Nairobi"
         description="Kenya's best online florist & gift shop. Fresh flowers & personalized gifts with same-day delivery in Nairobi. Order now!"
-        keywords={KENYA_KEYWORDS}
+        keywords={PAGE_KEYWORDS.home}
         canonicalUrl={`${SITE_URL}/`}
       />
       <StructuredData data={[floristSchema(), websiteSchema()]} />

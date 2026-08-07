@@ -20,6 +20,22 @@ const STATIC_PAGES = [
   { loc: '/', changefreq: 'daily', priority: '1.0' },
   { loc: '/florist-kenya', changefreq: 'weekly', priority: '0.95' },
   { loc: '/flowers', changefreq: 'daily', priority: '0.9' },
+  // Occasion landing pages
+  { loc: '/birthday-flowers-nairobi', changefreq: 'weekly', priority: '0.9' },
+  { loc: '/roses-delivery-nairobi', changefreq: 'weekly', priority: '0.9' },
+  { loc: '/anniversary-flowers-nairobi', changefreq: 'weekly', priority: '0.9' },
+  // Topical authority pages
+  { loc: '/same-day-flower-delivery-nairobi', changefreq: 'weekly', priority: '0.88' },
+  { loc: '/money-bouquet-nairobi', changefreq: 'weekly', priority: '0.85' },
+  { loc: '/corporate-flower-gifts-nairobi', changefreq: 'monthly', priority: '0.8' },
+  // Neighbourhood local SEO pages
+  { loc: '/flower-delivery-westlands', changefreq: 'monthly', priority: '0.82' },
+  { loc: '/flower-delivery-kilimani', changefreq: 'monthly', priority: '0.82' },
+  { loc: '/flower-delivery-karen', changefreq: 'monthly', priority: '0.82' },
+  { loc: '/flower-delivery-lavington', changefreq: 'monthly', priority: '0.82' },
+  { loc: '/flower-delivery-gigiri', changefreq: 'monthly', priority: '0.82' },
+  { loc: '/flower-delivery-kasarani', changefreq: 'monthly', priority: '0.82' },
+  // Utility pages
   { loc: '/delivery', changefreq: 'monthly', priority: '0.85' },
   { loc: '/faq', changefreq: 'monthly', priority: '0.75' },
   { loc: '/about', changefreq: 'monthly', priority: '0.7' },

@@ -25,6 +25,9 @@ import NeighborhoodPage from "./pages/NeighborhoodPage";
 import SameDayDeliveryPage from "./pages/SameDayDeliveryPage";
 import MoneyBouquetPage from "./pages/MoneyBouquetPage";
 import CorporateGiftsPage from "./pages/CorporateGiftsPage";
+import BirthdayFlowersPage from "./pages/BirthdayFlowersPage";
+import RosesDeliveryPage from "./pages/RosesDeliveryPage";
+import AnniversaryFlowersPage from "./pages/AnniversaryFlowersPage";
 import WhatsAppButton from "./components/common/WhatsAppButton";
 import GoogleAnalytics from "./components/seo/GoogleAnalytics";
 import NotFoundPage from "./pages/NotFoundPage";
@@ -90,6 +93,11 @@ function App() {
                     <Route path="/same-day-flower-delivery-nairobi" element={<SameDayDeliveryPage />} />
                     <Route path="/money-bouquet-nairobi" element={<MoneyBouquetPage />} />
                     <Route path="/corporate-flower-gifts-nairobi" element={<CorporateGiftsPage />} />
+
+                    {/* Occasion landing pages */}
+                    <Route path="/birthday-flowers-nairobi" element={<BirthdayFlowersPage />} />
+                    <Route path="/roses-delivery-nairobi" element={<RosesDeliveryPage />} />
+                    <Route path="/anniversary-flowers-nairobi" element={<AnniversaryFlowersPage />} />
 
                     <Route path="*" element={<NotFoundPage />} />
                   </Routes>

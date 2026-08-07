@@ -31,8 +31,27 @@ export const BUSINESS = {
   reviewUrl: 'https://www.google.com/maps/search/Flower+Lifestyle+Giftshop+Nairobi/@-1.2777859,36.815201,16z',
 };
 
-export const KENYA_KEYWORDS =
-  'florist near me, flower shop near me, flower delivery near me, florist in Nairobi, florist in Nairobi near me, gift shop Kenya, online flower delivery service Kenya, florist in Kenya, florist Nairobi, online florist Kenya, flower delivery Kenya, best florist Nairobi, same day flower delivery Nairobi, order flowers online Kenya, flower shop Nairobi, roses delivery Kenya, birthday flowers Nairobi, gift shop Nairobi, unique gifts Kenya, personalized gifts Kenya';
+/**
+ * Page-specific keyword lists.
+ * Each page focuses on 6–8 distinct, high-intent terms rather than sharing
+ * one stuffed list — avoids keyword cannibalisation and perceived spam.
+ */
+export const PAGE_KEYWORDS = {
+  home: 'flower delivery Nairobi, same-day flower delivery Nairobi, florist Nairobi, online flower shop Kenya, buy flowers online Kenya, flower gift shop Nairobi',
+  blog: 'flower blog Kenya, florist tips Nairobi, flower care guide Kenya, flower gift ideas Kenya, Nairobi florist advice',
+  floristKenya: 'florist in Nairobi, Nairobi flower shop, flower delivery Nairobi, same-day flower delivery Nairobi, online florist Kenya, City Market florist',
+  delivery: 'same-day flower delivery Nairobi, flower delivery areas Nairobi, flower delivery fees Kenya, Nairobi flower courier',
+  faq: 'flower delivery Nairobi FAQ, florist Nairobi questions, how to order flowers Kenya, M-Pesa flower payment',
+  birthday: 'birthday flowers Nairobi, birthday bouquet Kenya, same-day birthday flowers Nairobi, birthday flower delivery Kenya',
+  roses: 'roses delivery Nairobi, red roses Nairobi, buy roses online Kenya, red roses delivery Kenya, Valentine roses Nairobi',
+  anniversary: 'anniversary flowers Nairobi, anniversary bouquet Kenya, romantic flowers Nairobi, anniversary flower delivery Kenya',
+  sameDayDelivery: 'same-day flower delivery Nairobi, urgent flower delivery Nairobi, order flowers today Nairobi, fast flower courier Kenya',
+  moneyBouquet: 'money bouquet Nairobi, money bouquet Kenya, graduation money bouquet, cash flower arrangement Nairobi',
+  corporate: 'corporate flower gifts Nairobi, office flower delivery Nairobi, corporate florist Kenya, event flowers Nairobi',
+};
+
+/** @deprecated Use PAGE_KEYWORDS.home instead */
+export const KENYA_KEYWORDS = PAGE_KEYWORDS.home;
 
 export const floristSchema = () => ({
   '@context': 'https://schema.org',
