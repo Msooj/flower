@@ -1,29 +1,51 @@
 User-agent: *
 Allow: /
 
-# ── Priority SEO pages ──────────────────────────────────────────────
-# Explicitly allow all neighbourhood and topical landing pages
+# ── Core pages ────────────────────────────────────────────────────────
+Allow: /flowers
+Allow: /blog
+Allow: /about
+Allow: /delivery
+Allow: /faq
+
+# ── SEO landing pages ─────────────────────────────────────────────────
+Allow: /florist-kenya
+Allow: /birthday-flowers-nairobi
+Allow: /roses-delivery-nairobi
+Allow: /anniversary-flowers-nairobi
+Allow: /same-day-flower-delivery-nairobi
+Allow: /money-bouquet-nairobi
+Allow: /corporate-flower-gifts-nairobi
+
+# ── Neighbourhood local-SEO pages ─────────────────────────────────────
 Allow: /flower-delivery-westlands
 Allow: /flower-delivery-kilimani
 Allow: /flower-delivery-karen
 Allow: /flower-delivery-lavington
 Allow: /flower-delivery-gigiri
 Allow: /flower-delivery-kasarani
-Allow: /same-day-flower-delivery-nairobi
-Allow: /money-bouquet-nairobi
-Allow: /corporate-flower-gifts-nairobi
-Allow: /florist-kenya
-Allow: /flowers
-Allow: /blog
 
-# ── Block modal/overlay product URLs ────────────────────────────────
+# ── Blog articles ─────────────────────────────────────────────────────
+Allow: /blog/psychology-of-flower-colours-nairobi
+Allow: /blog/best-birthday-flowers-nairobi
+Allow: /blog/same-day-flower-delivery-nairobi
+Allow: /blog/anniversary-bouquet-guide-kenya
+Allow: /blog/red-roses-meaning-gift-guide
+Allow: /blog/mothers-day-flowers-kenya-ideas
+Allow: /blog/money-bouquet-trend-kenya
+Allow: /blog/girlfriends-day-flowers-gifts-kenya
+Allow: /blog/flower-care-tips-nairobi
+Allow: /blog/best-flowers-every-occasion-nairobi
+Allow: /blog/flower-delivery-kiambu
+
+# ── Block modal/overlay product URLs ─────────────────────────────────
 # /flowers?product=UUID are NOT standalone pages — they open a modal
 # on the /flowers page. Indexing them would create duplicate content
 # and waste crawl budget. Category filter URLs (?category=*) remain
 # fully allowed and are listed in the sitemap.
 Disallow: /flowers?product=
 
-# ── Block private account & admin pages ─────────────────────────────
+# ── Block private account & admin pages ──────────────────────────────
 Disallow: /admin
 Disallow: /orders
 Disallow: /cart

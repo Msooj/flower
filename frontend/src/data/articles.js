@@ -1,6 +1,33 @@
 /** Blog articles for Flower Lifestyle — florist tips & Kenya delivery guides */
 export const ARTICLES = [
   {
+    slug: 'psychology-of-flower-colours-nairobi',
+    title: 'The Psychology of Flower Colours: What Each Colour Says Without Words',
+    excerpt:
+      "Have you ever wondered why someone chooses red roses instead of white roses, or why a bright yellow bouquet feels so cheerful? Understanding the psychology of flower colours helps you choose the perfect bouquet for every occasion in Nairobi.",
+    category: 'Flower Tips',
+    publishedAt: '2026-08-11',
+    updatedAt: '2026-08-11',
+    readMinutes: 5,
+    image: 'https://duazdpldzqodpucqoyta.supabase.co/storage/v1/object/public/products/products/mixed-bouquet-nairobi-butterflies.jpg',
+    keywords:
+      'flower colour meaning Kenya, psychology of flower colours Nairobi, what do flower colours mean, red roses meaning Kenya, flower colour guide Nairobi, best flower colours for occasions Kenya',
+    body: [
+      "Have you ever wondered why someone chooses red roses instead of white roses, or why a bright yellow bouquet feels so cheerful? Colours have a powerful influence on our emotions, and flowers use this language beautifully.",
+      "When choosing a bouquet, the colour you select can help communicate feelings of love, appreciation, happiness, sympathy, or admiration. Understanding the psychology of flower colours can help you choose the perfect gift for every occasion.",
+      "🌹 Red Flowers: Love, Passion, and Romance. Red is one of the most powerful colours associated with love and deep emotions. Red roses, in particular, are often chosen to express romance, commitment, and admiration. Perfect for: Anniversaries, Valentine's Day, romantic surprises, and expressing deep affection. A bouquet of red roses is a timeless way to say 'I love you.'",
+      "🤍 White Flowers: Purity, Elegance, and New Beginnings. White flowers represent simplicity, peace, and elegance. Their clean and graceful appearance makes them suitable for many occasions. Perfect for: Weddings, congratulations, appreciation gifts, and elegant celebrations. White roses, lilies, and other white blooms create a sophisticated and calming impression.",
+      "💗 Pink Flowers: Appreciation, Sweetness, and Affection. Pink flowers represent gentleness, admiration, and care. They are a beautiful choice when you want to show someone they are special. Perfect for: Girlfriend's Day gifts, birthdays, thank-you gifts, and celebrating friendships. Pink roses are especially popular because they combine romance with softness.",
+      "💛 Yellow Flowers: Happiness, Friendship, and Positivity. Yellow is associated with warmth, joy, and optimism. Yellow flowers can brighten someone's day and create a cheerful atmosphere. Perfect for: Friendship gifts, congratulations, get-well wishes, and celebrating achievements.",
+      "💜 Purple Flowers: Luxury, Creativity, and Admiration. Purple flowers often represent elegance, mystery, and beauty. They create a unique and luxurious feeling. Perfect for: Special occasions, unique gift ideas, and someone who appreciates uncommon beauty.",
+      "🧡 Orange Flowers: Energy, Excitement, and Enthusiasm. Orange flowers bring warmth and vibrancy. They are perfect for expressing excitement and celebrating memorable moments. Perfect for: Birthdays, celebrations, and encouragement gifts.",
+      "Choosing the Right Flower Colour for Your Gift. The best bouquet is one that matches both the occasion and the personality of the person receiving it. Before choosing flowers, consider: their favourite colours, the message you want to communicate, the occasion you are celebrating, and whether you want something romantic, cheerful, elegant, or unique. A carefully selected bouquet shows thoughtfulness and makes the gift more meaningful.",
+      "Find the Perfect Colourful Bouquet at Flower Lifestyle. At Flower Lifestyle, we create beautiful flower arrangements designed to match every emotion and occasion. Whether you are looking for romantic red roses, elegant white bouquets, cheerful yellow flowers, or colourful mixed arrangements, we help you create unforgettable moments. We offer fresh flower bouquets, customized gift arrangements, same-day flower delivery in Nairobi, and flowers and gift packages for every occasion. Choose the perfect flower colour and let your bouquet say what words cannot. Visit Flower Lifestyle today and find a bouquet that speaks from the heart.",
+    ],
+    ctaLink: '/flowers',
+    ctaLabel: 'Shop Flowers by Colour',
+  },
+  {
     slug: 'best-birthday-flowers-nairobi',
     title: 'Best Birthday Flowers in Nairobi: A Complete Gift Guide',
     excerpt:
