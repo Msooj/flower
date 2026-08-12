@@ -5,7 +5,6 @@ import { Search, User, ShoppingBag, Menu, X, Heart, Phone, MapPin, ChevronDown }
 import { Button } from '../ui/button';
 import { toast } from 'sonner';
 import { navLinks, contactInfo } from '../../data/mock';
-import { CurrencySelector } from '../ui/CurrencyConverter';
 
 import { useCart } from '../../context/CartContext';
 import { useWishlist } from '../../context/WishlistContext';
@@ -238,11 +237,6 @@ const Header = () => {
 
             {/* Right Actions */}
             <div className="flex items-center gap-1 xl:gap-3 flex-shrink-0">
-              {/* Currency Selector - hidden on mobile, shown in mobile menu */}
-              <div className="hidden sm:block">
-                <CurrencySelector />
-              </div>
-
               {/* Search */}
               <Button
                 variant="ghost"
@@ -398,11 +392,6 @@ const Header = () => {
             >
               <div className="container mx-auto px-4 py-4">
                 <nav className="flex flex-col gap-2">
-                  {/* Currency Selector for Mobile */}
-                  <div className="px-4 py-2">
-                    <CurrencySelector />
-                  </div>
-
                   {navLinks.map((link) => (
                     <Link
                       key={link.name}

@@ -14,7 +14,7 @@ const HeroSection = ({ isMobile = false }) => {
             src={HERO_IMAGE}
             alt="Fresh flower bouquet delivery in Nairobi - beautiful arrangement ready for same day delivery"
             className="w-full h-full object-cover"
-            fetchpriority="high"
+            fetchPriority="high"
             loading="eager"
           />
           <div className="absolute inset-0 bg-white/20" />
@@ -41,10 +41,10 @@ const HeroSection = ({ isMobile = false }) => {
 
 
             <h1 className={`${isMobile ? 'text-2xl sm:text-3xl text-center' : 'text-3xl md:text-4xl lg:text-5xl'} font-bold text-gray-900 leading-tight mb-3 md:mb-6`}>
-              Nairobi's Favourite Florist &amp; Gift Shop — Fresh Flowers Delivered to Your Door
+              Flower Delivery Nairobi | Online Flower Shop Kenya — Same-Day Delivery
             </h1>
             <h2 className={`${isMobile ? 'text-base sm:text-lg text-center' : 'text-lg md:text-xl lg:text-2xl'} font-semibold text-pink-600 mb-3 md:mb-6`}>
-              Birthdays • Anniversaries • Weddings • Corporate Gifts • Romantic Occasions — Same-Day Flower Delivery Across Nairobi &amp; Near You
+              Birthday Flowers • Anniversary Bouquets • Funeral Wreaths • Red Roses • Wedding Flowers • Gift Combos
             </h2>
 
             <p className={`text-sm md:text-base lg:text-lg text-gray-600 mb-6 md:mb-8 max-w-lg leading-relaxed ${isMobile ? 'text-center' : ''}`}>
@@ -91,7 +91,7 @@ const HeroSection = ({ isMobile = false }) => {
                     src={HERO_IMAGE}
                     alt="Fresh flower bouquet delivery in Nairobi - beautiful arrangement ready for same day delivery"
                     className="h-[300px] md:h-[400px] lg:h-[500px] w-full object-cover"
-                    fetchpriority="high"
+                    fetchPriority="high"
                     loading="eager"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-pink-900/20 to-transparent" />

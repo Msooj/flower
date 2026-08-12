@@ -9,7 +9,7 @@ export const ARTICLES = [
     publishedAt: '2026-08-11',
     updatedAt: '2026-08-11',
     readMinutes: 5,
-    image: 'https://duazdpldzqodpucqoyta.supabase.co/storage/v1/object/public/products/products/mixed-bouquet-nairobi-butterflies.jpg',
+    image: 'https://duazdpldzqodpucqoyta.supabase.co/storage/v1/object/public/products/products/1766216396653_hd1fdp.jpeg',
     keywords:
       'flower colour meaning Kenya, psychology of flower colours Nairobi, what do flower colours mean, red roses meaning Kenya, flower colour guide Nairobi, best flower colours for occasions Kenya',
     body: [
