@@ -373,30 +373,69 @@ USING (
         setIsUploadingBlogImage(true);
         
         try {
+            // Check authentication
+            const { data: authData } = await supabase.auth.getSession();
+            if (!authData.session) {
+                throw new Error('User not authenticated - cannot upload to Supabase Storage');
+            }
+
             const fileExt = file.name.split('.').pop();
             const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
             const filePath = `blogs/${fileName}`;
 
             console.log('Uploading blog image to:', filePath);
 
-            const { data, error } = await supabase.storage
-                .from('products')
-                .upload(filePath, file);
+            // Retry loop for upload
+            let uploadError = null;
+            for (let i = 0; i < 3; i++) {
+                try {
+                    const { data, error } = await supabase.storage
+                        .from('products')
+                        .upload(filePath, file, {
+                            cacheControl: '3600',
+                            upsert: false
+                        });
 
-            if (error) throw error;
+                    if (error) {
+                        if (error.message?.includes('body stream') || 
+                            error.message?.includes('Failed to execute') ||
+                            error.message?.includes('timeout')) {
+                            console.warn(`Upload attempt ${i + 1} failed, retrying...`);
+                            await new Promise(r => setTimeout(r, 1000));
+                            continue;
+                        }
+                        uploadError = error;
+                        break;
+                    }
 
-            const { data: { publicUrl } } = supabase.storage
-                .from('products')
-                .getPublicUrl(filePath);
+                    const { data: { publicUrl } } = supabase.storage
+                        .from('products')
+                        .getPublicUrl(filePath);
 
-            console.log('Blog image uploaded:', publicUrl);
-            setNewBlog({ ...newBlog, image: publicUrl });
-            toast.success('Blog image uploaded successfully');
+                    console.log('Blog image uploaded:', publicUrl);
+                    setNewBlog({ ...newBlog, image: publicUrl });
+                    toast.success('Blog image uploaded successfully');
+                    return;
+                } catch (e) {
+                    if (e.message?.includes('body stream') || 
+                        e.message?.includes('Failed to execute') ||
+                        e.message?.includes('timeout')) {
+                        console.warn(`Upload attempt ${i + 1} failed, retrying...`);
+                        await new Promise(r => setTimeout(r, 1000));
+                        continue;
+                    }
+                    uploadError = e;
+                    break;
+                }
+            }
+
+            if (uploadError) throw uploadError;
         } catch (error) {
             console.error('Error uploading blog image:', error);
             toast.error(`Failed to upload blog image: ${error.message}`);
         } finally {
             setIsUploadingBlogImage(false);
+            if (event.target) event.target.value = '';
         }
     };
 
@@ -883,6 +922,7 @@ USING (
     const handleAddBlog = async (e) => {
         e.preventDefault();
         console.log('handleAddBlog called');
+        console.log('Current newBlog state:', newBlog);
 
         try {
             if (!newBlog.title.trim() || !newBlog.content.trim()) {
@@ -895,6 +935,7 @@ USING (
             if (sessionError || !session) {
                 throw new Error('No active session. Please log in again.');
             }
+            console.log('Session confirmed for user:', session.user.email);
 
             // Generate slug from title if not provided
             const slug = newBlog.slug.trim() || newBlog.title.trim()
@@ -917,9 +958,12 @@ USING (
 
             console.log('Blog data to insert:', blogData);
 
-            const { error } = await supabase.from('blogs').insert([blogData]);
+            const { data, error } = await supabase.from('blogs').insert([blogData]).select();
+
+            console.log('Insert result:', { data, error });
 
             if (error) {
+                console.error('Database insert error:', error);
                 if (error.code === '42501') {
                     throw new Error(
                         'Permission denied. Please ensure your account has admin role in user_profiles and RLS policy allows blog insertion.'
@@ -928,6 +972,7 @@ USING (
                 throw error;
             }
 
+            console.log('Blog inserted successfully:', data);
             toast.success(`Blog "${newBlog.title}" added successfully!`);
             setNewBlog({
                 title: '',
@@ -944,6 +989,7 @@ USING (
             setActiveTab('blogs');
         } catch (error) {
             console.error('Error adding blog:', error);
+            console.error('Error stack:', error.stack);
             toast.error(
                 <div className="text-xs">
                     <p className="font-bold mb-1">Blog Addition Failed: {error.message}</p>
@@ -960,9 +1006,12 @@ USING (
 {`CREATE POLICY "Admins can insert blogs" ON blogs
 FOR INSERT
 TO authenticated users
-USING (
-    (SELECT role FROM user_profiles WHERE user_profiles.id = auth.uid())
-) = 'admin';`}
+WITH CHECK (
+    EXISTS (
+        SELECT 1 FROM public.user_profiles
+        WHERE id = auth.uid() AND role = 'admin'
+    )
+);`}
                         </code>
                     </div>
                 </div>,

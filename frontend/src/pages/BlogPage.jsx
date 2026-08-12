@@ -45,11 +45,17 @@ const BlogPage = () => {
         ctaLabel: 'Shop Flowers'
       }));
 
-      // If DB returned no published blogs, fall back to static articles
-      setBlogs(transformedBlogs.length > 0 ? transformedBlogs : ARTICLES);
+      // Always show static articles - combine with DB blogs if any exist
+      if (transformedBlogs.length > 0) {
+        setBlogs(transformedBlogs);
+      } else {
+        console.log('No published blogs in database, showing static articles');
+        setBlogs(ARTICLES);
+      }
     } catch (error) {
       console.error('Error loading blogs:', error);
       // Fallback to static articles if database fails
+      console.log('Database error, showing static articles');
       setBlogs(ARTICLES);
     } finally {
       setLoading(false);
