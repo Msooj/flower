@@ -48,6 +48,7 @@ const AdminPage = () => {
     const [isAddingProduct, setIsAddingProduct] = useState(false);
     const [isUploadingBlogImage, setIsUploadingBlogImage] = useState(false);
     const [isUploadingEditBlogImage, setIsUploadingEditBlogImage] = useState(false);
+    const [isAddingBlog, setIsAddingBlog] = useState(false);
     const [users, setUsers] = useState([]);
     const [dataLoading, setDataLoading] = useState({ users: false, orders: false, products: false, blogs: false });
 
@@ -413,7 +414,7 @@ USING (
                         .getPublicUrl(filePath);
 
                     console.log('Blog image uploaded:', publicUrl);
-                    setNewBlog({ ...newBlog, image: publicUrl });
+                    setNewBlog(prev => ({ ...prev, image: publicUrl }));
                     toast.success('Blog image uploaded successfully');
                     return;
                 } catch (e) {
@@ -924,12 +925,17 @@ USING (
         console.log('handleAddBlog called');
         console.log('Current newBlog state:', newBlog);
 
-        try {
-            if (!newBlog.title.trim() || !newBlog.content.trim()) {
-                toast.error('Title and content are required');
-                return;
-            }
+        if (isAddingBlog || isUploadingBlogImage) return;
 
+        if (!newBlog.title.trim() || !newBlog.content.trim()) {
+            toast.error('Title and content are required');
+            return;
+        }
+
+        setIsAddingBlog(true);
+        const toastId = toast.loading('Adding blog post...');
+
+        try {
             // Check authentication
             const { data: { session }, error: sessionError } = await supabase.auth.getSession();
             if (sessionError || !session) {
@@ -938,42 +944,51 @@ USING (
             console.log('Session confirmed for user:', session.user.email);
 
             // Generate slug from title if not provided
-            const slug = newBlog.slug.trim() || newBlog.title.trim()
+            let slug = newBlog.slug.trim() || newBlog.title.trim()
                 .toLowerCase()
                 .replace(/[^a-z0-9\s-]/g, '')
-                .replace(/\s+/g, '-');
+                .replace(/\s+/g, '-')
+                .replace(/^-+|-+$/g, '');
+
+            if (!slug) {
+                slug = `blog-${Date.now()}`;
+            }
 
             const blogData = {
                 title: newBlog.title.trim(),
                 slug: slug,
-                excerpt: newBlog.excerpt.trim(),
+                excerpt: newBlog.excerpt.trim() || (newBlog.content.trim().substring(0, 160) + '...'),
                 content: newBlog.content.trim(),
-                author: newBlog.author.trim(),
-                category: newBlog.category,
-                image: newBlog.image,
-                published: newBlog.published,
-                featured: newBlog.featured,
+                author: newBlog.author.trim() || 'Flower Lifestyle',
+                category: newBlog.category || 'general',
+                image: newBlog.image || '',
+                published: Boolean(newBlog.published),
+                featured: Boolean(newBlog.featured),
                 published_at: newBlog.published ? new Date().toISOString() : null
             };
 
             console.log('Blog data to insert:', blogData);
 
-            const { data, error } = await supabase.from('blogs').insert([blogData]).select();
+            let insertResult = await supabase.from('blogs').insert([blogData]).select();
 
-            console.log('Insert result:', { data, error });
+            if (insertResult.error && insertResult.error.code === '23505') {
+                console.warn('Duplicate slug detected, appending unique timestamp suffix...');
+                blogData.slug = `${slug}-${Date.now().toString().slice(-4)}`;
+                insertResult = await supabase.from('blogs').insert([blogData]).select();
+            }
 
-            if (error) {
-                console.error('Database insert error:', error);
-                if (error.code === '42501') {
+            if (insertResult.error) {
+                console.error('Database insert error:', insertResult.error);
+                if (insertResult.error.code === '42501') {
                     throw new Error(
                         'Permission denied. Please ensure your account has admin role in user_profiles and RLS policy allows blog insertion.'
                     );
                 }
-                throw error;
+                throw insertResult.error;
             }
 
-            console.log('Blog inserted successfully:', data);
-            toast.success(`Blog "${newBlog.title}" added successfully!`);
+            console.log('Blog inserted successfully:', insertResult.data);
+            toast.success(`Blog "${newBlog.title}" added successfully!`, { id: toastId });
             setNewBlog({
                 title: '',
                 slug: '',
@@ -985,7 +1000,7 @@ USING (
                 published: false,
                 featured: false
             });
-            loadBlogs();
+            await loadBlogs();
             setActiveTab('blogs');
         } catch (error) {
             console.error('Error adding blog:', error);
@@ -1015,8 +1030,10 @@ WITH CHECK (
                         </code>
                     </div>
                 </div>,
-                { duration: 20000 }
+                { id: toastId, duration: 20000 }
             );
+        } finally {
+            setIsAddingBlog(false);
         }
     };
 
@@ -1998,7 +2015,16 @@ WITH CHECK (
                     {/* Manage Blogs Tab */}
                     {activeTab === 'blogs' && (
                         <div className="bg-white rounded-2xl shadow-sm border border-pink-100 p-4 sm:p-8">
-                            <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">Manage Blogs</h2>
+                            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4 sm:mb-6">
+                                <h2 className="text-xl sm:text-2xl font-bold">Manage Blogs</h2>
+                                <Button
+                                    onClick={() => setActiveTab('add-blog')}
+                                    className="bg-pink-600 hover:bg-pink-700 text-white flex items-center gap-2 text-xs sm:text-sm"
+                                >
+                                    <Plus className="w-4 h-4" />
+                                    Add New Blog
+                                </Button>
+                            </div>
 
                             {dataLoading.blogs ? (
                                 <div className="flex justify-center py-12">
@@ -2163,7 +2189,7 @@ WITH CHECK (
                                     <input
                                         type="text"
                                         value={newBlog.title}
-                                        onChange={(e) => setNewBlog({ ...newBlog, title: e.target.value })}
+                                        onChange={(e) => setNewBlog(prev => ({ ...prev, title: e.target.value }))}
                                         className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-pink-500 focus:ring-2 focus:ring-pink-100 outline-none"
                                         placeholder="e.g. The Art of Flower Arranging"
                                         required
@@ -2175,7 +2201,7 @@ WITH CHECK (
                                     <input
                                         type="text"
                                         value={newBlog.slug}
-                                        onChange={(e) => setNewBlog({ ...newBlog, slug: e.target.value })}
+                                        onChange={(e) => setNewBlog(prev => ({ ...prev, slug: e.target.value }))}
                                         className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-pink-500 focus:ring-2 focus:ring-pink-100 outline-none"
                                         placeholder="e.g. the-art-of-flower-arranging"
                                     />
@@ -2186,7 +2212,7 @@ WITH CHECK (
                                     <label className="block text-sm font-medium text-gray-700 mb-2">Excerpt (Short description)</label>
                                     <textarea
                                         value={newBlog.excerpt}
-                                        onChange={(e) => setNewBlog({ ...newBlog, excerpt: e.target.value })}
+                                        onChange={(e) => setNewBlog(prev => ({ ...prev, excerpt: e.target.value }))}
                                         className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-pink-500 focus:ring-2 focus:ring-pink-100 outline-none"
                                         placeholder="Brief description for blog listing..."
                                         rows="2"
@@ -2197,7 +2223,7 @@ WITH CHECK (
                                     <label className="block text-sm font-medium text-gray-700 mb-2">Content</label>
                                     <textarea
                                         value={newBlog.content}
-                                        onChange={(e) => setNewBlog({ ...newBlog, content: e.target.value })}
+                                        onChange={(e) => setNewBlog(prev => ({ ...prev, content: e.target.value }))}
                                         className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-pink-500 focus:ring-2 focus:ring-pink-100 outline-none"
                                         placeholder="Write your blog content here..."
                                         rows="10"
@@ -2211,7 +2237,7 @@ WITH CHECK (
                                         <input
                                             type="text"
                                             value={newBlog.author}
-                                            onChange={(e) => setNewBlog({ ...newBlog, author: e.target.value })}
+                                            onChange={(e) => setNewBlog(prev => ({ ...prev, author: e.target.value }))}
                                             className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-pink-500 focus:ring-2 focus:ring-pink-100 outline-none"
                                             placeholder="e.g. Flower Lifestyle"
                                         />
@@ -2220,7 +2246,7 @@ WITH CHECK (
                                         <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
                                         <select
                                             value={newBlog.category}
-                                            onChange={(e) => setNewBlog({ ...newBlog, category: e.target.value })}
+                                            onChange={(e) => setNewBlog(prev => ({ ...prev, category: e.target.value }))}
                                             className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-pink-500 focus:ring-2 focus:ring-pink-100 outline-none"
                                         >
                                             <option value="general">General</option>
@@ -2266,7 +2292,7 @@ WITH CHECK (
                                                 <input
                                                     type="url"
                                                     value={newBlog.image}
-                                                    onChange={(e) => setNewBlog({ ...newBlog, image: e.target.value })}
+                                                    onChange={(e) => setNewBlog(prev => ({ ...prev, image: e.target.value }))}
                                                     className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-pink-500 focus:ring-2 focus:ring-pink-100 outline-none"
                                                     placeholder="https://images.unsplash.com/..."
                                                 />
@@ -2282,7 +2308,7 @@ WITH CHECK (
                                                 />
                                                 <button
                                                     type="button"
-                                                    onClick={() => setNewBlog({ ...newBlog, image: '' })}
+                                                    onClick={() => setNewBlog(prev => ({ ...prev, image: '' }))}
                                                     className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 shadow-md hover:bg-red-600 transition-colors"
                                                 >
                                                     <X className="w-3 h-3" />
@@ -2297,7 +2323,7 @@ WITH CHECK (
                                         <input
                                             type="checkbox"
                                             checked={newBlog.published}
-                                            onChange={(e) => setNewBlog({ ...newBlog, published: e.target.checked })}
+                                            onChange={(e) => setNewBlog(prev => ({ ...prev, published: e.target.checked }))}
                                             className="rounded"
                                         />
                                         <span className="text-sm font-medium text-gray-700">Publish immediately</span>
@@ -2306,7 +2332,7 @@ WITH CHECK (
                                         <input
                                             type="checkbox"
                                             checked={newBlog.featured}
-                                            onChange={(e) => setNewBlog({ ...newBlog, featured: e.target.checked })}
+                                            onChange={(e) => setNewBlog(prev => ({ ...prev, featured: e.target.checked }))}
                                             className="rounded"
                                         />
                                         <span className="text-sm font-medium text-gray-700">Featured blog</span>
@@ -2316,9 +2342,11 @@ WITH CHECK (
                                 <div className="pt-4">
                                     <button 
                                         type="submit" 
-                                        className="w-full py-6 bg-pink-600 hover:bg-pink-700 text-white rounded-xl font-semibold"
+                                        disabled={isAddingBlog || isUploadingBlogImage}
+                                        className="w-full py-6 bg-pink-600 hover:bg-pink-700 disabled:opacity-60 disabled:cursor-not-allowed text-white rounded-xl font-semibold transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2"
                                     >
-                                        Add Blog
+                                        {isAddingBlog && <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>}
+                                        {isAddingBlog ? 'Adding Blog...' : isUploadingBlogImage ? 'Waiting for image upload...' : 'Add Blog'}
                                     </button>
                                 </div>
                             </form>
