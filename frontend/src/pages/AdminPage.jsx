@@ -5,6 +5,7 @@ import PageMetaTags from '../components/seo/PageMetaTags';
 import { Button } from '../components/ui/button';
 import { toast } from 'sonner';
 import { supabase, createFreshClient } from '../lib/supabase';
+import { uploadAndOptimizeImage } from '../lib/imageUtils';
 import { Plus, Image, Lock, User, LogOut, Package, Check, X, Clock, Edit, Trash2, Eye, EyeOff, Upload, BarChart2, TrendingUp, ShoppingBag, Bell } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import useOrderNotifications from '../hooks/useOrderNotifications';
@@ -353,84 +354,27 @@ USING (
         console.log('handleBlogImageUpload called');
         
         const file = event.target.files[0];
-        console.log('Selected file:', file);
-        
         if (!file) {
             toast.error('Please select a file first');
             return;
         }
 
-        // Basic validation
         if (!file.type.startsWith('image/')) {
             toast.error(`Please upload an image file. Selected type: ${file.type}`);
             return;
         }
 
-        if (file.size > 5 * 1024 * 1024) { // 5MB limit
-            toast.error(`File size must be less than 5MB. Selected size: ${(file.size / 1024 / 1024).toFixed(2)}MB`);
+        if (file.size > 20 * 1024 * 1024) {
+            toast.error(`File size must be less than 20MB.`);
             return;
         }
 
         setIsUploadingBlogImage(true);
-        
         try {
-            // Check authentication
-            const { data: authData } = await supabase.auth.getSession();
-            if (!authData.session) {
-                throw new Error('User not authenticated - cannot upload to Supabase Storage');
-            }
+            const { url, isStorageUrl } = await uploadAndOptimizeImage(file, 'blogs', 'blogs');
 
-            const fileExt = file.name.split('.').pop();
-            const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
-            const filePath = `blogs/${fileName}`;
-
-            console.log('Uploading blog image to:', filePath);
-
-            // Retry loop for upload
-            let uploadError = null;
-            for (let i = 0; i < 3; i++) {
-                try {
-                    const { data, error } = await supabase.storage
-                        .from('products')
-                        .upload(filePath, file, {
-                            cacheControl: '3600',
-                            upsert: false
-                        });
-
-                    if (error) {
-                        if (error.message?.includes('body stream') || 
-                            error.message?.includes('Failed to execute') ||
-                            error.message?.includes('timeout')) {
-                            console.warn(`Upload attempt ${i + 1} failed, retrying...`);
-                            await new Promise(r => setTimeout(r, 1000));
-                            continue;
-                        }
-                        uploadError = error;
-                        break;
-                    }
-
-                    const { data: { publicUrl } } = supabase.storage
-                        .from('products')
-                        .getPublicUrl(filePath);
-
-                    console.log('Blog image uploaded:', publicUrl);
-                    setNewBlog(prev => ({ ...prev, image: publicUrl }));
-                    toast.success('Blog image uploaded successfully');
-                    return;
-                } catch (e) {
-                    if (e.message?.includes('body stream') || 
-                        e.message?.includes('Failed to execute') ||
-                        e.message?.includes('timeout')) {
-                        console.warn(`Upload attempt ${i + 1} failed, retrying...`);
-                        await new Promise(r => setTimeout(r, 1000));
-                        continue;
-                    }
-                    uploadError = e;
-                    break;
-                }
-            }
-
-            if (uploadError) throw uploadError;
+            setNewBlog(prev => ({ ...prev, image: url }));
+            toast.success(isStorageUrl ? 'Blog image uploaded successfully' : 'Local blog image optimized & loaded');
         } catch (error) {
             console.error('Error uploading blog image:', error);
             toast.error(`Failed to upload blog image: ${error.message}`);
@@ -448,29 +392,17 @@ USING (
             toast.error('Please upload an image file.');
             return;
         }
-        if (file.size > 5 * 1024 * 1024) {
-            toast.error('File size must be less than 5MB.');
+        if (file.size > 20 * 1024 * 1024) {
+            toast.error('File size must be less than 20MB.');
             return;
         }
 
         setIsUploadingEditBlogImage(true);
         try {
-            const fileExt = file.name.split('.').pop();
-            const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
-            const filePath = `blogs/${fileName}`;
+            const { url, isStorageUrl } = await uploadAndOptimizeImage(file, 'blogs', 'blogs');
 
-            const { error } = await supabase.storage
-                .from('products')
-                .upload(filePath, file);
-
-            if (error) throw error;
-
-            const { data: { publicUrl } } = supabase.storage
-                .from('products')
-                .getPublicUrl(filePath);
-
-            setEditingBlog(prev => ({ ...prev, image: publicUrl }));
-            toast.success('Blog image uploaded successfully');
+            setEditingBlog(prev => ({ ...prev, image: url }));
+            toast.success(isStorageUrl ? 'Blog image uploaded successfully' : 'Local blog image optimized & loaded');
         } catch (error) {
             console.error('Error uploading edit blog image:', error);
             toast.error(`Failed to upload image: ${error.message}`);
