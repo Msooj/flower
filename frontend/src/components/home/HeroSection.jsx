@@ -41,14 +41,14 @@ const HeroSection = ({ isMobile = false }) => {
 
 
             <h1 className={`${isMobile ? 'text-2xl sm:text-3xl text-center' : 'text-3xl md:text-4xl lg:text-5xl'} font-bold text-gray-900 leading-tight mb-3 md:mb-6`}>
-              Flower Delivery Nairobi | Online Flower Shop Kenya — Same-Day Delivery
+              Premier Nairobi Florist — Fresh Flowers & Gifts with Same Day Delivery
             </h1>
             <h2 className={`${isMobile ? 'text-base sm:text-lg text-center' : 'text-lg md:text-xl lg:text-2xl'} font-semibold text-pink-600 mb-3 md:mb-6`}>
-              Birthday Flowers • Anniversary Bouquets • Funeral Wreaths • Red Roses • Wedding Flowers • Gift Combos
+              Beautiful Flowers • Special Gifts • Same Day Delivery in Nairobi • All Occasions
             </h2>
 
             <p className={`text-sm md:text-base lg:text-lg text-gray-600 mb-6 md:mb-8 max-w-lg leading-relaxed ${isMobile ? 'text-center' : ''}`}>
-              Whether you're looking for a florist near you or shopping online, Flower Lifestyle delivers stunning, handcrafted flower arrangements and gifts right to your loved ones in Nairobi. From red roses and anniversary bouquets to birthday combos and wedding flowers — we make every occasion extraordinary.
+              Welcome to your favorite online florist in Nairobi! We deliver handcrafted fresh flowers and unique gifts for all occasions with reliable same day delivery. Whether it's birthdays, anniversaries, or romantic surprises, let our Nairobi florists create unforgettable moments for your loved ones.
             </p>
 
             <div className={`flex flex-col sm:flex-row gap-3 md:gap-4 ${isMobile ? 'mb-8 justify-center' : 'mb-12'}`}>

@@ -19,6 +19,7 @@ const CartPage = () => {
     const [paymentMethod, setPaymentMethod] = useState('mpesa');
     const [mpesaNumber, setMpesaNumber] = useState('');
     const [paymentStatus, setPaymentStatus] = useState(null); // 'pending', 'success', 'failed'
+    const [completedOrder, setCompletedOrder] = useState(null);
     const [checkoutData, setCheckoutData] = useState({
         name: '',
         email: '',
@@ -121,7 +122,6 @@ const CartPage = () => {
 
             // Handle M-Pesa payment (manual confirmation)
             if (paymentMethod === 'mpesa') {
-                // Update order with phone number
                 const { error: updateError } = await supabase
                     .from('orders')
                     .update({
@@ -131,19 +131,46 @@ const CartPage = () => {
                     .eq('id', order.id);
 
                 if (updateError) throw updateError;
-
-                clearCart();
-                toast.success('Order placed successfully! We will verify your payment and process your order.');
-                setTimeout(() => {
-                    navigate('/');
-                }, 3000);
-            } else {
-                clearCart();
-                toast.success('Order placed successfully! Payment will be collected on delivery.');
-                setTimeout(() => {
-                    navigate('/');
-                }, 2000);
             }
+
+            // Build WhatsApp order message for 0742370307
+            const orderShortId = order.id ? order.id.slice(0, 8).toUpperCase() : 'NEW';
+            const itemsText = cart.map((item, i) => `${i + 1}. *${item.name}* (Qty: ${item.quantity}) - KSh ${(item.price * item.quantity).toLocaleString()}`).join('\n');
+
+            const whatsappMessage = 
+`🌸 *NEW FLOWER & GIFT ORDER (#${orderShortId})* 🌸\n\n` +
+`👤 *Customer Name:* ${checkoutData.name}\n` +
+`📞 *Phone Number:* ${checkoutData.phone}\n` +
+`📧 *Email:* ${checkoutData.email}\n` +
+`📍 *Delivery Address:* ${checkoutData.address}\n` +
+(checkoutData.deliveryDate ? `📅 *Delivery Date:* ${checkoutData.deliveryDate}\n` : '') +
+`⏰ *Preferred Time:* ${checkoutData.deliveryTime.toUpperCase()}\n` +
+(checkoutData.personalizedMessage ? `💌 *Card Message:* "${checkoutData.personalizedMessage}"\n` : '') +
+`💳 *Payment Method:* ${paymentMethod.toUpperCase()}${paymentMethod === 'mpesa' && mpesaNumber ? ` (M-Pesa No: ${mpesaNumber})` : ''}\n` +
+`💰 *Total Amount:* KSh ${cartTotal.toLocaleString()}\n\n` +
+`🛍️ *ITEMS ORDERED:*\n${itemsText}\n\n` +
+`Thank you for ordering with Flower Lifestyle!`;
+
+            const whatsappUrl = `https://wa.me/254742370307?text=${encodeURIComponent(whatsappMessage)}`;
+
+            // Clear cart & set completed order state
+            clearCart();
+            setCompletedOrder({
+                orderId: orderShortId,
+                whatsappUrl,
+                customerName: checkoutData.name,
+                customerPhone: checkoutData.phone,
+                totalAmount: cartTotal
+            });
+
+            // Automatically attempt opening WhatsApp window/tab
+            try {
+                window.open(whatsappUrl, '_blank');
+            } catch (err) {
+                console.error('WhatsApp auto-open prevented:', err);
+            }
+
+            toast.success('Order placed successfully! Redirecting to WhatsApp to send order details...');
 
         } catch (error) {
             console.error('Checkout error:', error);
@@ -158,6 +185,60 @@ const CartPage = () => {
             [e.target.name]: e.target.value
         }));
     };
+
+    if (completedOrder) {
+        return (
+            <div className="min-h-screen flex flex-col bg-gray-50 overflow-x-hidden">
+                <Header />
+                <main className="flex-1 container mx-auto px-4 py-12 flex items-center justify-center">
+                    <div className="max-w-lg w-full bg-white rounded-3xl shadow-xl border border-pink-100 p-8 text-center">
+                        <div className="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner">
+                            <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                            </svg>
+                        </div>
+
+                        <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Order Received! 🎉</h2>
+                        <p className="text-pink-600 font-semibold text-sm mb-4">Order ID: #{completedOrder.orderId}</p>
+
+                        <p className="text-gray-600 text-sm sm:text-base mb-6 leading-relaxed">
+                            Thank you, <span className="font-semibold text-gray-800">{completedOrder.customerName}</span>! Your order has been recorded. Order details are being sent directly to our WhatsApp line (<span className="font-semibold text-gray-800">0742370307</span>).
+                        </p>
+
+                        <div className="bg-pink-50/70 rounded-2xl p-4 mb-6 border border-pink-100 text-left text-sm space-y-2">
+                            <div className="flex justify-between text-gray-600">
+                                <span>Total Amount:</span>
+                                <span className="font-bold text-pink-600">{formatPrice(completedOrder.totalAmount)}</span>
+                            </div>
+                            <div className="flex justify-between text-gray-600">
+                                <span>Phone Number:</span>
+                                <span className="font-medium text-gray-800">{completedOrder.customerPhone}</span>
+                            </div>
+                        </div>
+
+                        <a
+                            href={completedOrder.whatsappUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="w-full inline-flex items-center justify-center gap-2 py-4 px-6 bg-green-500 hover:bg-green-600 text-white font-bold rounded-2xl shadow-lg transition-all duration-300 transform hover:scale-[1.02] mb-4 text-base"
+                        >
+                            <svg className="w-6 h-6 fill-current" viewBox="0 0 32 32">
+                                <path d="M16.002 2C8.28 2 2 8.28 2 16c0 2.48.67 4.8 1.84 6.8L2 30l7.4-1.8A13.94 13.94 0 0 0 16.002 30C23.72 30 30 23.72 30 16S23.72 2 16.002 2zm0 25.6a11.55 11.55 0 0 1-5.9-1.62l-.42-.25-4.38 1.07 1.1-4.27-.27-.44A11.56 11.56 0 0 1 4.4 16c0-6.4 5.2-11.6 11.6-11.6S27.6 9.6 27.6 16s-5.2 11.6-11.598 11.6zm6.36-8.68c-.35-.18-2.07-1.02-2.39-1.13-.32-.12-.55-.18-.78.18s-.9 1.13-1.1 1.37c-.2.23-.4.26-.75.09-.35-.18-1.47-.54-2.8-1.73a10.5 10.5 0 0 1-1.94-2.41c-.2-.35-.02-.54.15-.71.16-.16.35-.4.52-.6.18-.2.23-.35.35-.58.12-.23.06-.44-.03-.62-.09-.18-.78-1.88-1.07-2.57-.28-.68-.57-.59-.78-.6h-.67c-.23 0-.6.09-.91.43-.31.34-1.2 1.17-1.2 2.85s1.23 3.3 1.4 3.53c.18.23 2.42 3.7 5.86 5.19.82.35 1.46.56 1.96.72.82.26 1.57.22 2.16.13.66-.1 2.07-.85 2.36-1.67.29-.82.29-1.52.2-1.67-.08-.15-.31-.23-.66-.4z" />
+                            </svg>
+                            Open Order in WhatsApp (0742370307)
+                        </a>
+
+                        <Link to="/">
+                            <Button variant="outline" className="w-full border-gray-200 text-gray-700 py-3 rounded-xl hover:bg-gray-50">
+                                Return to Home
+                            </Button>
+                        </Link>
+                    </div>
+                </main>
+                <Footer />
+            </div>
+        );
+    }
 
     if (cart.length === 0) {
         return (
