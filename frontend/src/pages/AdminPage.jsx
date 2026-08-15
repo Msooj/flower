@@ -6,6 +6,7 @@ import { Button } from '../components/ui/button';
 import { toast } from 'sonner';
 import { supabase, createFreshClient } from '../lib/supabase';
 import { uploadAndOptimizeImage } from '../lib/imageUtils';
+import { invalidateProductCache } from '../lib/products';
 import { Plus, Image, Lock, User, LogOut, Package, Check, X, Clock, Edit, Trash2, Eye, EyeOff, Upload, BarChart2, TrendingUp, ShoppingBag, Bell } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import useOrderNotifications from '../hooks/useOrderNotifications';
@@ -793,6 +794,7 @@ USING (
 
             toast.success(`Product "${newItem.name}" added successfully!`, { id: toastId });
             setNewItem({ name: '', description: '', price: '', category: 'girlfriends-day', image: '', stock: 100 });
+            invalidateProductCache(); // bust public storefront cache
             await loadProducts(session, true);
             setActiveTab('manage-products');
         } catch (error) {
@@ -831,6 +833,7 @@ USING (
 
             toast.success('Product updated successfully!');
             setEditingProduct(null);
+            invalidateProductCache(); // bust public storefront cache
             loadProducts(null, true);
         } catch (error) {
             console.error('Error updating product:', error);
@@ -850,6 +853,7 @@ USING (
 
             if (error) throw error;
             toast.success(`Product "${productName}" deleted successfully!`);
+            invalidateProductCache(); // bust public storefront cache
             loadProducts(null, true);
         } catch (error) {
             console.error('Error deleting product:', error);

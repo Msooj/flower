@@ -18,7 +18,7 @@ export const isRetryableError = (error) => {
 };
 
 /** Retry transient Supabase query failures (network, 5xx, timeouts). */
-export const runSupabaseQuery = async (queryFn, { retries = 3, baseDelayMs = 600 } = {}) => {
+export const runSupabaseQuery = async (queryFn, { retries = 3, baseDelayMs = 250 } = {}) => {
   let lastResult = { data: null, error: null };
 
   for (let attempt = 0; attempt < retries; attempt += 1) {
