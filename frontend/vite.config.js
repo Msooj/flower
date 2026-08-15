@@ -14,6 +14,7 @@ export default defineConfig({
         host: true, // Listen on all local IPs
         port: 3001,
         open: false,
+        historyApiFallback: true, // Serve index.html for all 404s (fixes page reload on sub-routes)
         proxy: {
             '/api': {
                 target: 'http://localhost:8000',

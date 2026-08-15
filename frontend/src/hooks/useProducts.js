@@ -4,12 +4,16 @@ import { allProducts } from '../data/mock';
 
 /**
  * Shared product loader with DB retries and optional mock fallback.
+ * On first render, mock data is shown immediately (no loading flash).
+ * If the DB fetch succeeds, products are upgraded to live data.
  */
 export function useProducts({ limit = 50, fallbackToMock = true } = {}) {
-  const [products, setProducts] = useState([]);
+  // Initialise with mock data immediately so the page always renders on reload.
+  const initialProducts = fallbackToMock ? allProducts.slice(0, limit) : [];
+  const [products, setProducts] = useState(initialProducts);
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState(null);
-  const [dataSource, setDataSource] = useState('loading');
+  const [dataSource, setDataSource] = useState(fallbackToMock ? 'fallback' : 'loading');
 
   const load = useCallback(async () => {
     setIsLoading(true);
