@@ -64,6 +64,8 @@ const AdminPage = () => {
 
     // Track which tabs have already fetched data so tab switches don't re-fetch unnecessarily
     const dataLoaded = React.useRef({ orders: false, products: false, users: false, blogs: false });
+    // Prevent concurrent fetches for the same resource
+    const isFetching = React.useRef({ orders: false, products: false, users: false, blogs: false });
 
     // Check if user is admin on component mount
     useEffect(() => {
@@ -77,7 +79,8 @@ const AdminPage = () => {
 
     const checkAdminAuth = async () => {
         try {
-            // Race against an 8-second deadline so the spinner never hangs forever
+            // getSession() reads from localStorage first — fast, no network round-trip
+            // if the stored token is expired Supabase will silently refresh it
             const { data, error } = await withTimeout(
                 supabase.auth.getSession(),
                 8000,
@@ -98,14 +101,9 @@ const AdminPage = () => {
             }
 
             setCurrentUser({ email: session.user.email, role: 'admin' });
+            // Setting isAuthenticated = true will trigger the tab useEffect below,
+            // which loads the active tab's data automatically — no need to call loadX here.
             setIsAuthenticated(true);
-
-            // Load only the active tab on mount — other tabs load lazily on switch
-            const tab = localStorage.getItem('adminActiveTab') || 'orders';
-            if (tab === 'users') loadUsers(session);
-            else if (tab === 'manage-products' || tab === 'products') loadProducts(session);
-            else if (tab === 'blogs' || tab === 'add-blog') loadBlogs();
-            else loadOrders(session);
 
         } catch (error) {
             console.error('Auth check error:', error.message);
@@ -485,9 +483,10 @@ USING (
 
     const loadUsers = async (existingSession = null, force = false) => {
         if (!force && dataLoaded.current.users && users.length > 0) return;
+        if (isFetching.current.users) return; // prevent concurrent fetches
+        isFetching.current.users = true;
         setDataLoading(prev => ({ ...prev, users: true }));
         try {
-            // Reuse a passed-in session to avoid an extra network round-trip
             let session = existingSession;
             if (!session) {
                 const { data } = await supabase.auth.getSession();
@@ -507,15 +506,12 @@ USING (
 
             if (error) {
                 console.error('Supabase query error:', error);
-                console.error('Error details:', JSON.stringify(error, null, 2));
-                // Check for RLS policy errors
                 if (error.code === 'PGRST301' || error.message?.includes('permission denied') || error.message?.includes('row-level security') || error.message?.includes('recursion')) {
                     toast.error('RLS policy error. Please run fix_database_columns.sql in Supabase SQL Editor.');
                 } else if (error.message?.includes('does not exist')) {
                     toast.error('Database schema mismatch. Please run fix_database_columns.sql in Supabase SQL Editor.');
                 } else {
-                    const errorMsg = error.message || error.details || 'Unknown error';
-                    toast.error(`Failed to load users: ${errorMsg}`);
+                    toast.error(`Failed to load users: ${error.message || error.details || 'Unknown error'}`);
                 }
                 setUsers([]);
                 return;
@@ -529,12 +525,15 @@ USING (
             toast.error(`Failed to load user profiles: ${error.message}`);
             setUsers([]);
         } finally {
+            isFetching.current.users = false;
             setDataLoading(prev => ({ ...prev, users: false }));
         }
     };
 
     const loadOrders = async (existingSession = null, force = false) => {
         if (!force && dataLoaded.current.orders && orders.length > 0) return;
+        if (isFetching.current.orders) return; // prevent concurrent fetches
+        isFetching.current.orders = true;
         setDataLoading(prev => ({ ...prev, orders: true }));
         try {
             let session = existingSession;
@@ -544,7 +543,7 @@ USING (
             }
             if (!session) throw new Error('No active session. Please log in again.');
 
-            // Only fetch the fields we actually need — avoids a heavy triple-join scan
+            // Fetch orders without the nested join first (fast) — items shown inline from stored data
             const { data, error } = await withTimeout(
                 supabase
                     .from('orders')
@@ -557,13 +556,10 @@ USING (
 
             if (error) {
                 console.error('Supabase query error:', error);
-                console.error('Error details:', JSON.stringify(error, null, 2));
-                // Check for RLS policy errors
                 if (error.code === 'PGRST301' || error.message?.includes('permission denied') || error.message?.includes('row-level security') || error.message?.includes('recursion')) {
                     toast.error('RLS policy error. Please run fix_database_columns.sql in Supabase SQL Editor.');
                 } else {
-                    const errorMsg = error.message || error.details || 'Unknown error';
-                    toast.error(`Failed to load orders: ${errorMsg}`);
+                    toast.error(`Failed to load orders: ${error.message || error.details || 'Unknown error'}`);
                 }
                 setOrders([]);
                 return;
@@ -577,12 +573,15 @@ USING (
             toast.error(`Failed to load orders: ${error.message}`);
             setOrders([]);
         } finally {
+            isFetching.current.orders = false;
             setDataLoading(prev => ({ ...prev, orders: false }));
         }
     };
 
     const loadProducts = async (existingSession = null, force = false) => {
         if (!force && dataLoaded.current.products && products.length > 0) return;
+        if (isFetching.current.products) return; // prevent concurrent fetches
+        isFetching.current.products = true;
         try {
             setDataLoading(prev => ({ ...prev, products: true }));
 
@@ -605,13 +604,10 @@ USING (
 
             if (error) {
                 console.error('Supabase query error:', error);
-                console.error('Error details:', JSON.stringify(error, null, 2));
-                // Check for RLS policy errors
                 if (error.code === 'PGRST301' || error.message?.includes('permission denied') || error.message?.includes('row-level security') || error.message?.includes('recursion')) {
                     toast.error('RLS policy error. Please run fix_database_columns.sql in Supabase SQL Editor.');
                 } else {
-                    const errorMsg = error.message || error.details || 'Unknown error';
-                    toast.error(`Database error: ${errorMsg}`);
+                    toast.error(`Database error: ${error.message || error.details || 'Unknown error'}`);
                 }
                 setProducts([]);
                 return;
@@ -630,12 +626,15 @@ USING (
             toast.error(`Failed to connect to database: ${error.message}`);
             setProducts([]);
         } finally {
+            isFetching.current.products = false;
             setDataLoading(prev => ({ ...prev, products: false }));
         }
     };
 
     const loadBlogs = async (force = false) => {
         if (!force && dataLoaded.current.blogs && blogs.length > 0) return;
+        if (isFetching.current.blogs) return; // prevent concurrent fetches
+        isFetching.current.blogs = true;
         try {
             setDataLoading(prev => ({ ...prev, blogs: true }));
             console.log('Loading blogs...');
@@ -663,6 +662,7 @@ USING (
             toast.error(`Failed to load blogs: ${error.message}`);
             setBlogs([]);
         } finally {
+            isFetching.current.blogs = false;
             setDataLoading(prev => ({ ...prev, blogs: false }));
         }
     };
@@ -794,7 +794,6 @@ USING (
             toast.success(`Product "${newItem.name}" added successfully!`, { id: toastId });
             setNewItem({ name: '', description: '', price: '', category: 'girlfriends-day', image: '', stock: 100 });
             await loadProducts(session, true);
-            dataLoaded.current.products = false; // force tab effect to re-fetch if needed
             setActiveTab('manage-products');
         } catch (error) {
             console.error('Error adding product:', error);
