@@ -37,7 +37,6 @@ const FlowersPage = ({ isMobile = false }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { products: dbProducts, isLoading, loadError, dataSource, retry } = useProducts({
     limit: 50,
-    fallbackToMock: true,
   });
 
   // --- Clean URL priority: route param > query param (backward compat) ---
@@ -438,7 +437,11 @@ const FlowersPage = ({ isMobile = false }) => {
               </p>
             </div>
 
-            {filteredProducts.length === 0 ? (
+            {isLoading ? (
+              <div className="flex justify-center items-center py-20">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-500"></div>
+              </div>
+            ) : filteredProducts.length === 0 ? (
               <div className="text-center py-16 bg-white rounded-2xl border border-pink-100 max-w-md mx-auto">
                 <p className="text-gray-500 text-lg">No products found matching your criteria.</p>
                 <Button

@@ -1,10 +1,9 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { Heart, ShoppingBag, Star, Eye } from 'lucide-react';
+import { Heart, ShoppingBag } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
-import { featuredProducts as mockFeaturedProducts } from '../../data/mock';
 import { useProducts } from '../../hooks/useProducts';
 import { useCurrency } from '../ui/CurrencyConverter';
 
@@ -119,7 +118,7 @@ const ProductCard = ({ product, index }) => {
 
 const FeaturedProducts = () => {
   const navigate = useNavigate();
-  const { products, isLoading } = useProducts({ limit: 4, fallbackToMock: true });
+  const { products, isLoading } = useProducts({ limit: 4 });
 
   return (
     <section className="py-16 bg-gradient-to-b from-white to-pink-50">
@@ -159,7 +158,11 @@ const FeaturedProducts = () => {
           </motion.div>
         </div>
 
-        {products.length === 0 ? (
+        {isLoading ? (
+          <div className="flex justify-center items-center py-20">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-500"></div>
+          </div>
+        ) : products.length === 0 ? (
           <div className="text-center py-16 bg-white rounded-2xl border border-pink-100">
             <p className="text-gray-500 text-lg">No featured products available at the moment.</p>
           </div>
