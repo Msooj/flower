@@ -10,11 +10,20 @@ import { Plus, Image, Lock, User, LogOut, Package, Check, X, Clock, Edit, Trash2
 import { useNavigate } from 'react-router-dom';
 import useOrderNotifications from '../hooks/useOrderNotifications';
 
+// Helper: wraps a promise with a timeout so Supabase calls never hang indefinitely
+const withTimeout = (promise, ms, label = 'Request') =>
+    Promise.race([
+        promise,
+        new Promise((_, reject) =>
+            setTimeout(() => reject(new Error(`${label} timed out after ${ms / 1000}s. Check your connection and try again.`)), ms)
+        )
+    ]);
+
 const AdminPage = () => {
     const navigate = useNavigate();
     const { requestPermission, testNotification } = useOrderNotifications(true);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
-    // Start as false — show login form immediately, then check session in background
+    // Start as true — show spinner briefly, resolve quickly once session is known
     const [isLoading, setIsLoading] = useState(true);
     const [activeTab, setActiveTab] = useState(() => localStorage.getItem('adminActiveTab') || 'orders');
     const [currentUser, setCurrentUser] = useState({ email: '', role: '' });
@@ -53,6 +62,9 @@ const AdminPage = () => {
     const [users, setUsers] = useState([]);
     const [dataLoading, setDataLoading] = useState({ users: false, orders: false, products: false, blogs: false });
 
+    // Track which tabs have already fetched data so tab switches don't re-fetch unnecessarily
+    const dataLoaded = React.useRef({ orders: false, products: false, users: false, blogs: false });
+
     // Check if user is admin on component mount
     useEffect(() => {
         checkAdminAuth();
@@ -65,7 +77,12 @@ const AdminPage = () => {
 
     const checkAdminAuth = async () => {
         try {
-            const { data, error } = await supabase.auth.getSession();
+            // Race against an 8-second deadline so the spinner never hangs forever
+            const { data, error } = await withTimeout(
+                supabase.auth.getSession(),
+                8000,
+                'Session check'
+            );
 
             if (error) {
                 console.error('Session check error:', error);
@@ -87,6 +104,7 @@ const AdminPage = () => {
             const tab = localStorage.getItem('adminActiveTab') || 'orders';
             if (tab === 'users') loadUsers(session);
             else if (tab === 'manage-products' || tab === 'products') loadProducts(session);
+            else if (tab === 'blogs' || tab === 'add-blog') loadBlogs();
             else loadOrders(session);
 
         } catch (error) {
@@ -465,7 +483,8 @@ USING (
 
 
 
-    const loadUsers = async (existingSession = null) => {
+    const loadUsers = async (existingSession = null, force = false) => {
+        if (!force && dataLoaded.current.users && users.length > 0) return;
         setDataLoading(prev => ({ ...prev, users: true }));
         try {
             // Reuse a passed-in session to avoid an extra network round-trip
@@ -476,9 +495,15 @@ USING (
             }
             if (!session) throw new Error('No active session. Please log in again.');
 
-            const { data, error } = await supabase
-                .from('user_profiles')
-                .select('*');
+            const { data, error } = await withTimeout(
+                supabase
+                    .from('user_profiles')
+                    .select('*')
+                    .order('created_at', { ascending: false })
+                    .limit(500),
+                15000,
+                'Load users'
+            );
 
             if (error) {
                 console.error('Supabase query error:', error);
@@ -496,17 +521,9 @@ USING (
                 return;
             }
 
-            // Sort by email as fallback if created_at doesn't exist
-            const sortedData = data ? [...data].sort((a, b) => {
-                // Try to sort by created_at if available, otherwise by email
-                if (a.created_at && b.created_at) {
-                    return new Date(b.created_at) - new Date(a.created_at);
-                }
-                return (a.email || '').localeCompare(b.email || '');
-            }) : [];
-
-            console.log('Users loaded:', sortedData.length);
-            setUsers(sortedData);
+            console.log('Users loaded:', data?.length ?? 0);
+            setUsers(data || []);
+            dataLoaded.current.users = true;
         } catch (error) {
             console.error('Error loading users:', error);
             toast.error(`Failed to load user profiles: ${error.message}`);
@@ -516,7 +533,8 @@ USING (
         }
     };
 
-    const loadOrders = async (existingSession = null) => {
+    const loadOrders = async (existingSession = null, force = false) => {
+        if (!force && dataLoaded.current.orders && orders.length > 0) return;
         setDataLoading(prev => ({ ...prev, orders: true }));
         try {
             let session = existingSession;
@@ -526,9 +544,16 @@ USING (
             }
             if (!session) throw new Error('No active session. Please log in again.');
 
-            const { data, error } = await supabase
-                .from('orders')
-                .select('*, order_items(*, product:products(image, name))');
+            // Only fetch the fields we actually need — avoids a heavy triple-join scan
+            const { data, error } = await withTimeout(
+                supabase
+                    .from('orders')
+                    .select('*, order_items(id, quantity, price, product_name, product_id, product:products(id, name, image))')
+                    .order('created_at', { ascending: false })
+                    .limit(300),
+                15000,
+                'Load orders'
+            );
 
             if (error) {
                 console.error('Supabase query error:', error);
@@ -544,16 +569,9 @@ USING (
                 return;
             }
 
-            // Sort by created_at in JavaScript if available
-            const sortedData = data ? [...data].sort((a, b) => {
-                if (a.created_at && b.created_at) {
-                    return new Date(b.created_at) - new Date(a.created_at);
-                }
-                return 0;
-            }) : [];
-
-            console.log('Orders loaded:', sortedData.length);
-            setOrders(sortedData);
+            console.log('Orders loaded:', data?.length ?? 0);
+            setOrders(data || []);
+            dataLoaded.current.orders = true;
         } catch (error) {
             console.error('Error loading orders:', error);
             toast.error(`Failed to load orders: ${error.message}`);
@@ -563,7 +581,8 @@ USING (
         }
     };
 
-    const loadProducts = async (existingSession = null) => {
+    const loadProducts = async (existingSession = null, force = false) => {
+        if (!force && dataLoaded.current.products && products.length > 0) return;
         try {
             setDataLoading(prev => ({ ...prev, products: true }));
 
@@ -574,9 +593,15 @@ USING (
             }
             if (!session) throw new Error('No active session. Please log in again.');
 
-            const { data, error } = await supabase
-                .from('products')
-                .select('*');
+            const { data, error } = await withTimeout(
+                supabase
+                    .from('products')
+                    .select('*')
+                    .order('created_at', { ascending: false })
+                    .limit(500),
+                15000,
+                'Load products'
+            );
 
             if (error) {
                 console.error('Supabase query error:', error);
@@ -592,18 +617,11 @@ USING (
                 return;
             }
 
-            // Sort by created_at in JavaScript if available
-            const sortedData = data ? [...data].sort((a, b) => {
-                if (a.created_at && b.created_at) {
-                    return new Date(b.created_at) - new Date(a.created_at);
-                }
-                return (a.name || '').localeCompare(b.name || '');
-            }) : [];
+            console.log('Products loaded:', data?.length ?? 0);
+            setProducts(data || []);
+            dataLoaded.current.products = true;
 
-            console.log('Products loaded:', sortedData.length);
-            setProducts(sortedData);
-
-            if (sortedData.length === 0) {
+            if ((data || []).length === 0) {
                 toast.info('No products found. Add some products first.');
             }
 
@@ -616,25 +634,30 @@ USING (
         }
     };
 
-    const loadBlogs = async () => {
+    const loadBlogs = async (force = false) => {
+        if (!force && dataLoaded.current.blogs && blogs.length > 0) return;
         try {
             setDataLoading(prev => ({ ...prev, blogs: true }));
             console.log('Loading blogs...');
-            
-            const { data, error } = await supabase
-                .from('blogs')
-                .select('*')
-                .order('created_at', { ascending: false });
 
-            console.log('Blogs query result:', { data, error });
+            const { data, error } = await withTimeout(
+                supabase
+                    .from('blogs')
+                    .select('*')
+                    .order('created_at', { ascending: false })
+                    .limit(200),
+                15000,
+                'Load blogs'
+            );
 
             if (error) {
                 console.error('Blogs query error:', error);
                 throw error;
             }
-            
+
             console.log('Blogs loaded:', data?.length || 0);
             setBlogs(data || []);
+            dataLoaded.current.blogs = true;
         } catch (error) {
             console.error('Error loading blogs:', error);
             toast.error(`Failed to load blogs: ${error.message}`);
@@ -644,14 +667,13 @@ USING (
         }
     };
 
-    // Reload data when tabs change to ensure freshness
+    // Load data lazily when switching tabs — skips re-fetch if already loaded
     useEffect(() => {
-        if (isAuthenticated) {
-            if (activeTab === 'users') loadUsers();
-            if (activeTab === 'orders') loadOrders();
-            if (activeTab === 'manage-products' || activeTab === 'products') loadProducts();
-            if (activeTab === 'blogs' || activeTab === 'add-blog') loadBlogs();
-        }
+        if (!isAuthenticated) return;
+        if (activeTab === 'users') loadUsers();
+        if (activeTab === 'orders') loadOrders();
+        if (activeTab === 'manage-products' || activeTab === 'products') loadProducts();
+        if (activeTab === 'blogs' || activeTab === 'add-blog') loadBlogs();
     }, [activeTab, isAuthenticated]);
 
     const runEmergencyTest = async () => {
@@ -695,7 +717,7 @@ USING (
             if (error) throw error;
 
             toast.success(`Order status updated to ${newStatus}`);
-            loadOrders();
+            loadOrders(null, true);
         } catch (error) {
             toast.error(`Failed to update order status: ${error.message}`);
         }
@@ -771,7 +793,8 @@ USING (
 
             toast.success(`Product "${newItem.name}" added successfully!`, { id: toastId });
             setNewItem({ name: '', description: '', price: '', category: 'girlfriends-day', image: '', stock: 100 });
-            await loadProducts(session);
+            await loadProducts(session, true);
+            dataLoaded.current.products = false; // force tab effect to re-fetch if needed
             setActiveTab('manage-products');
         } catch (error) {
             console.error('Error adding product:', error);
@@ -809,7 +832,7 @@ USING (
 
             toast.success('Product updated successfully!');
             setEditingProduct(null);
-            loadProducts();
+            loadProducts(null, true);
         } catch (error) {
             console.error('Error updating product:', error);
             toast.error('Failed to update product');
@@ -828,7 +851,7 @@ USING (
 
             if (error) throw error;
             toast.success(`Product "${productName}" deleted successfully!`);
-            loadProducts();
+            loadProducts(null, true);
         } catch (error) {
             console.error('Error deleting product:', error);
             toast.error('Failed to delete product');
@@ -845,7 +868,7 @@ USING (
             const { error } = await supabase.from('orders').delete().eq('id', orderId);
             if (error) throw error;
             toast.success(`Order from "${customerName}" deleted.`);
-            loadOrders();
+            loadOrders(null, true);
         } catch (error) {
             console.error('Error deleting order:', error);
             toast.error(`Failed to delete order: ${error.message}`);
@@ -932,7 +955,7 @@ USING (
                 published: false,
                 featured: false
             });
-            await loadBlogs();
+            await loadBlogs(true);
             setActiveTab('blogs');
         } catch (error) {
             console.error('Error adding blog:', error);
@@ -991,7 +1014,7 @@ WITH CHECK (
 
             toast.success('Blog updated successfully!');
             setEditingBlog(null);
-            loadBlogs();
+            loadBlogs(true);
         } catch (error) {
             console.error('Error updating blog:', error);
             toast.error('Failed to update blog');
@@ -1006,7 +1029,7 @@ WITH CHECK (
 
             if (error) throw error;
             toast.success(`Blog "${blogTitle}" deleted successfully!`);
-            loadBlogs();
+            loadBlogs(true);
         } catch (error) {
             console.error('Error deleting blog:', error);
             toast.error('Failed to delete blog');
@@ -1219,9 +1242,9 @@ WITH CHECK (
                             </Button>
                             <Button
                                 onClick={() => {
-                                    loadOrders();
-                                    loadProducts();
-                                    loadUsers();
+                                    loadOrders(null, true);
+                                    loadProducts(null, true);
+                                    loadUsers(null, true);
                                     toast.success('Dashboard data refreshed');
                                 }}
                                 variant="outline"
