@@ -32,7 +32,7 @@ const TestimonialsSection = () => {
             transition={{ delay: 0.2 }}
             className="text-gray-600 max-w-2xl mx-auto"
           >
-            Join thousands of happy customers who've experienced the Flower Lifestyle difference
+            Join 500+ happy customers who've experienced the Flower Lifestyle difference
           </motion.p>
         </div>
 

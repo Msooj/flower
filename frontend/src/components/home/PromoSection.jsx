@@ -42,7 +42,7 @@ const PromoSection = () => {
             <div className="absolute -top-5 -right-5 w-20 h-20 bg-white/10 rounded-full" />
           </motion.div>
 
-          {/* Promo Card 2 */}
+          {/* Promo Card 2 — Shop by Occasion */}
           <motion.div
             initial={{ opacity: 0, x: 30 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -54,19 +54,36 @@ const PromoSection = () => {
               alt="Florist at work"
               className="w-full h-full object-cover absolute inset-0"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-pink-900/80 via-pink-900/40 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-pink-900/85 via-pink-900/50 to-transparent" />
             <div className="relative z-10 p-8 md:p-10 h-full flex flex-col justify-end min-h-[300px]">
-              <h3 className="text-2xl md:text-3xl font-bold text-white mb-3">
-                Free Same Day Delivery
+              <span className="inline-flex items-center gap-2 px-3 py-1 bg-white/20 text-white rounded-full text-sm mb-4 w-fit">
+                <Gift className="w-4 h-4" />
+                Shop by Occasion
+              </span>
+              <h3 className="text-2xl md:text-3xl font-bold text-white mb-4">
+                Find the Perfect Bouquet
               </h3>
-              <p className="text-white/90 mb-6 max-w-sm">
-                Order before 2 PM for same day delivery within Nairobi. Express your love faster!
-              </p>
+              <div className="flex flex-wrap gap-2 mb-6">
+                {[
+                  { label: '🎂 Birthday', href: '/flowers/birthday' },
+                  { label: '💍 Anniversary', href: '/flowers/anniversary' },
+                  { label: '❤️ Romance', href: '/flowers/romance' },
+                  { label: '🎁 Gift Combos', href: '/flowers/combos' },
+                ].map(({ label, href }) => (
+                  <a
+                    key={href}
+                    href={href}
+                    className="px-3 py-1.5 bg-white/20 hover:bg-white/30 text-white text-sm font-medium rounded-full transition-colors"
+                  >
+                    {label}
+                  </a>
+                ))}
+              </div>
               <a
                 href="/flowers"
-                className="w-fit border-white text-white hover:bg-white hover:text-pink-600 rounded-full group inline-flex items-center justify-center text-center font-medium py-3 px-8 transition-colors"
+                className="w-fit border border-white text-white hover:bg-white hover:text-pink-600 rounded-full group inline-flex items-center justify-center text-center font-medium py-3 px-8 transition-colors"
               >
-                Browse Collection
+                Browse All Flowers
                 <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </a>
             </div>

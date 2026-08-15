@@ -31,6 +31,9 @@ import AnniversaryFlowersPage from "./pages/AnniversaryFlowersPage";
 import WhatsAppButton from "./components/common/WhatsAppButton";
 import GoogleAnalytics from "./components/seo/GoogleAnalytics";
 import NotFoundPage from "./pages/NotFoundPage";
+import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
+import TermsOfServicePage from "./pages/TermsOfServicePage";
+import ReturnsPage from "./pages/ReturnsPage";
 import { useAuthCallback } from "./hooks/useAuthCallback";
 import { neighborhoods } from "./data/neighborhoodData";
 
@@ -99,12 +102,17 @@ function App() {
                     <Route path="/roses-delivery-nairobi" element={<RosesDeliveryPage />} />
                     <Route path="/anniversary-flowers-nairobi" element={<AnniversaryFlowersPage />} />
 
+                    {/* Legal pages */}
+                    <Route path="/privacy" element={<PrivacyPolicyPage />} />
+                    <Route path="/terms" element={<TermsOfServicePage />} />
+                    <Route path="/returns" element={<ReturnsPage />} />
+
                     <Route path="*" element={<NotFoundPage />} />
                   </Routes>
                 </AuthWrapper>
+                <WhatsAppButton />
               </BrowserRouter>
             </HelmetProvider>
-            <WhatsAppButton />
             <Toaster position="top-right" richColors />
           </CurrencyProvider>
         </WishlistProvider>

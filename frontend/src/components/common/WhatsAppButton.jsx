@@ -1,9 +1,35 @@
 import React from 'react';
+import { useLocation } from 'react-router-dom';
+
+const PHONE = '254742370307';
+
+const getContextMessage = (pathname) => {
+  if (pathname.startsWith('/flowers/')) {
+    const category = pathname.split('/flowers/')[1];
+    const categoryNames = {
+      birthday: 'birthday flowers',
+      roses: 'roses',
+      romance: 'romantic flowers',
+      anniversary: 'anniversary flowers',
+      combos: 'a flower gift combo',
+      'money-bouquet': 'a money bouquet',
+      'mothers-day': "Mother's Day flowers",
+      'girlfriends-day': "Girlfriend's Day flowers",
+    };
+    const name = categoryNames[category] || 'flowers';
+    return `Hi Flower Lifestyle! I'd like to order ${name}. Could you please help me?`;
+  }
+  if (pathname === '/flowers') return "Hi Flower Lifestyle! I'd like to browse your flower collection and place an order.";
+  if (pathname === '/cart') return "Hi Flower Lifestyle! I need some help with my order.";
+  if (pathname === '/delivery') return "Hi Flower Lifestyle! I have a question about delivery.";
+  if (pathname === '/returns') return "Hi Flower Lifestyle! I have a question about returns or refunds.";
+  return "Hi Flower Lifestyle! I'd like to order some flowers. 🌸";
+};
 
 const WhatsAppButton = () => {
-  const phoneNumber = '+254742370307';
-  const message = 'Hello, I would like to order some flowers.';
-  const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+  const location = useLocation();
+  const message = getContextMessage(location.pathname);
+  const whatsappUrl = `https://wa.me/${PHONE}?text=${encodeURIComponent(message)}`;
 
   return (
     <a

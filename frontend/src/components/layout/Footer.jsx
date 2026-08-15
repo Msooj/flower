@@ -54,7 +54,7 @@ const Footer = () => {
 
       {/* Main Footer Grid */}
       <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
 
           {/* Brand */}
           <div>
@@ -114,6 +114,16 @@ const Footer = () => {
               <li><Link to="/blog" className="text-gray-600 hover:text-pink-600 transition-colors text-sm">Blog &amp; Articles</Link></li>
               <li><Link to="/about" className="text-gray-600 hover:text-pink-600 transition-colors text-sm">About Us</Link></li>
               <li><Link to="/florist-kenya" className="text-gray-600 hover:text-pink-600 transition-colors text-sm">Florist in Kenya</Link></li>
+            </ul>
+          </div>
+
+          {/* Legal */}
+          <div>
+            <h4 className="text-lg font-semibold text-gray-800 mb-4">Legal</h4>
+            <ul className="space-y-3">
+              <li><Link to="/privacy" className="text-gray-600 hover:text-pink-600 transition-colors text-sm">Privacy Policy</Link></li>
+              <li><Link to="/terms" className="text-gray-600 hover:text-pink-600 transition-colors text-sm">Terms of Service</Link></li>
+              <li><Link to="/returns" className="text-gray-600 hover:text-pink-600 transition-colors text-sm">Returns &amp; Refunds</Link></li>
             </ul>
           </div>
 
