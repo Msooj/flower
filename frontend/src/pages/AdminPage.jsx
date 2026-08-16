@@ -4,7 +4,7 @@ import Footer from '../components/layout/Footer';
 import PageMetaTags from '../components/seo/PageMetaTags';
 import { Button } from '../components/ui/button';
 import { toast } from 'sonner';
-import { supabase, createFreshClient } from '../lib/supabase';
+import { supabase } from '../lib/supabase';
 import { uploadAndOptimizeImage } from '../lib/imageUtils';
 import { invalidateProductCache } from '../lib/products';
 import { Plus, Image, Lock, User, LogOut, Package, Check, X, Clock, Edit, Trash2, Eye, EyeOff, Upload, BarChart2, TrendingUp, ShoppingBag, Bell } from 'lucide-react';
@@ -84,7 +84,7 @@ const AdminPage = () => {
             // if the stored token is expired Supabase will silently refresh it
             const { data, error } = await withTimeout(
                 supabase.auth.getSession(),
-                8000,
+                15000,
                 'Session check'
             );
 
@@ -445,16 +445,24 @@ USING (
             if (error) throw error;
             if (!data?.session) throw new Error('Login succeeded but no session returned');
 
-            const { error: profileError } = await supabase.from('user_profiles').upsert({
-                id: data.session.user.id,
-                email: data.session.user.email,
-                role: 'admin',
-                updated_at: new Date().toISOString()
-            }, { onConflict: 'id' });
+            // Verify admin role BEFORE granting access (Bug 5 fix)
+            // Do NOT upsert role: 'admin' — that would promote any user to admin!
+            const { data: profile, error: profileError } = await supabase
+                .from('user_profiles')
+                .select('role')
+                .eq('id', data.session.user.id)
+                .single();
 
-            if (profileError) {
-                console.warn('Profile upgrade warning:', profileError);
-                toast.warning('Logged in, but admin profile may not be saved. Product add could fail until profile is fixed.');
+            if (profileError && profileError.code !== 'PGRST116') {
+                console.warn('Profile check warning:', profileError);
+            }
+
+            if (!profile || profile.role !== 'admin') {
+                // Sign them back out immediately — they are not an admin
+                await supabase.auth.signOut();
+                toast.dismiss('auth-toast');
+                toast.error('Access denied. This account does not have admin privileges.');
+                return;
             }
 
             setCurrentUser({ email: data.session.user.email, role: 'admin' });
@@ -845,8 +853,9 @@ USING (
         if (!confirm(`Are you sure you want to delete "${productName}"?`)) return;
 
         try {
-            const client = createFreshClient();
-            const { error } = await client
+            // Use the shared supabase client so the auth session is guaranteed
+            // to be present (Bug 10 fix — createFreshClient() may race the session)
+            const { error } = await supabase
                 .from('products')
                 .delete()
                 .eq('id', productId);
@@ -1159,7 +1168,6 @@ WITH CHECK (
                                         required
                                         autoComplete="email"
                                     />
-                                    <p className="text-xs text-gray-500 mt-1">Authorized email: flowerlifestyle@gmail.com</p>
                                 </div>
                                 <div className="relative">
                                     <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
@@ -1359,7 +1367,7 @@ WITH CHECK (
                             ) : users.length === 0 ? (
                                 <div className="text-center py-12">
                                     <p className="text-gray-500 mb-4">No users found or access denied by database</p>
-                                    <Button onClick={loadUsers} variant="outline" size="sm">Reload Users</Button>
+                                    <Button onClick={() => loadUsers(null, true)} variant="outline" size="sm">Reload Users</Button>
                                 </div>
                             ) : (
                                 <div className="overflow-x-auto -mx-4 sm:mx-0">

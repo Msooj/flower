@@ -20,7 +20,8 @@ const LoginPage = () => {
   useEffect(() => {
     const checkConnection = async () => {
       try {
-        const { data, error } = await supabase.from('status_checks').select('id').limit(1);
+        // Use user_profiles which is guaranteed to exist (status_checks does not exist)
+        const { error } = await supabase.from('user_profiles').select('id').limit(1);
         if (error) {
           setDbStatus(`Database connection issue: ${error.message}`);
         } else {
