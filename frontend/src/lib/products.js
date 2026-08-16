@@ -22,12 +22,29 @@ export const normalizeProduct = (p) => ({
 // Shared across ALL useProducts() calls in the same browser session.
 // Prevents FeaturedProducts + FlowersPage (and any other consumer) from each
 // firing their own independent Supabase query on every page visit.
-const CACHE_TTL_MS = 2 * 60 * 1000; // 2 minutes stale time
+const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes stale time (was 2 min)
 const _cache = {
   data: null,       // normalized product array, or null
   fetchedAt: 0,     // timestamp of last successful fetch
   limit: 0,         // how many items are in the cache
   inFlight: null,   // Promise while a fetch is in progress
+};
+
+/**
+ * Synchronous cache read — returns the cached array if still fresh and large
+ * enough for the requested limit, otherwise returns null.
+ * Used by useProducts to pre-populate state on mount with no async overhead.
+ */
+export const getCachedProducts = (limit = 50) => {
+  const now = Date.now();
+  if (
+    _cache.data &&
+    _cache.limit >= limit &&
+    now - _cache.fetchedAt < CACHE_TTL_MS
+  ) {
+    return _cache.data.slice(0, limit);
+  }
+  return null;
 };
 
 /** Load products from Supabase with cache + in-flight deduplication. Returns { data, error }. */
@@ -51,7 +68,9 @@ export const fetchProductsFromDb = async ({ limit = 50 } = {}) => {
 
   // 3. Start a fresh fetch and share the Promise so concurrent callers wait on it
   _cache.inFlight = (async () => {
-    const fetchLimit = Math.max(limit, 50); // always fetch ≥50 so cache is reusable
+    // Always fetch at least 100 so FeaturedProducts(limit=4) and
+    // FlowersPage(limit=50) both reuse this single cached request.
+    const fetchLimit = Math.max(limit, 100);
     const { data, error } = await runSupabaseQuery(() =>
       supabase
         .from('products')

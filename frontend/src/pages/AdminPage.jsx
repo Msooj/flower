@@ -552,13 +552,14 @@ USING (
             }
             if (!session) throw new Error('No active session. Please log in again.');
 
-            // Fetch orders without the nested join first (fast) — items shown inline from stored data
+            // Fetch orders with order items — product name already stored on each item,
+            // so we skip the heavy nested product join (Bug fix: was fetching 300 rows with full join)
             const { data, error } = await withTimeout(
                 supabase
                     .from('orders')
-                    .select('*, order_items(id, quantity, price, product_name, product_id, product:products(id, name, image))')
+                    .select('*, order_items(id, quantity, price, product_name, product_id)')
                     .order('created_at', { ascending: false })
-                    .limit(300),
+                    .limit(100),
                 15000,
                 'Load orders'
             );

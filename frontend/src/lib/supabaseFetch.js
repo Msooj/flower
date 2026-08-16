@@ -18,7 +18,7 @@ export const isRetryableError = (error) => {
 };
 
 /** Retry transient Supabase query failures (network, 5xx, timeouts). */
-export const runSupabaseQuery = async (queryFn, { retries = 3, baseDelayMs = 250 } = {}) => {
+export const runSupabaseQuery = async (queryFn, { retries = 2, baseDelayMs = 150 } = {}) => {
   let lastResult = { data: null, error: null };
 
   for (let attempt = 0; attempt < retries; attempt += 1) {
@@ -43,7 +43,7 @@ export const runSupabaseQuery = async (queryFn, { retries = 3, baseDelayMs = 250
 };
 
 /** Fetch wrapper with retries for Supabase client global.fetch */
-export const createRetryFetch = (retries = 3) => {
+export const createRetryFetch = (retries = 2) => {
   return async (input, init) => {
     let lastError;
 
@@ -51,14 +51,14 @@ export const createRetryFetch = (retries = 3) => {
       try {
         const response = await fetch(input, init);
         if (response.status >= 500 && attempt < retries - 1) {
-          await delay(400 * (attempt + 1));
+          await delay(300 * (attempt + 1));
           continue;
         }
         return response;
       } catch (err) {
         lastError = err;
         if (attempt === retries - 1) throw err;
-        await delay(400 * (attempt + 1));
+        await delay(300 * (attempt + 1));
       }
     }
 

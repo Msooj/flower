@@ -1,17 +1,30 @@
-import { useState, useEffect, useCallback } from 'react';
-import { fetchProductsFromDb } from '../lib/products';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { fetchProductsFromDb, getCachedProducts } from '../lib/products';
 
 /**
  * Shared product loader with DB retries.
  * Products are loaded exclusively from Supabase — no mock fallback.
+ * If the module-level cache is warm, products are returned synchronously
+ * (no spinner shown at all).
  */
 export function useProducts({ limit = 50 } = {}) {
-  const [products, setProducts] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  // Pre-check the cache so we can initialise with data already available,
+  // avoiding a blank-screen flash on pages that have already loaded products.
+  const cachedOnMount = useRef(getCachedProducts(limit));
+
+  const [products, setProducts] = useState(cachedOnMount.current ?? []);
+  const [isLoading, setIsLoading] = useState(cachedOnMount.current === null);
   const [loadError, setLoadError] = useState(null);
-  const [dataSource, setDataSource] = useState('loading');
 
   const load = useCallback(async () => {
+    // If cache is still valid, return immediately — no network call, no spinner
+    const cached = getCachedProducts(limit);
+    if (cached !== null) {
+      setProducts(cached);
+      setIsLoading(false);
+      return;
+    }
+
     setIsLoading(true);
     setLoadError(null);
 
@@ -19,10 +32,8 @@ export function useProducts({ limit = 50 } = {}) {
 
     if (data.length > 0) {
       setProducts(data);
-      setDataSource('database');
     } else {
       setProducts([]);
-      setDataSource('empty');
       setLoadError(error);
     }
 
@@ -33,6 +44,5 @@ export function useProducts({ limit = 50 } = {}) {
     load();
   }, [load]);
 
-  return { products, isLoading, loadError, dataSource, retry: load };
+  return { products, isLoading, loadError, retry: load };
 };
-
