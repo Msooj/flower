@@ -138,9 +138,9 @@ const NeighborhoodPage = ({ data }) => {
             </h2>
             <p className="text-gray-600 mb-6">Hand-crafted fresh every day at City Market, Nairobi CBD</p>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {data.popularItems.map((item) => (
+              {data.popularItems.map((item, index) => (
                 <Link
-                  key={item}
+                  key={index}
                   to="/flowers"
                   className="group relative rounded-2xl bg-gradient-to-br from-pink-50 to-pink-100 border border-pink-200 p-5 text-center hover:shadow-md hover:border-pink-400 transition-all duration-200"
                 >
@@ -162,9 +162,9 @@ const NeighborhoodPage = ({ data }) => {
               Areas we cover in {data.area}
             </h2>
             <div className="flex flex-wrap gap-2">
-              {data.landmarks.map((lm) => (
+              {data.landmarks.map((lm, index) => (
                 <span
-                  key={lm}
+                  key={index}
                   className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-pink-50 border border-pink-200 text-pink-700 text-sm font-medium"
                 >
                   <MapPin className="w-3.5 h-3.5" />

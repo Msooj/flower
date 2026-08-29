@@ -41,10 +41,10 @@ const HeroSection = ({ isMobile = false }) => {
 
 
             <h1 className={`${isMobile ? 'text-2xl sm:text-3xl text-center' : 'text-3xl md:text-4xl lg:text-5xl'} font-bold text-gray-900 leading-tight mb-3 md:mb-6`}>
-              Premier Nairobi Florist — Fresh Flowers & Gifts with Same Day Delivery
+              Nairobi Florist — Flowers, Gifts & Same Day Delivery for All Occasions
             </h1>
             <h2 className={`${isMobile ? 'text-base sm:text-lg text-center' : 'text-lg md:text-xl lg:text-2xl'} font-semibold text-pink-600 mb-3 md:mb-6`}>
-              Beautiful Flowers • Special Gifts • Same Day Delivery in Nairobi • All Occasions
+              Fresh Flowers • Beautiful Gifts • Same Day Delivery in Nairobi • Your Trusted Florist for Every Occasion
             </h2>
 
             <p className={`text-sm md:text-base lg:text-lg text-gray-600 mb-6 md:mb-8 max-w-lg leading-relaxed ${isMobile ? 'text-center' : ''}`}>
