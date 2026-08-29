@@ -71,6 +71,7 @@ export const fetchProductsFromDb = async ({ limit = 50 } = {}) => {
     // Always fetch at least 100 so FeaturedProducts(limit=4) and
     // FlowersPage(limit=50) both reuse this single cached request.
     const fetchLimit = Math.max(limit, 100);
+    console.log('Fetching products from Supabase with columns:', PRODUCT_COLUMNS);
     const { data, error } = await runSupabaseQuery(() =>
       supabase
         .from('products')
@@ -79,11 +80,20 @@ export const fetchProductsFromDb = async ({ limit = 50 } = {}) => {
         .limit(fetchLimit)
     );
 
-    if (error || !data?.length) {
-      return { data: [], error: error || null };
+    console.log('Supabase products query result:', { data, error });
+
+    if (error) {
+      console.error('Error fetching products:', error);
+      return { data: [], error };
+    }
+
+    if (!data?.length) {
+      console.warn('No products found in database');
+      return { data: [], error: null };
     }
 
     const normalized = data.map(normalizeProduct);
+    console.log('Normalized products:', normalized.length);
     _cache.data = normalized;
     _cache.fetchedAt = Date.now();
     _cache.limit = normalized.length;
