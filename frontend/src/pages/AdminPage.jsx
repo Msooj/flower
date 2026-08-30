@@ -664,9 +664,14 @@ USING (
                 throw error;
             }
 
-            console.log('Blogs loaded:', data?.length || 0);
-            setBlogs(data || []);
-            dataLoaded.current.blogs = true;
+            const blogsData = data || [];
+            console.log('Blogs loaded:', blogsData.length);
+            setBlogs(blogsData);
+            // Only mark as loaded when we actually got data; if empty, allow
+            // the next tab switch to retry (handles RLS timing on first load)
+            if (blogsData.length > 0) {
+                dataLoaded.current.blogs = true;
+            }
         } catch (error) {
             console.error('Error loading blogs:', error);
             toast.error(`Failed to load blogs: ${error.message}`);
@@ -1007,30 +1012,60 @@ WITH CHECK (
 
     const handleUpdateBlog = async (blogId, updatedData) => {
         try {
-            if (!updatedData.title || !updatedData.content) {
+            if (!updatedData.title?.trim() || !updatedData.content?.trim()) {
                 toast.error('Title and content are required');
                 return;
             }
 
+            // Verify session is still active before attempting write
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) {
+                toast.error('Your session has expired. Please log in again.');
+                return;
+            }
+
+            // Only send the safe, editable columns — never spread the full
+            // editingBlog object which contains id / created_at / etc. that
+            // Postgres will reject or treat as a no-op constraint violation.
+            const payload = {
+                title: updatedData.title.trim(),
+                slug: updatedData.slug?.trim() || updatedData.title.trim()
+                    .toLowerCase()
+                    .replace(/[^a-z0-9\s-]/g, '')
+                    .replace(/\s+/g, '-')
+                    .replace(/^-+|-+$/g, ''),
+                excerpt: updatedData.excerpt?.trim() || '',
+                content: updatedData.content.trim(),
+                author: updatedData.author?.trim() || 'Flower Lifestyle',
+                category: updatedData.category || 'general',
+                image: updatedData.image || '',
+                published: Boolean(updatedData.published),
+                featured: Boolean(updatedData.featured),
+                // Set published_at when first publishing, leave it as-is otherwise
+                published_at: updatedData.published && !editingBlog?.published_at
+                    ? new Date().toISOString()
+                    : (editingBlog?.published_at ?? null),
+            };
+
+            console.log('Updating blog', blogId, 'with payload:', payload);
+
             const { error } = await supabase
                 .from('blogs')
-                .update({
-                    ...updatedData,
-                    updated_at: new Date().toISOString(),
-                    published_at: updatedData.published && !editingBlog.published_at 
-                        ? new Date().toISOString() 
-                        : editingBlog.published_at
-                })
-                .eq('id', blogId);
+                .update(payload)
+                .eq('id', blogId)
+                .select();
 
-            if (error) throw error;
+            if (error) {
+                console.error('Blog update Supabase error:', error);
+                throw error;
+            }
 
             toast.success('Blog updated successfully!');
             setEditingBlog(null);
             loadBlogs(true);
         } catch (error) {
             console.error('Error updating blog:', error);
-            toast.error('Failed to update blog');
+            toast.error(`Failed to update blog: ${error.message || 'Unknown error'}`);
         }
     };
 
@@ -1984,13 +2019,25 @@ WITH CHECK (
                         <div className="bg-white rounded-2xl shadow-sm border border-pink-100 p-4 sm:p-8">
                             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4 sm:mb-6">
                                 <h2 className="text-xl sm:text-2xl font-bold">Manage Blogs</h2>
-                                <Button
-                                    onClick={() => setActiveTab('add-blog')}
-                                    className="bg-pink-600 hover:bg-pink-700 text-white flex items-center gap-2 text-xs sm:text-sm"
-                                >
-                                    <Plus className="w-4 h-4" />
-                                    Add New Blog
-                                </Button>
+                                <div className="flex gap-2 flex-wrap">
+                                    <Button
+                                        variant="outline"
+                                        onClick={() => { dataLoaded.current.blogs = false; loadBlogs(true); }}
+                                        className="border-pink-300 text-pink-600 flex items-center gap-2 text-xs sm:text-sm"
+                                        disabled={dataLoading.blogs}
+                                    >
+                                        {dataLoading.blogs ? (
+                                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-pink-600" />
+                                        ) : '↻'} Refresh
+                                    </Button>
+                                    <Button
+                                        onClick={() => setActiveTab('add-blog')}
+                                        className="bg-pink-600 hover:bg-pink-700 text-white flex items-center gap-2 text-xs sm:text-sm"
+                                    >
+                                        <Plus className="w-4 h-4" />
+                                        Add New Blog
+                                    </Button>
+                                </div>
                             </div>
 
                             {dataLoading.blogs ? (
@@ -1999,10 +2046,16 @@ WITH CHECK (
                                 </div>
                             ) : blogs.length === 0 ? (
                                 <div className="text-center py-12">
-                                    <p className="text-gray-500 mb-4">No blogs found</p>
-                                    <Button onClick={() => setActiveTab('add-blog')} className="bg-pink-600 hover:bg-pink-700">
-                                        Create First Blog
-                                    </Button>
+                                    <p className="text-gray-500 mb-2">No blogs found</p>
+                                    <p className="text-xs text-gray-400 mb-4">If you have blogs in the database, click Refresh to reload.</p>
+                                    <div className="flex gap-3 justify-center">
+                                        <Button variant="outline" onClick={() => { dataLoaded.current.blogs = false; loadBlogs(true); }} className="border-pink-300 text-pink-600">
+                                            ↻ Reload Blogs
+                                        </Button>
+                                        <Button onClick={() => setActiveTab('add-blog')} className="bg-pink-600 hover:bg-pink-700">
+                                            Create First Blog
+                                        </Button>
+                                    </div>
                                 </div>
                             ) : (
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
