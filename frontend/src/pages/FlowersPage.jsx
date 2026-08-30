@@ -286,11 +286,11 @@ const FlowersPage = ({ isMobile = false }) => {
       <StructuredData data={structuredDataBlocks} />
       <Header />
 
-      {dataSource === 'fallback' && loadError && (
+      {loadError && (
         <div className="bg-amber-50 border-b border-amber-200">
           <div className="container mx-auto px-4 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 max-w-7xl">
             <p className="text-sm text-amber-900">
-              Live catalog temporarily unavailable. Showing cached items — tap retry for fresh stock.
+              Live catalog temporarily unavailable — tap retry to reload products.
             </p>
             <Button type="button" variant="outline" size="sm" onClick={retry} className="shrink-0 border-amber-300">
               Retry loading
